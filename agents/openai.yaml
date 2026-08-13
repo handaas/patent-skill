@@ -1,0 +1,4 @@
+interface:
+  display_name: "专利大数据报告"
+  short_description: "基于 HandaaS 专利大数据 MCP，生成专利统计 / 申请授权趋势 / 类型分布 / 状态分布 / 检索明细的专业 HTML / Markdown / JSON 报告。"
+  default_prompt: "使用 $patent-report 生成「企业名称」的专利大数据报告：自动补全企业全称，调用专利 MCP 工具，产出 HTML + Markdown + JSON 三件套。"
