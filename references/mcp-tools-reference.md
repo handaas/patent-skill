@@ -8,7 +8,7 @@
 ## 通用约定
 
 - `keywordType` 枚举：`name`（企业名称）/ `nameId`（企业 id）/ `regNumber`（注册号）/ `socialCreditCode`（统一社会信用代码）。
-- 分页：`pageIndex` 从 1 开始；`pageSize` 单页最多 50。
+- 分页：`pageIndex` 从 1 开始；`pageSize` 单页最多 50。仅 `patent_bigdata_patent_search`（专利检索明细）支持分页，本 skill 按显式页数预算采集（CLI `--max-pages`，默认 1 页；首屏同时作报告数据与 total 发现，不重复请求）；统计（stats）为聚合接口，关键词模糊查询仅用于主体确认，均单次调用、不分页遍历。
 - `patentType` 枚举：`发明申请` / `实用新型` / `发明授权` / `外观设计`。
 
 ---

@@ -20,10 +20,9 @@ import argparse
 import datetime as dt
 import json
 import pathlib
-import sys
-from typing import Any, Dict, List, Mapping, Optional
+from typing import Any, Dict, List, Mapping, Optional, Sequence
 
-from common import REPORT_BANNER, REPORT_TYPE, json_dumps, load_json_file, print_json
+from common import REPORT_BANNER, REPORT_TYPE, attach_pagination, call_tool_once, collect_detail_pages, paid_call_scope, json_dumps, load_json_file, print_json
 import mcp_client
 from render_report import render_html, render_markdown, html_to_pdf
 
@@ -40,43 +39,77 @@ T_STATS = "patent_bigdata_patent_stats"
 # --------------------------------------------------------------------------- #
 
 
+
+
+def _is_empty_signal(value: Any) -> bool:
+    """Recognize documented no-data text without classifying it as an API failure."""
+    if not isinstance(value, str):
+        return False
+    text = value.strip()
+    return bool(text) and any(token in text for token in (
+        "查询数据为空", "暂无数据", "未查询到", "未检索到", "查询结果为空",
+    ))
+
 def _is_api_error(value: Any) -> bool:
-    """Detect MCP API error responses (not empty data, but actual failures like 405)."""
+    """Recognize failures without treating a documented empty result as an error."""
     if value is None:
         return False
     if isinstance(value, str):
-        return any(s in value for s in ("接口调用失败", "查询失败", "状态码：4", "状态码：5"))
-    if isinstance(value, dict):
-        for v in value.values():
-            if isinstance(v, str) and any(s in v for s in ("接口调用失败", "查询失败", "状态码：4", "状态码：5")):
-                return True
-    return False
+        text = value.strip()
+        if any(s in text for s in ("查询数据为空", "暂无数据", "未查询到", "未检索到")):
+            return False
+        return any(s in text for s in (
+            "接口调用失败", "查询失败", "Error executing tool", "validation error",
+            "状态码：4", "状态码：5", "密钥错误", "签名错误", "未配置",
+        ))
+    if not isinstance(value, dict):
+        return False
+    if value.get("isError") is True or value.get("success") is False:
+        return True
+    if value.get("_error") or value.get("error") or value.get("error_message"):
+        return True
+    if "code" in value and value.get("code") not in (None, 0, 200, "0", "200", "SUCCESS", "success"):
+        return True
+    if set(value) == {"text"} and value.get("text"):
+        return not any(s in str(value["text"]) for s in ("查询数据为空", "暂无数据", "未查询到", "未检索到"))
+    return any(_is_api_error(v) for v in value.values() if isinstance(v, (dict, str)))
+
 
 def _first_list(value: Any) -> List[Any]:
+    if _is_api_error(value):
+        return []
     if isinstance(value, list):
         return value
     if isinstance(value, dict):
-        if _is_api_error(value):
-            return []
-        for key in ("resultList", "list", "items", "data"):
+        for key in ("resultList", "list", "items", "records", "data"):
             if isinstance(value.get(key), list):
                 return value[key]
-    if value in (None, "", {}):
-        return []
-    return [value]
+    return []
 
 
 def _first_record(value: Any) -> Dict[str, Any]:
     for record in _first_list(value):
-        if isinstance(record, dict):
+        if isinstance(record, dict) and _has_evidence(record):
             return record
-    if isinstance(value, dict):
+    if isinstance(value, dict) and not _is_api_error(value) and _has_evidence(value):
         return value
     return {}
 
 
+def _has_evidence(value: Any) -> bool:
+    if value is None or value in ("", "-") or _is_empty_signal(value):
+        return False
+    if _is_api_error(value):
+        return False
+    if isinstance(value, dict):
+        return any(_has_evidence(v) for k, v in value.items() if k not in {"sections", "_raw"})
+    if isinstance(value, list):
+        return any(_has_evidence(v) for v in value)
+    return True
+
+
 def _text(value: Any, limit: int = 0) -> str:
-    if value is None:
+    if value is None or _is_empty_signal(value):
         return ""
     if isinstance(value, (dict, list)):
         t = json.dumps(value, ensure_ascii=False)
@@ -97,7 +130,7 @@ def _int(value: Any) -> Optional[int]:
 
 def _safe_call(tool: str, arguments: Dict[str, Any]) -> Any:
     try:
-        result = mcp_client.call_tool(tool, arguments)
+        result = call_tool_once(mcp_client.call_tool, tool, arguments)
         # Detect API error responses (405, etc.) and return error marker
         if _is_api_error(result):
             return {"_error": "API错误", "_raw": result}
@@ -114,6 +147,18 @@ def _safe_total(payload: Any) -> Any:
     return None
 
 
+def _collect_detail_pages(tool: str, arguments: Dict[str, Any], max_pages: int) -> Dict[str, Any]:
+    """Total-driven detail collection within an explicit paid-page budget (default 1 page).
+
+    The first paid page serves both as report data and as total discovery; it is
+    never refetched. Additional pages are only requested inside the budget.
+    """
+    return collect_detail_pages(
+        _safe_call, tool, dict(arguments), get_rows=_first_list, get_total=_safe_total,
+        is_error=_is_api_error, max_pages=max_pages,
+    )
+
+
 # --------------------------------------------------------------------------- #
 # Resolution
 # --------------------------------------------------------------------------- #
@@ -126,10 +171,13 @@ def resolve_enterprise_name(raw: str) -> Dict[str, Any]:
         return {"keyword": raw, "enterprise": raw, "resolved": True, "reason": "视为企业全称"}
     fuzzy = _safe_call(T_FUZZY, {"matchKeyword": raw, "pageSize": 1})
     record = _first_record(fuzzy)
+    total = _int(_safe_total(fuzzy))
     name = str(record.get("name") or "").strip()
-    if name:
-        return {"keyword": raw, "enterprise": name, "resolved": True, "reason": "由关键词模糊查询补全", "fuzzy_total": _int(_safe_total(fuzzy)), "record": record}
-    return {"keyword": raw, "enterprise": raw, "resolved": False, "reason": "模糊查询未命中企业全称，按关键词直查"}
+    if name and total == 1:
+        return {"keyword": raw, "enterprise": name, "resolved": True, "reason": "模糊查询唯一候选补全", "fuzzy_total": total, "record": record, "fuzzy_requested": True}
+    if name and total and total > 1:
+        return {"keyword": raw, "enterprise": raw, "resolved": False, "reason": f"模糊查询返回 {total} 个候选，未静默采用首条", "fuzzy_total": total, "fuzzy_requested": True}
+    return {"keyword": raw, "enterprise": raw, "resolved": False, "reason": "模糊查询未命中唯一企业全称，按原始关键词查询", "fuzzy_requested": True}
 
 
 # --------------------------------------------------------------------------- #
@@ -190,7 +238,6 @@ def _enrich_metrics_with_profile(metrics: List[Dict[str, Any]], record: Any) -> 
 def _derive_core_metrics(metrics: List[Dict[str, Any]], core: Mapping[str, Any]) -> List[Dict[str, Any]]:
     """Derive additional metrics from core analysis sections."""
     search = core.get("search_records", []) if isinstance(core, dict) else []
-    stats = core.get("patent_stats", {}) if isinstance(core, dict) else {}
     if isinstance(search, list) and search:
         try:
             types = set(str(r.get("专利类型", "")) for r in search if r.get("专利类型"))
@@ -216,10 +263,26 @@ def build_subject(raw: str, resolved: Mapping[str, Any], keyword_type: str) -> D
         "match_raw": raw,
         "resolved": bool(resolved.get("resolved")),
         "resolve_reason": resolved.get("reason", ""),
+        "searchKeywordType": "申请人",
+        "fuzzy_total": resolved.get("fuzzy_total"),
+        "requires_confirmation": bool((resolved.get("fuzzy_total") or 0) > 1),
+        "fuzzy_requested": bool(resolved.get("fuzzy_requested")),
     }
 
 
-def build_metrics(stats: Mapping[str, Any], search_total: Any, core: Mapping[str, Any] = None) -> List[Dict[str, Any]]:
+def requested_products(subject: Mapping[str, Any]) -> List[Dict[str, str]]:
+    products: List[Dict[str, str]] = []
+    if subject.get("fuzzy_requested"):
+        products.append({"name": "企业模糊查询", "product_id": "675cea1f0e009a9ea37edaa1"})
+    if not subject.get("requires_confirmation"):
+        products.extend([
+            {"name": "专利检索", "product_id": "66b338e274bf098447db7f37"},
+            {"name": "专利统计", "product_id": "66d5b7df537c3f61d646c230"},
+        ])
+    return products
+
+
+def build_metrics(stats: Mapping[str, Any], search_total: Any, core: Optional[Mapping[str, Any]] = None) -> List[Dict[str, Any]]:
     metrics: List[Dict[str, Any]] = []
     core = core or {}
     s = stats if isinstance(stats, dict) else {}
@@ -230,15 +293,14 @@ def build_metrics(stats: Mapping[str, Any], search_total: Any, core: Mapping[str
     inv_lic_n = _int(type_raw.get("inventionLicPatentCount"))
     util_n = _int(type_raw.get("utilityModelPatentCount"))
     design_n = _int(type_raw.get("appearanceDesignPatentCount"))
-    total_n = sum(n for n in (inv_app_n, inv_lic_n, util_n, design_n) if n is not None) or _int(s.get("patentCount"))
+    known_type_counts = [n for n in (inv_app_n, inv_lic_n, util_n, design_n) if n is not None]
+    total_n = sum(known_type_counts) if known_type_counts else _int(s.get("patentCount"))
 
-    metrics.append({"label": "专利总数", "value": str(total_n) if total_n else "-", "hint": "企业专利总量"})
+    metrics.append({"label": "专利总数", "value": str(total_n) if total_n is not None else "-", "hint": "企业专利总量"})
     metrics.append({"label": "发明申请", "value": str(inv_app_n) if inv_app_n is not None else "-", "hint": "发明申请专利数量"})
-    if inv_app_n and inv_lic_n is not None:
-        rate = inv_lic_n / inv_app_n * 100 if inv_app_n else 0
-        metrics.append({"label": "发明授权", "value": str(inv_lic_n) if inv_lic_n is not None else "-", "hint": "发明授权专利数量", "delta": f"授权率 {rate:.0f}%"})
-    else:
-        metrics.append({"label": "发明授权", "value": str(inv_lic_n) if inv_lic_n is not None else "-", "hint": "发明授权专利数量"})
+    # 申请量和授权量是各自的累计存量，并非同一申请队列。这里只展示
+    # 上游原始计数，不能相除生成申请结果比例。
+    metrics.append({"label": "发明授权", "value": str(inv_lic_n) if inv_lic_n is not None else "-", "hint": "发明授权专利数量"})
     metrics.append({"label": "实用新型", "value": str(util_n) if util_n is not None else "-", "hint": "实用新型专利数量"})
     metrics.append({"label": "外观设计", "value": str(design_n) if design_n is not None else "-", "hint": "外观设计专利数量"})
     if total_n and inv_app_n:
@@ -251,17 +313,24 @@ def build_metrics(stats: Mapping[str, Any], search_total: Any, core: Mapping[str
         denom = sum(vmap.get(k, 0) for k in ("有效", "失效", "审查中", "失败"))
         if denom:
             valid_rate = vmap.get("有效", 0) / denom * 100
-            metrics.append({"label": "专利有效率", "value": f"{valid_rate:.1f}%", "hint": "有效专利 / 已审专利（不含程序性状态）", "delta": "有效" if valid_rate >= 50 else None})
+            metrics.append({"label": "专利有效率", "value": f"{valid_rate:.1f}%", "hint": "有效 /（有效+失效+审查中+失败）", "delta": "有效" if valid_rate >= 50 else None})
     metrics.append({"label": "检索结果", "value": (_text(search_total) if search_total is not None else "-"), "hint": "本次检索命中专利条数"})
     return [m for m in metrics if m.get("value") not in ("", None, "-")]
 
 
 def build_caliber(subject: Mapping[str, Any]) -> Dict[str, Any]:
+    detail_filter = "申请人=目标企业"
+    if subject.get("patentType"):
+        detail_filter += f"，专利类型={subject['patentType']}"
+    products = [item["name"] for item in requested_products(subject)]
+    data_scope = f"专利统计（企业整体口径）；专利检索明细（明细筛选：{detail_filter}）；申请/授权趋势、类型分布、状态分布"
+    if products == ["企业模糊查询"]:
+        data_scope = "仅执行企业模糊查询；主体未唯一确认，未调用专利统计或专利检索"
     return {
         "match_target": subject.get("enterprise") or subject.get("match_raw"),
         "match_type": f"专利统计按企业主体匹配（keywordType={subject.get('keywordType', 'name')}）；检索支持专利名称/申请号/申请人/代理机构",
-        "data_scope": "专利统计、专利检索明细、专利申请/授权趋势、专利类型分布、专利状态分布",
-        "products": ["专利检索", "专利统计"],
+        "data_scope": data_scope,
+        "products": products,
         "limit": "数据来自专利公开数据库；少量字段可能存在更新延迟。",
     }
 
@@ -270,7 +339,7 @@ def _stat_rows(stats: Mapping[str, Any], key: str, label_key: str, count_key: st
     """Generic {label, count} extraction — kept for compatibility."""
     rows = []
     for item in _first_list(stats.get(key)):
-        if not isinstance(item, dict):
+        if not isinstance(item, dict) or not _has_evidence(item):
             continue
         label = item.get(label_key) or item.get("year") or item.get("patentDivAppLegal") or "-"
         rows.append({
@@ -296,7 +365,7 @@ def _trend_total_rows(stats: Mapping[str, Any], key: str) -> List[Dict[str, Any]
     """
     rows: List[Dict[str, Any]] = []
     for item in _first_list(stats.get(key)):
-        if not isinstance(item, dict):
+        if not isinstance(item, dict) or not _has_evidence(item):
             continue
         year = item.get("year") or "-"
         total = 0
@@ -319,7 +388,7 @@ def _trend_multi_rows(stats: Mapping[str, Any], key: str) -> List[Dict[str, Any]
     """
     rows: List[Dict[str, Any]] = []
     for item in _first_list(stats.get(key)):
-        if not isinstance(item, dict):
+        if not isinstance(item, dict) or not _has_evidence(item):
             continue
         year = item.get("year")
         if year is None:
@@ -363,7 +432,7 @@ def _validity_rows(stats: Mapping[str, Any]) -> List[Dict[str, Any]]:
     """Aggregate patentDivAppLegalStat into 有效/失效/审查中/失败 buckets."""
     bucket_count: Dict[str, int] = {}
     for item in _first_list(stats.get("patentDivAppLegalStat")):
-        if not isinstance(item, dict):
+        if not isinstance(item, dict) or not _has_evidence(item):
             continue
         label = _text(item.get("patentDivAppLegal"))
         n = _int(item.get("patentCount"))
@@ -380,7 +449,7 @@ def _status_rows(stats: Mapping[str, Any]) -> List[Dict[str, Any]]:
     """patentDivAppLegalStat: [{patentDivAppLegal, patentCount}, ...]"""
     rows = []
     for item in _first_list(stats.get("patentDivAppLegalStat")):
-        if not isinstance(item, dict):
+        if not isinstance(item, dict) or not _has_evidence(item):
             continue
         label = item.get("patentDivAppLegal") or "-"
         n = _int(item.get("patentCount"))
@@ -389,7 +458,14 @@ def _status_rows(stats: Mapping[str, Any]) -> List[Dict[str, Any]]:
     return rows
 
 
-def build_core_analysis(search: Any, stats: Mapping[str, Any]) -> Dict[str, Any]:
+def _same_subject(target: str, applicant: Any) -> bool:
+    def norm(value: Any) -> str:
+        return "".join(ch for ch in _text(value).lower() if ch.isalnum() or "\u4e00" <= ch <= "\u9fff")
+    left, right = norm(target), norm(applicant)
+    return bool(left and right and (left in right or right in left))
+
+
+def build_core_analysis(search: Any, stats: Mapping[str, Any], target: str = "", patent_type: Optional[str] = None) -> Dict[str, Any]:
     s = stats if isinstance(stats, dict) else {}
 
     TYPE_LABELS = (
@@ -432,7 +508,9 @@ def build_core_analysis(search: Any, stats: Mapping[str, Any]) -> Dict[str, Any]
     if isinstance(search, dict):
         total = search.get("total")
     for item in _first_list(search):
-        if not isinstance(item, dict):
+        if not isinstance(item, dict) or not _has_evidence(item):
+            continue
+        if target and not _same_subject(target, item.get("patentApplicantName")):
             continue
         search_rows.append({
             "专利名称": _text(item.get("patentName")) or "-",
@@ -467,7 +545,11 @@ def build_core_analysis(search: Any, stats: Mapping[str, Any]) -> Dict[str, Any]
          "chart": {"name": "有效性", "value": "数量", "donut": True}, "columns": [("有效性", "有效性"), ("数量", "数量")]},
         {"key": "type_stat", "title": "专利类型分布", "kind": "pie", "note": "按专利类型统计数量", "chart": {"name": "名称/类型/状态/年份", "value": "数量", "donut": True}, "columns": [("类型", "名称/类型/状态/年份"), ("数量", "数量")]},
         {"key": "status_stat", "title": "专利法律状态分布", "kind": "bar", "note": "按专利法律状态统计数量", "chart": {"name": "名称/类型/状态/年份", "value": "数量", "orient": "v"}, "columns": [("状态", "名称/类型/状态/年份"), ("数量", "数量")]},
-        {"key": "search_records", "title": "专利检索明细", "kind": "table", "note": f"本次检索命中 {total if total is not None else '若干'} 条，展示前 {len(search_rows)} 条",
+        {"key": "search_records", "title": "专利检索明细", "kind": "table", "note": (
+            f"明细筛选：申请人={target or '目标企业'}" + (f"、专利类型={patent_type}" if patent_type else "")
+            + (f"；上游总量 {total} 条，本次采集 {len(search_rows)} 条" if total is not None
+               else f"；上游未返回总量，本次采集 {len(search_rows)} 条")
+        ),
          "columns": [("专利名称", "专利名称"), ("申请号", "申请号"), ("申请人", "申请人"), ("专利类型", "专利类型"), ("申请日期", "申请日期"), ("法律状态", "法律状态"), ("代理机构", "代理机构")]},
     ]
 
@@ -591,7 +673,7 @@ def _concentration(rows: List[Mapping[str, Any]], top_n: int = 3, name_key: str 
     return {"top": items[0][0], "top_share": items[0][1] / total * 100, "cr": cr, "total": total}
 
 
-def build_insights(subject: Mapping[str, Any], core: Mapping[str, Any], metrics: List[Mapping[str, Any]]) -> List[Dict[str, Any]]:
+def build_insights(subject: Mapping[str, Any], core: Mapping[str, Any], metrics: Sequence[Mapping[str, Any]]) -> List[Dict[str, Any]]:
     insights: List[Dict[str, Any]] = []
     metric_map = {m["label"]: str(m["value"]) for m in metrics}
     total = metric_map.get("专利总数")
@@ -602,7 +684,7 @@ def build_insights(subject: Mapping[str, Any], core: Mapping[str, Any], metrics:
         insights.append({
             "feature": "专利资产规模",
             "evidence": f"企业专利总数 {total} 件。",
-            "interpretation": "专利总量反映企业技术储备广度；结合发明/实用新型/外观设计的比例可评估研发深度。",
+            "interpretation": "该数量描述公开数据库中的累计专利记录规模；不能单独证明技术储备、研发投入、专利质量或商业价值。",
         })
     if inv_app or inv_lic:
         parts = []
@@ -610,18 +692,10 @@ def build_insights(subject: Mapping[str, Any], core: Mapping[str, Any], metrics:
             parts.append(f"发明申请 {inv_app}")
         if inv_lic:
             parts.append(f"发明授权 {inv_lic}")
-        try:
-            app_n = float(inv_app) if inv_app else 0
-            lic_n = float(inv_lic) if inv_lic else 0
-            grant_rate = (lic_n / app_n * 100) if app_n else 0
-            rate_clause = f"，授权率约 {grant_rate:.0f}%" if app_n else ""
-        except (TypeError, ValueError):
-            rate_clause = ""
         insights.append({
-            "feature": "发明型专利含金量",
-            "evidence": "、".join(parts) + "。"
-                + (f"授权率反映核心技术被专利局认可的程度，是创新实力的硬指标{rate_clause}。" if rate_clause else "发明型专利含金量较高，授权量反映核心技术被专利局认可的程度。"),
-            "interpretation": "发明授权占比越高，企业底层技术壁垒越强；若以实用新型/外观设计为主，则偏向产品迭代与外形保护。",
+            "feature": "发明申请与授权存量",
+            "evidence": "、".join(parts) + "。两项均为累计存量，口径不对应同一申请队列，不能相除推算申请结果比例。",
+            "interpretation": "两项分别描述公开申请记录和授权记录规模；当前权利状态及技术、商业意义仍需逐件核验。",
         })
     type_stat = core.get("type_stat") or []
     if type_stat:
@@ -630,7 +704,7 @@ def build_insights(subject: Mapping[str, Any], core: Mapping[str, Any], metrics:
             insights.append({
                 "feature": "专利类型集中度",
                 "evidence": f"“{conc['top']}”占比约 {conc['top_share']:.0f}%，前 3 类合计 {conc['cr']:.0f}%（CR3）。",
-                "interpretation": "类型集中度反映企业研发方向；CR3 越高说明技术布局越聚焦，反之则研发面较宽。",
+                "interpretation": "类型集中度仅描述返回记录的类型构成，不能单独推断研发活动范围或技术布局质量。",
             })
     status_stat = core.get("status_stat") or []
     if status_stat:
@@ -639,7 +713,7 @@ def build_insights(subject: Mapping[str, Any], core: Mapping[str, Any], metrics:
             insights.append({
                 "feature": "专利有效性结构",
                 "evidence": f"“{conc['top']}”为主流状态，占比约 {conc['top_share']:.0f}%。",
-                "interpretation": "有效专利占比反映专利资产健康度；失效/驳回较多可能源于未缴年费或审查未通过，建议关注核心专利的维持。",
+                "interpretation": "该分布只描述返回的法律状态结构；失效或失败原因需结合逐件法律状态记录核查。",
             })
     # 专利有效性分桶 + 有效率 + 失效风险（HIGHEST VALUE）
     validity = core.get("validity_stat") or []
@@ -653,9 +727,9 @@ def build_insights(subject: Mapping[str, Any], core: Mapping[str, Any], metrics:
             invalid_rate = invalid_n / denom * 100 if denom else 0
             risk = "偏高" if invalid_rate >= 40 else ("中等" if invalid_rate >= 20 else "较低")
             insights.append({
-                "feature": "专利有效率与失效风险",
-                "evidence": f"已审专利中 有效 {valid_n} 件（{valid_rate:.0f}%）、失效 {invalid_n} 件（{invalid_rate:.0f}%）、审查中 {vmap.get('审查中', 0)} 件、失败 {vmap.get('失败', 0)} 件。",
-                "interpretation": f"有效率为专利资产质量的核心指标；当前有效率约 {valid_rate:.0f}%，失效风险{risk}。失效多源于未缴年费或主动放弃，建议核查核心专利的年费缴纳状态，避免关键技术保护失效。",
+                "feature": "专利法律状态结构",
+                "evidence": f"纳入有效率分母的状态中：有效 {valid_n} 件（{valid_rate:.0f}%）、失效 {invalid_n} 件（{invalid_rate:.0f}%）、审查中 {vmap.get('审查中', 0)} 件、失败 {vmap.get('失败', 0)} 件。",
+                "interpretation": f"当前状态口径下有效占比约 {valid_rate:.0f}%，失效占比水平{risk}；具体原因不能由聚合数量推断，需逐件核查法律状态。",
             })
     apply_trend = core.get("apply_trend") or []
     if apply_trend:
@@ -664,7 +738,7 @@ def build_insights(subject: Mapping[str, Any], core: Mapping[str, Any], metrics:
             insights.append({
                 "feature": "申请趋势研判",
                 "evidence": f"峰值出现在“{ta['peak_period']}”（{ta['peak_value']:.0f} 件），近年趋势{ta['direction']}，{ta.get('yoy', '')}。",
-                "interpretation": "趋势上升表明研发投入持续加码、新业务技术布局活跃；趋势下降可能意味着阶段性技术成熟或投入收缩，需结合业务周期判断。",
+                "interpretation": "趋势仅描述申请数量变化，不能单独证明研发投入或业务周期变化，需结合研发费用和产品资料核验。",
             })
     grant_trend = core.get("grant_trend") or []
     if grant_trend:
@@ -673,7 +747,7 @@ def build_insights(subject: Mapping[str, Any], core: Mapping[str, Any], metrics:
             insights.append({
                 "feature": "授权趋势研判",
                 "evidence": f"授权峰值在“{ta['peak_period']}”（{ta['peak_value']:.0f} 件），近年{ta['direction']}。",
-                "interpretation": "授权趋势反映核心技术被认可的速度；授权量稳步增长通常意味着研发质量稳定、技术壁垒持续加固。",
+                "interpretation": "该趋势仅描述各报告期授权数量，不能单独证明研发质量、技术壁垒或申请转化速度。",
             })
     if not insights:
         insights.append({
@@ -684,13 +758,17 @@ def build_insights(subject: Mapping[str, Any], core: Mapping[str, Any], metrics:
     return insights
 
 
-def build_abstract(subject: Mapping[str, Any], core: Mapping[str, Any], metrics: List[Mapping[str, Any]]) -> str:
+def build_abstract(subject: Mapping[str, Any], core: Mapping[str, Any], metrics: Sequence[Mapping[str, Any]]) -> str:
     name = subject.get("enterprise") or subject.get("match_raw") or "目标企业"
+    if subject.get("requires_confirmation"):
+        return f"原始关键词“{subject.get('match_raw') or name}”返回多个候选主体，待人工确认；本报告未调用专利详情，也不形成主体专利结论。"
+    if not metrics and not any(_has_evidence(v) for k, v in core.items() if k != "sections"):
+        return f"本次未获得“{name}”的可用专利证据，核心维度覆盖率为 0；不得据此判断专利数量、类型或法律状态。"
     parts = [f"本报告以“{name}”为分析对象，基于专利公开数据，系统呈现企业专利统计、申请/授权趋势、类型分布、状态分布与专利检索明细。"]
     if metrics:
         kv = "、".join(f"{m['label']} {m['value']}" for m in metrics[:5])
         parts.append(f"关键指标包括：{kv}。")
-    parts.append("报告同时给出专利类型集中度与近期申请活跃度的结构化解读，便于技术资产管理、竞争分析与研发决策参考。")
+    parts.append("报告同时对专利类型与申请、授权趋势作结构化观察；聚合数量不能替代逐件法律状态和权利要求核验。")
     return "".join(parts)
 
 
@@ -715,7 +793,7 @@ def build_dry_run_payload(raw: str, keyword_type: str) -> Dict[str, Any]:
 # Assembly
 # --------------------------------------------------------------------------- #
 
-def _assemble(subject: Mapping[str, Any], core: Mapping[str, Any], metrics: List[Mapping[str, Any]], *, dry_run: bool) -> Dict[str, Any]:
+def _assemble(subject: Mapping[str, Any], core: Mapping[str, Any], metrics: Sequence[Mapping[str, Any]], *, dry_run: bool) -> Dict[str, Any]:
     abstract = build_abstract(subject, core, metrics)
     records = build_records(core)
     insights = build_insights(subject, core, metrics)
@@ -724,10 +802,10 @@ def _assemble(subject: Mapping[str, Any], core: Mapping[str, Any], metrics: List
     secs = ca.get("sections", [])
     if secs:
         total_secs = len(secs)
-        populated = sum(1 for s in secs if isinstance(s, dict) and ca.get(s.get("key")) not in (None, "", [], {}))
+        populated = sum(1 for s in secs if isinstance(s, dict) and _has_evidence(ca.get(s.get("key"))))
     else:
         total_secs = max(1, len([k for k in ca if k != "sections"]))
-        populated = sum(1 for k in ca if k != "sections" and ca.get(k) not in (None, "", [], {}))
+        populated = sum(1 for k in ca if k != "sections" and _has_evidence(ca.get(k)))
     quality_report = {
         "total_sections": total_secs,
         "populated_sections": populated,
@@ -753,11 +831,7 @@ def _assemble(subject: Mapping[str, Any], core: Mapping[str, Any], metrics: List
         "insights": insights,
         "data_source": {
             "mcp_server": "patent-mcp-server",
-            "products": [
-                {"name": "专利检索", "product_id": "66b338e274bf098447db7f37"},
-                {"name": "专利统计", "product_id": "66d5b7df537c3f61d646c230"},
-                {"name": "企业模糊查询", "product_id": "675cea1f0e009a9ea37edaa1"},
-            ],
+            "products": requested_products(subject),
             "generated_at": dt.datetime.now().astimezone().isoformat(timespec="seconds"),
             "dry_run": dry_run,
             "quality_report": quality_report,
@@ -765,24 +839,34 @@ def _assemble(subject: Mapping[str, Any], core: Mapping[str, Any], metrics: List
     }
 
 
-def build_payload(raw: str, keyword_type: str, patent_type: Optional[str], page_size: int) -> Dict[str, Any]:
+@paid_call_scope
+def build_payload(raw: str, keyword_type: str, patent_type: Optional[str], page_size: int, max_pages: Optional[int] = 1) -> Dict[str, Any]:
+    if isinstance(max_pages, bool) or not isinstance(max_pages, int) or max_pages < 1:
+        raise ValueError("max_pages 必须为正整数")
     resolved = resolve_enterprise_name(raw)
+    if (resolved.get("fuzzy_total") or 0) > 1:
+        subject = build_subject(raw, resolved, keyword_type)
+        subject["patentType"] = patent_type
+        core = build_core_analysis({}, {}, raw, patent_type)
+        return _assemble(subject, core, [], dry_run=False)
     enterprise = resolved["enterprise"]
     mk_args: Dict[str, Any] = {"matchKeyword": enterprise, "keywordType": keyword_type}
-    search_args: Dict[str, Any] = {"matchKeyword": enterprise, "keywordType": keyword_type, "pageIndex": 1, "pageSize": page_size}
+    search_args: Dict[str, Any] = {"matchKeyword": enterprise, "keywordType": "申请人", "pageIndex": 1, "pageSize": page_size}
     if patent_type:
         search_args["patentType"] = patent_type
     stats = _safe_call(T_STATS, mk_args)
-    search = _safe_call(T_SEARCH, search_args)
+    search = _collect_detail_pages(T_SEARCH, search_args, max_pages)
     search_total = _safe_total(search) if isinstance(search, dict) else None
 
     subject = build_subject(raw, resolved, keyword_type)
-    core = build_core_analysis(search, stats)
+    subject["patentType"] = patent_type
+    core = build_core_analysis(search, stats, enterprise, patent_type)
     metrics = build_metrics(stats if isinstance(stats, dict) else {}, search_total, core)
     _derive_core_metrics(metrics, core if isinstance(core, dict) else {})
     # --- Enterprise profile enrichment (from fuzzy_search) ---
     _enrich_metrics_with_profile(metrics, resolved.get("record") if isinstance(resolved, dict) else None)
-    return _assemble(subject, core, metrics, dry_run=False)
+    report = _assemble(subject, core, metrics, dry_run=False)
+    return attach_pagination(report, {"专利检索明细": search})
 
 
 # --------------------------------------------------------------------------- #
@@ -795,16 +879,19 @@ def main() -> None:
     parser.add_argument("--keyword-type", default="name", help="主体类型：name/nameId/regNumber/socialCreditCode")
     parser.add_argument("--patent-type", default=None, help="可选专利类型过滤（发明申请 / 实用新型 / 发明授权 / 外观设计）")
     parser.add_argument("--page-size", type=int, default=10, help="专利检索明细分页大小（最多 50）")
+    parser.add_argument("--max-pages", type=int, default=1, help="专利检索明细最多查询页数（正整数，默认 1 页；按报告结论需要先计划预算再显式扩大）")
     parser.add_argument("--dry-run", action="store_true", help="不调用真实 MCP，使用样例数据组装报告骨架")
     parser.add_argument("--output", help="输出 JSON 路径；省略则打印到 stdout")
     parser.add_argument("--report-output", help="同时输出 HTML 报告（.html）与 Markdown 报告（.md）")
     parser.add_argument("--pdf-output", help="额外输出 PDF 报告（.pdf）；需要 Playwright + Chromium")
     args = parser.parse_args()
 
+    if args.max_pages < 1:
+        parser.error("--max-pages 必须为正整数")
     if args.dry_run:
         payload = build_dry_run_payload(args.enterprise, args.keyword_type)
     else:
-        payload = build_payload(args.enterprise, args.keyword_type, args.patent_type, args.page_size)
+        payload = build_payload(args.enterprise, args.keyword_type, args.patent_type, args.page_size, args.max_pages)
 
     if args.output:
         out = pathlib.Path(args.output).expanduser()
