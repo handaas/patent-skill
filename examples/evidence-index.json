@@ -17,7 +17,7 @@
         "business-review.json": "3abb16e1d53772619d5f0f138b448c8b5a0b62f15ff3803ab5d0431d3bbd6152",
         "browser-check.json": "da93607ee1fe2e85618377ac413ce63dc5589702d28ab64e5a3023ef5de58796"
       },
-      "audit_record": "../../test-records/live-replaced-20261027/09-overall-portfolio-scope.md"
+      "audit_record": "../test-records/live-replaced-20261027/09-overall-portfolio-scope.md"
     },
     {
       "skill": "patent-skill",
@@ -35,7 +35,7 @@
         "business-review.json": "5776f5af670dbbc8b80ff2386c65d0502f04faa160b49e3f9b05d0cc22c9e8c3",
         "browser-check.json": "d35bf30005d822640a44187646c6f1c71699e4d70018a22feefdfa18203572f0"
       },
-      "audit_record": "../../test-records/live-replaced-20261027/10-invention-application-scope.md"
+      "audit_record": "../test-records/live-replaced-20261027/10-invention-application-scope.md"
     },
     {
       "skill": "patent-skill",
@@ -53,7 +53,7 @@
         "business-review.json": "e0af4ad4ca60a26a92823688334c0871f56af17ae8fb5b44b26a5f1cee8309be",
         "browser-check.json": "61ab6a4214c0a63bcf2acf1bce28eb53ff5256c142a6b7903e6760b8fd814f96"
       },
-      "audit_record": "../../test-records/live-replaced-20261027/12-granted-invention-status-boundary.md"
+      "audit_record": "../test-records/live-replaced-20261027/12-granted-invention-status-boundary.md"
     },
     {
       "skill": "patent-skill",
@@ -71,7 +71,7 @@
         "business-review.json": "de6969a0de092c43d896951e4fe5b1fac19cfd61b82a5da85ee7c8be767b4420",
         "browser-check.json": "ad74dfe49655e1efdd0a7737cdd8758b87411d658685b4420bedaf0988d6cbcd"
       },
-      "audit_record": "../../test-records/live-replaced-20261027/05-design-patent.md"
+      "audit_record": "../test-records/live-replaced-20261027/05-design-patent.md"
     },
     {
       "skill": "patent-skill",
@@ -89,7 +89,7 @@
         "business-review.json": "51b93473043fdafb3f5370ad48fca1e22785f50bb9ea1a300094c96aec9c279f",
         "browser-check.json": "01011c69f6d74aab3565847f38594e4ba25955ef82b11e75d2bf44b712077308"
       },
-      "audit_record": "../../test-records/live-replaced-20261027/07-small-sample.md"
+      "audit_record": "../test-records/live-replaced-20261027/07-small-sample.md"
     }
   ]
 }
