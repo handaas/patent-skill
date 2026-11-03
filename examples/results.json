@@ -1,0 +1,1046 @@
+{
+  "run_id": "live-replaced-20261027",
+  "skill": "patent-skill",
+  "counts": {
+    "passed": 5
+  },
+  "scenarios": [
+    {
+      "scenario": {
+        "id": "09-overall-portfolio-scope",
+        "title": "企业专利总体口径清单",
+        "user_request": "整理华为技术有限公司的企业专利总体统计、申请/公开趋势、法律状态分布和前 10 条代表记录；累计申请与累计授权分别展示，不计算申请成功率。",
+        "purpose": "验证未指定专利类型时的总体统计、趋势、状态和分页样本边界。",
+        "args": [
+          "--enterprise",
+          "华为技术有限公司",
+          "--page-size",
+          "10"
+        ],
+        "expected_checks": [
+          "主体必须确认",
+          "企业总体统计至少一个类型累计字段真实非空",
+          "申请趋势或授权/公开趋势至少一个序列非空",
+          "代表记录至少一条且含名称、申请号、申请人和专利类型",
+          "不得计算累计申请/授权成功率"
+        ],
+        "limitations": [
+          "不评价专利质量、技术壁垒或商业价值",
+          "代表记录不是完整专利组合",
+          "法律状态需以官方登记复核"
+        ]
+      },
+      "result": {
+        "schema_version": 1,
+        "skill": "patent-skill",
+        "case_id": "09-overall-portfolio-scope",
+        "title": "企业专利总体口径清单",
+        "invocation_id": "1793070069852305000",
+        "provenance": {
+          "integrator_id": "683e574805537ace146cc05e",
+          "runner_sha256": "05777c2f2b0791cb5157aef691206606dade8df7af3b17212285b7ae74632a66",
+          "credential_policy_sha256": "bcabf08a1ca92f28357c0e57a8bae9bfa910eb1d4b204d8195ee3b7a77106eed",
+          "scenario_sha256": "41a1d2b16e91f1ddde35bcc19ee9d3f5f63b135455e167335b94dfa2a07a7ee5",
+          "skill_source_hashes": {
+            "scripts/common.py": "f1d8673c57a3f0259770bab9e02dff5a01e87c639a6b4831173ac52c54168e42",
+            "scripts/compose_report.py": "871e4bc0d9484725855b242a7f93e65ef27d40c706feead0798ef200956f9735",
+            "scripts/mcp_client.py": "79c51eaec8e124e20e49dd461d3ac1879c99d95a6e7e76a51d0ceadfecd54995",
+            "scripts/render_report.py": "4ed8ffbca7848bfbf2eba1c37f03f05f7e52a1dda1b25a66749a3654577733f2",
+            "scripts/validate_config.py": "3bf851c0bea7fecd2120dfef02a8dd59c9d367cc4b3f8fdea45040fda52fe630"
+          },
+          "upstream_source_hashes": {
+            "patent-mcp-server": "6415af144978311c545a4ba5e914de3b1b192eb6b667f2398faaa0e7d599e485"
+          },
+          "upstream_dependency_hashes": {
+            "patent-mcp-server/server/mcp_server.py": "6415af144978311c545a4ba5e914de3b1b192eb6b667f2398faaa0e7d599e485"
+          }
+        },
+        "source_changed_during_run": false,
+        "started_at": "2026-10-27T11:01:09+08:00",
+        "elapsed_seconds": 2.163,
+        "returncode": 0,
+        "exception_type": null,
+        "command": "python3 patent-skill/scripts/compose_report.py --enterprise '华为技术有限公司' --page-size 10 --output patent-skill/output/live-replaced-20261027/09-overall-portfolio-scope/report.json --report-output patent-skill/output/live-replaced-20261027/09-overall-portfolio-scope/report.html",
+        "transport": "local MCP servers via loopback streamable-http",
+        "cache_used": false,
+        "call_count": 2,
+        "successful_data_calls": 2,
+        "empty_calls": 0,
+        "failed_calls": 0,
+        "checks": {
+          "issues": [],
+          "warnings": [],
+          "coverage_pct": 100,
+          "subject": {
+            "enterprise": "华为技术有限公司",
+            "matchKeyword": "华为技术有限公司",
+            "keywordType": "name",
+            "match_raw": "华为技术有限公司",
+            "resolved": true,
+            "resolve_reason": "视为企业全称",
+            "searchKeywordType": "申请人",
+            "fuzzy_total": null,
+            "requires_confirmation": false,
+            "fuzzy_requested": false,
+            "patentType": null
+          },
+          "title": "华为技术有限公司 专利大数据报告",
+          "data_mode": null,
+          "metrics": [
+            {
+              "label": "专利总数",
+              "value": "133237",
+              "hint": "企业专利总量"
+            },
+            {
+              "label": "发明申请",
+              "value": "59570",
+              "hint": "发明申请专利数量"
+            },
+            {
+              "label": "发明授权",
+              "value": "66820",
+              "hint": "发明授权专利数量"
+            },
+            {
+              "label": "实用新型",
+              "value": "3440",
+              "hint": "实用新型专利数量"
+            },
+            {
+              "label": "外观设计",
+              "value": "3407",
+              "hint": "外观设计专利数量"
+            },
+            {
+              "label": "发明型占比",
+              "value": "95%",
+              "hint": "发明申请+授权 / 总数"
+            },
+            {
+              "label": "专利有效率",
+              "value": "46.6%",
+              "hint": "有效 /（有效+失效+审查中+失败）",
+              "delta": null
+            },
+            {
+              "label": "检索结果",
+              "value": "232639",
+              "hint": "本次检索命中专利条数"
+            },
+            {
+              "label": "专利类型数",
+              "value": "1",
+              "hint": "不同专利类型数量"
+            },
+            {
+              "label": "申请人/发明人数",
+              "value": "2",
+              "hint": "相关专利申请人数量"
+            }
+          ],
+          "quality_report": {
+            "total_sections": 7,
+            "populated_sections": 7,
+            "empty_sections": 0,
+            "coverage_pct": 100
+          },
+          "unregistered_tools": [],
+          "checks": {
+            "json_html_markdown": true,
+            "explicit_live": true,
+            "tool_calls_recorded": 2,
+            "offline_scripts": true,
+            "independent_rerender": true,
+            "offline_browser": true
+          }
+        },
+        "status": "passed",
+        "source_hashes": {
+          "scripts/common.py": "f1d8673c57a3f0259770bab9e02dff5a01e87c639a6b4831173ac52c54168e42",
+          "scripts/compose_report.py": "871e4bc0d9484725855b242a7f93e65ef27d40c706feead0798ef200956f9735",
+          "scripts/mcp_client.py": "79c51eaec8e124e20e49dd461d3ac1879c99d95a6e7e76a51d0ceadfecd54995",
+          "scripts/render_report.py": "4ed8ffbca7848bfbf2eba1c37f03f05f7e52a1dda1b25a66749a3654577733f2",
+          "scripts/validate_config.py": "3bf851c0bea7fecd2120dfef02a8dd59c9d367cc4b3f8fdea45040fda52fe630"
+        },
+        "technical_status": "passed",
+        "audited_at": "2026-10-27T11:13:02+08:00",
+        "evidence_binding": {
+          "report.json": "eecc112fb132dc19d59fe64d632722942bfd0586296082bc604009456dfe5c2c",
+          "report.html": "65f3887b6ba0f7ae989798b644f73c5d357abb3c89cfeef6431b4a439d596d3e",
+          "report.md": "147653dec015876bf609c5dce8c15dbcbd3edd94c1e28e2b10a9a8666fa657ad",
+          "calls.json": "5d453d6ddece16802101bc340bba8714eb07c119cd72c158b8fdb75d25a30d3f",
+          "result.json": "d03fe6da7dba90c1cb2bed39a35d655cfe1158559350a1488dd2970c58726167",
+          "source_manifest_sha256": "014e0c39ccd221d4b037bfafc75dc705b73521da54c003be18fa8ca62d4dab92"
+        },
+        "business_review": {
+          "id": "09-overall-portfolio-scope",
+          "verdict": "acceptable",
+          "summary": "当前正式产物满足新专利场景的主体、真实数据、字段和非推断边界。",
+          "checks": [
+            {
+              "expectation": "主体必须确认",
+              "status": "pass",
+              "evidence": "requires_confirmation=False。本轮三种格式标题一致（JSON/HTML/Markdown；html=65f3887b6ba0）；技术状态=passed、真实data调用=2；主体={\"enterprise\":\"华为技术有限公司\",\"matchKeyword\":\"华为技术有限公司\",\"keywordType\":\"name\",\"match_raw\":\"华为技术有限公司\",\"resolved\":true,\"resolve_reason\":\"视为企业全称\",\"searchKeywordType\":\"申请人\",\"fuzzy_total\":null,\"requires_confirmation\":false,\"fuzzy_requested\":false,\"patentType\":null}；调用=[{\"tool\":\"patent_bigdata_patent_stats\",\"status\":\"data\",\"rows\":null,\"total\":null},{\"tool\":\"patent_bigdata_patent_search\",\"status\":\"data\",\"rows\":10,\"total\":232639}]；质量={\"total_sections\":7,\"populated_sections\":7,\"empty_sections\":0,\"coverage_pct\":100}；章节=[{\"title\":\"专利统计\",\"records\":5},{\"title\":\"专利申请趋势（分类型）\",\"records\":10},{\"title\":\"专利授权趋势（分类型）\",\"records\":10},{\"title\":\"专利有效性结构\",\"records\":5},{\"title\":\"专利类型分布\",\"records\":4},{\"title\":\"专利法律状态分布\",\"records\":32},{\"title\":\"专利检索明细\",\"records\":10}]；指标=[{\"label\":\"专利总数\",\"value\":\"133237\",\"hint\":\"企业专利总量\"},{\"label\":\"发明申请\",\"value\":\"59570\",\"hint\":\"发明申请专利数量\"},{\"label\":\"发明授权\",\"value\":\"66820\",\"hint\":\"发明授权专利数量\"},{\"label\":\"实用新型\",\"value\":\"3440\",\"hint\":\"实用新型专利数量\"},{\"label\":\"外观设计\",\"value\":\"3407\",\"hint\":\"外观设计专利数量\"},{\"label\":\"发明型占比\",\"value\":\"95%\",\"hint\":\"发明申请+授权 / 总数\"},{\"label\":\"专利有效率\",\"value\":\"46.6%\",\"hint\":\"有效 /（有效+失效+审查中+失败）\",\"delta\":null},{\"label\":\"检索结果\",\"value\":\"232639\",\"hint\":\"本次检索命中专利条数\"},{\"label\":\"专利类型数\",\"value\":\"1\",\"hint\":\"不同专利类型数量\"},{\"label\":\"申请人/发明人数\",\"value\":\"2\",\"hint\":\"相关专利申请人数量\"}]；章节样本=[{\"title\":\"专利统计\",\"sample\":{\"专利总数\":\"133237\",\"发明申请专利数\":\"59570\",\"发明授权专利数\":\"66820\",\"实用新型专利数\":\"3440\",\"外观设计专利数\":\"3407\"}},{\"title\":\"专利申请趋势（分类型）\",\"sample\":{\"年份\":\"2017\",\"发明申请\":1640,\"发明授权\":5202,\"实用新型\":53,\"外观设计\":102}},{\"title\":\"专利授权趋势（分类型）\",\"sample\":{\"年份\":\"2017\",\"发明申请\":727,\"发明授权\":2681,\"实用新型\":56,\"外观设计\":137}},{\"title\":\"专利有效性结构\",\"sample\":{\"有效性\":\"有效\",\"数量\":102142}},{\"title\":\"专利类型分布\",\"sample\":{\"名称/类型/状态/年份\":\"发明申请\",\"数量\":\"59570\"}},{\"title\":\"专利法律状态分布\",\"sample\":{\"名称/类型/状态/年份\":\"专利实施许可合同备案的生效、变更及注销\",\"数量\":\"1429\"}},{\"title\":\"专利检索明细\",\"sample\":{\"专利名称\":\"COMMUNICATION METHOD AND DEVICE\",\"申请号\":\"WOCN21107579\",\"申请人\":\"华为技术有限公司\",\"专利类型\":\"发明申请\",\"申请日期\":\"2021-07-21\",\"法律状态\":\"-\",\"代理机构\":\"北京同达信恒知识产权代理有限公司\"}}]；代表记录=[{\"专利名称\":\"COMMUNICATION METHOD AND DEVICE\",\"专利类型\":\"发明申请\",\"申请日期\":\"2021-07-21\",\"法律状态\":\"-\"},{\"专利名称\":\"METHOD AND APPARATUS FOR COMMUNICATION, TERMINAL DEVICE, NETWORK DEVICE, AND MEDIUM\",\"专利类型\":\"发明申请\",\"申请日期\":\"2021-07-06\",\"法律状态\":\"-\"},{\"专利名称\":\"晶片\",\"专利类型\":\"发明申请\",\"申请日期\":\"2021-07-20\",\"法律状态\":\"-\"}]；解释边界=[{\"feature\":\"专利资产规模\",\"evidence\":\"企业专利总数 133237 件。\",\"interpretation\":\"该数量描述公开数据库中的累计专利记录规模；不能单独证明技术储备、研发投入、专利质量或商业价值。\"},{\"feature\":\"发明申请与授权存量\",\"evidence\":\"发明申请 59570、发明授权 66820。两项均为累计存量，口径不对应同一申请队列，不能相除推算申请结果比例。\",\"interpretation\":\"两项分别描述公开申请记录和授权记录规模；当前权利状态及技术、商业意义仍需逐件核验。\"},{\"feature\":\"专利类型集中度\",\"evidence\":\"“发明授权”占比约 50%，前 3 类合计 97%（CR3）。\",\"interpretation\":\"类型集中度仅描述返回记录的类型构成，不能单独推断研发活动范围或技术布局质量。\"},{\"feature\":\"专利有效性结构\",\"evidence\":\"“授权”为主流状态，占比约 45%。\",\"interpretation\":\"该分布只描述返回的法律状态结构；失效或失败原因需结合逐件法律状态记录核查。\"},{\"feature\":\"专利法律状态结构\",\"evidence\":\"纳入有效率分母的状态中：有效 102142 件（47%）、失效 52420 件（24%）、审查中 43614 件、失败 21134 件。\",\"interpretation\":\"当前状态口径下有效占比约 47%，失效占比水平中等；具体原因不能由聚合数量推断，需逐件核查法律状态。\"},{\"feature\":\"申请趋势研判\",\"evidence\":\"峰值出现在“2024”（11595 件），近年趋势下降 94%，同比 -94%。\",\"interpretation\":\"趋势仅描述申请数量变化，不能单独证明研发投入或业务周期变化，需结合研发费用和产品资料核验。\"},{\"feature\":\"授权趋势研判\",\"evidence\":\"授权峰值在“2025”（16433 件），近年下降 19%。\",\"interpretation\":\"该趋势仅描述各报告期授权数量，不能单独证明研发质量、技术壁垒或申请转化速度。\"}]。"
+            },
+            {
+              "expectation": "企业总体统计至少一个类型累计字段真实非空",
+              "status": "pass",
+              "evidence": "patent_stats={\"专利总数\":\"133237\",\"发明申请专利数\":\"59570\",\"发明授权专利数\":\"66820\",\"实用新型专利数\":\"3440\",\"外观设计专利数\":\"3407\"}。本轮三种格式标题一致（JSON/HTML/Markdown；html=65f3887b6ba0）；技术状态=passed、真实data调用=2；主体={\"enterprise\":\"华为技术有限公司\",\"matchKeyword\":\"华为技术有限公司\",\"keywordType\":\"name\",\"match_raw\":\"华为技术有限公司\",\"resolved\":true,\"resolve_reason\":\"视为企业全称\",\"searchKeywordType\":\"申请人\",\"fuzzy_total\":null,\"requires_confirmation\":false,\"fuzzy_requested\":false,\"patentType\":null}；调用=[{\"tool\":\"patent_bigdata_patent_stats\",\"status\":\"data\",\"rows\":null,\"total\":null},{\"tool\":\"patent_bigdata_patent_search\",\"status\":\"data\",\"rows\":10,\"total\":232639}]；质量={\"total_sections\":7,\"populated_sections\":7,\"empty_sections\":0,\"coverage_pct\":100}；章节=[{\"title\":\"专利统计\",\"records\":5},{\"title\":\"专利申请趋势（分类型）\",\"records\":10},{\"title\":\"专利授权趋势（分类型）\",\"records\":10},{\"title\":\"专利有效性结构\",\"records\":5},{\"title\":\"专利类型分布\",\"records\":4},{\"title\":\"专利法律状态分布\",\"records\":32},{\"title\":\"专利检索明细\",\"records\":10}]；指标=[{\"label\":\"专利总数\",\"value\":\"133237\",\"hint\":\"企业专利总量\"},{\"label\":\"发明申请\",\"value\":\"59570\",\"hint\":\"发明申请专利数量\"},{\"label\":\"发明授权\",\"value\":\"66820\",\"hint\":\"发明授权专利数量\"},{\"label\":\"实用新型\",\"value\":\"3440\",\"hint\":\"实用新型专利数量\"},{\"label\":\"外观设计\",\"value\":\"3407\",\"hint\":\"外观设计专利数量\"},{\"label\":\"发明型占比\",\"value\":\"95%\",\"hint\":\"发明申请+授权 / 总数\"},{\"label\":\"专利有效率\",\"value\":\"46.6%\",\"hint\":\"有效 /（有效+失效+审查中+失败）\",\"delta\":null},{\"label\":\"检索结果\",\"value\":\"232639\",\"hint\":\"本次检索命中专利条数\"},{\"label\":\"专利类型数\",\"value\":\"1\",\"hint\":\"不同专利类型数量\"},{\"label\":\"申请人/发明人数\",\"value\":\"2\",\"hint\":\"相关专利申请人数量\"}]；章节样本=[{\"title\":\"专利统计\",\"sample\":{\"专利总数\":\"133237\",\"发明申请专利数\":\"59570\",\"发明授权专利数\":\"66820\",\"实用新型专利数\":\"3440\",\"外观设计专利数\":\"3407\"}},{\"title\":\"专利申请趋势（分类型）\",\"sample\":{\"年份\":\"2017\",\"发明申请\":1640,\"发明授权\":5202,\"实用新型\":53,\"外观设计\":102}},{\"title\":\"专利授权趋势（分类型）\",\"sample\":{\"年份\":\"2017\",\"发明申请\":727,\"发明授权\":2681,\"实用新型\":56,\"外观设计\":137}},{\"title\":\"专利有效性结构\",\"sample\":{\"有效性\":\"有效\",\"数量\":102142}},{\"title\":\"专利类型分布\",\"sample\":{\"名称/类型/状态/年份\":\"发明申请\",\"数量\":\"59570\"}},{\"title\":\"专利法律状态分布\",\"sample\":{\"名称/类型/状态/年份\":\"专利实施许可合同备案的生效、变更及注销\",\"数量\":\"1429\"}},{\"title\":\"专利检索明细\",\"sample\":{\"专利名称\":\"COMMUNICATION METHOD AND DEVICE\",\"申请号\":\"WOCN21107579\",\"申请人\":\"华为技术有限公司\",\"专利类型\":\"发明申请\",\"申请日期\":\"2021-07-21\",\"法律状态\":\"-\",\"代理机构\":\"北京同达信恒知识产权代理有限公司\"}}]；代表记录=[{\"专利名称\":\"COMMUNICATION METHOD AND DEVICE\",\"专利类型\":\"发明申请\",\"申请日期\":\"2021-07-21\",\"法律状态\":\"-\"},{\"专利名称\":\"METHOD AND APPARATUS FOR COMMUNICATION, TERMINAL DEVICE, NETWORK DEVICE, AND MEDIUM\",\"专利类型\":\"发明申请\",\"申请日期\":\"2021-07-06\",\"法律状态\":\"-\"},{\"专利名称\":\"晶片\",\"专利类型\":\"发明申请\",\"申请日期\":\"2021-07-20\",\"法律状态\":\"-\"}]；解释边界=[{\"feature\":\"专利资产规模\",\"evidence\":\"企业专利总数 133237 件。\",\"interpretation\":\"该数量描述公开数据库中的累计专利记录规模；不能单独证明技术储备、研发投入、专利质量或商业价值。\"},{\"feature\":\"发明申请与授权存量\",\"evidence\":\"发明申请 59570、发明授权 66820。两项均为累计存量，口径不对应同一申请队列，不能相除推算申请结果比例。\",\"interpretation\":\"两项分别描述公开申请记录和授权记录规模；当前权利状态及技术、商业意义仍需逐件核验。\"},{\"feature\":\"专利类型集中度\",\"evidence\":\"“发明授权”占比约 50%，前 3 类合计 97%（CR3）。\",\"interpretation\":\"类型集中度仅描述返回记录的类型构成，不能单独推断研发活动范围或技术布局质量。\"},{\"feature\":\"专利有效性结构\",\"evidence\":\"“授权”为主流状态，占比约 45%。\",\"interpretation\":\"该分布只描述返回的法律状态结构；失效或失败原因需结合逐件法律状态记录核查。\"},{\"feature\":\"专利法律状态结构\",\"evidence\":\"纳入有效率分母的状态中：有效 102142 件（47%）、失效 52420 件（24%）、审查中 43614 件、失败 21134 件。\",\"interpretation\":\"当前状态口径下有效占比约 47%，失效占比水平中等；具体原因不能由聚合数量推断，需逐件核查法律状态。\"},{\"feature\":\"申请趋势研判\",\"evidence\":\"峰值出现在“2024”（11595 件），近年趋势下降 94%，同比 -94%。\",\"interpretation\":\"趋势仅描述申请数量变化，不能单独证明研发投入或业务周期变化，需结合研发费用和产品资料核验。\"},{\"feature\":\"授权趋势研判\",\"evidence\":\"授权峰值在“2025”（16433 件），近年下降 19%。\",\"interpretation\":\"该趋势仅描述各报告期授权数量，不能单独证明研发质量、技术壁垒或申请转化速度。\"}]。"
+            },
+            {
+              "expectation": "申请趋势或授权/公开趋势至少一个序列非空",
+              "status": "pass",
+              "evidence": "apply_trend=10, grant_trend=10。本轮三种格式标题一致（JSON/HTML/Markdown；html=65f3887b6ba0）；技术状态=passed、真实data调用=2；主体={\"enterprise\":\"华为技术有限公司\",\"matchKeyword\":\"华为技术有限公司\",\"keywordType\":\"name\",\"match_raw\":\"华为技术有限公司\",\"resolved\":true,\"resolve_reason\":\"视为企业全称\",\"searchKeywordType\":\"申请人\",\"fuzzy_total\":null,\"requires_confirmation\":false,\"fuzzy_requested\":false,\"patentType\":null}；调用=[{\"tool\":\"patent_bigdata_patent_stats\",\"status\":\"data\",\"rows\":null,\"total\":null},{\"tool\":\"patent_bigdata_patent_search\",\"status\":\"data\",\"rows\":10,\"total\":232639}]；质量={\"total_sections\":7,\"populated_sections\":7,\"empty_sections\":0,\"coverage_pct\":100}；章节=[{\"title\":\"专利统计\",\"records\":5},{\"title\":\"专利申请趋势（分类型）\",\"records\":10},{\"title\":\"专利授权趋势（分类型）\",\"records\":10},{\"title\":\"专利有效性结构\",\"records\":5},{\"title\":\"专利类型分布\",\"records\":4},{\"title\":\"专利法律状态分布\",\"records\":32},{\"title\":\"专利检索明细\",\"records\":10}]；指标=[{\"label\":\"专利总数\",\"value\":\"133237\",\"hint\":\"企业专利总量\"},{\"label\":\"发明申请\",\"value\":\"59570\",\"hint\":\"发明申请专利数量\"},{\"label\":\"发明授权\",\"value\":\"66820\",\"hint\":\"发明授权专利数量\"},{\"label\":\"实用新型\",\"value\":\"3440\",\"hint\":\"实用新型专利数量\"},{\"label\":\"外观设计\",\"value\":\"3407\",\"hint\":\"外观设计专利数量\"},{\"label\":\"发明型占比\",\"value\":\"95%\",\"hint\":\"发明申请+授权 / 总数\"},{\"label\":\"专利有效率\",\"value\":\"46.6%\",\"hint\":\"有效 /（有效+失效+审查中+失败）\",\"delta\":null},{\"label\":\"检索结果\",\"value\":\"232639\",\"hint\":\"本次检索命中专利条数\"},{\"label\":\"专利类型数\",\"value\":\"1\",\"hint\":\"不同专利类型数量\"},{\"label\":\"申请人/发明人数\",\"value\":\"2\",\"hint\":\"相关专利申请人数量\"}]；章节样本=[{\"title\":\"专利统计\",\"sample\":{\"专利总数\":\"133237\",\"发明申请专利数\":\"59570\",\"发明授权专利数\":\"66820\",\"实用新型专利数\":\"3440\",\"外观设计专利数\":\"3407\"}},{\"title\":\"专利申请趋势（分类型）\",\"sample\":{\"年份\":\"2017\",\"发明申请\":1640,\"发明授权\":5202,\"实用新型\":53,\"外观设计\":102}},{\"title\":\"专利授权趋势（分类型）\",\"sample\":{\"年份\":\"2017\",\"发明申请\":727,\"发明授权\":2681,\"实用新型\":56,\"外观设计\":137}},{\"title\":\"专利有效性结构\",\"sample\":{\"有效性\":\"有效\",\"数量\":102142}},{\"title\":\"专利类型分布\",\"sample\":{\"名称/类型/状态/年份\":\"发明申请\",\"数量\":\"59570\"}},{\"title\":\"专利法律状态分布\",\"sample\":{\"名称/类型/状态/年份\":\"专利实施许可合同备案的生效、变更及注销\",\"数量\":\"1429\"}},{\"title\":\"专利检索明细\",\"sample\":{\"专利名称\":\"COMMUNICATION METHOD AND DEVICE\",\"申请号\":\"WOCN21107579\",\"申请人\":\"华为技术有限公司\",\"专利类型\":\"发明申请\",\"申请日期\":\"2021-07-21\",\"法律状态\":\"-\",\"代理机构\":\"北京同达信恒知识产权代理有限公司\"}}]；代表记录=[{\"专利名称\":\"COMMUNICATION METHOD AND DEVICE\",\"专利类型\":\"发明申请\",\"申请日期\":\"2021-07-21\",\"法律状态\":\"-\"},{\"专利名称\":\"METHOD AND APPARATUS FOR COMMUNICATION, TERMINAL DEVICE, NETWORK DEVICE, AND MEDIUM\",\"专利类型\":\"发明申请\",\"申请日期\":\"2021-07-06\",\"法律状态\":\"-\"},{\"专利名称\":\"晶片\",\"专利类型\":\"发明申请\",\"申请日期\":\"2021-07-20\",\"法律状态\":\"-\"}]；解释边界=[{\"feature\":\"专利资产规模\",\"evidence\":\"企业专利总数 133237 件。\",\"interpretation\":\"该数量描述公开数据库中的累计专利记录规模；不能单独证明技术储备、研发投入、专利质量或商业价值。\"},{\"feature\":\"发明申请与授权存量\",\"evidence\":\"发明申请 59570、发明授权 66820。两项均为累计存量，口径不对应同一申请队列，不能相除推算申请结果比例。\",\"interpretation\":\"两项分别描述公开申请记录和授权记录规模；当前权利状态及技术、商业意义仍需逐件核验。\"},{\"feature\":\"专利类型集中度\",\"evidence\":\"“发明授权”占比约 50%，前 3 类合计 97%（CR3）。\",\"interpretation\":\"类型集中度仅描述返回记录的类型构成，不能单独推断研发活动范围或技术布局质量。\"},{\"feature\":\"专利有效性结构\",\"evidence\":\"“授权”为主流状态，占比约 45%。\",\"interpretation\":\"该分布只描述返回的法律状态结构；失效或失败原因需结合逐件法律状态记录核查。\"},{\"feature\":\"专利法律状态结构\",\"evidence\":\"纳入有效率分母的状态中：有效 102142 件（47%）、失效 52420 件（24%）、审查中 43614 件、失败 21134 件。\",\"interpretation\":\"当前状态口径下有效占比约 47%，失效占比水平中等；具体原因不能由聚合数量推断，需逐件核查法律状态。\"},{\"feature\":\"申请趋势研判\",\"evidence\":\"峰值出现在“2024”（11595 件），近年趋势下降 94%，同比 -94%。\",\"interpretation\":\"趋势仅描述申请数量变化，不能单独证明研发投入或业务周期变化，需结合研发费用和产品资料核验。\"},{\"feature\":\"授权趋势研判\",\"evidence\":\"授权峰值在“2025”（16433 件），近年下降 19%。\",\"interpretation\":\"该趋势仅描述各报告期授权数量，不能单独证明研发质量、技术壁垒或申请转化速度。\"}]。"
+            },
+            {
+              "expectation": "代表记录至少一条且含名称、申请号、申请人和专利类型",
+              "status": "pass",
+              "evidence": "首条检索记录=[{\"专利名称\":\"COMMUNICATION METHOD AND DEVICE\",\"申请号\":\"WOCN21107579\",\"申请人\":\"华为技术有限公司\",\"专利类型\":\"发明申请\",\"申请日期\":\"2021-07-21\",\"法律状态\":\"-\",\"代理机构\":\"北京同达信恒知识产权代理有限公司\"}]。本轮三种格式标题一致（JSON/HTML/Markdown；html=65f3887b6ba0）；技术状态=passed、真实data调用=2；主体={\"enterprise\":\"华为技术有限公司\",\"matchKeyword\":\"华为技术有限公司\",\"keywordType\":\"name\",\"match_raw\":\"华为技术有限公司\",\"resolved\":true,\"resolve_reason\":\"视为企业全称\",\"searchKeywordType\":\"申请人\",\"fuzzy_total\":null,\"requires_confirmation\":false,\"fuzzy_requested\":false,\"patentType\":null}；调用=[{\"tool\":\"patent_bigdata_patent_stats\",\"status\":\"data\",\"rows\":null,\"total\":null},{\"tool\":\"patent_bigdata_patent_search\",\"status\":\"data\",\"rows\":10,\"total\":232639}]；质量={\"total_sections\":7,\"populated_sections\":7,\"empty_sections\":0,\"coverage_pct\":100}；章节=[{\"title\":\"专利统计\",\"records\":5},{\"title\":\"专利申请趋势（分类型）\",\"records\":10},{\"title\":\"专利授权趋势（分类型）\",\"records\":10},{\"title\":\"专利有效性结构\",\"records\":5},{\"title\":\"专利类型分布\",\"records\":4},{\"title\":\"专利法律状态分布\",\"records\":32},{\"title\":\"专利检索明细\",\"records\":10}]；指标=[{\"label\":\"专利总数\",\"value\":\"133237\",\"hint\":\"企业专利总量\"},{\"label\":\"发明申请\",\"value\":\"59570\",\"hint\":\"发明申请专利数量\"},{\"label\":\"发明授权\",\"value\":\"66820\",\"hint\":\"发明授权专利数量\"},{\"label\":\"实用新型\",\"value\":\"3440\",\"hint\":\"实用新型专利数量\"},{\"label\":\"外观设计\",\"value\":\"3407\",\"hint\":\"外观设计专利数量\"},{\"label\":\"发明型占比\",\"value\":\"95%\",\"hint\":\"发明申请+授权 / 总数\"},{\"label\":\"专利有效率\",\"value\":\"46.6%\",\"hint\":\"有效 /（有效+失效+审查中+失败）\",\"delta\":null},{\"label\":\"检索结果\",\"value\":\"232639\",\"hint\":\"本次检索命中专利条数\"},{\"label\":\"专利类型数\",\"value\":\"1\",\"hint\":\"不同专利类型数量\"},{\"label\":\"申请人/发明人数\",\"value\":\"2\",\"hint\":\"相关专利申请人数量\"}]；章节样本=[{\"title\":\"专利统计\",\"sample\":{\"专利总数\":\"133237\",\"发明申请专利数\":\"59570\",\"发明授权专利数\":\"66820\",\"实用新型专利数\":\"3440\",\"外观设计专利数\":\"3407\"}},{\"title\":\"专利申请趋势（分类型）\",\"sample\":{\"年份\":\"2017\",\"发明申请\":1640,\"发明授权\":5202,\"实用新型\":53,\"外观设计\":102}},{\"title\":\"专利授权趋势（分类型）\",\"sample\":{\"年份\":\"2017\",\"发明申请\":727,\"发明授权\":2681,\"实用新型\":56,\"外观设计\":137}},{\"title\":\"专利有效性结构\",\"sample\":{\"有效性\":\"有效\",\"数量\":102142}},{\"title\":\"专利类型分布\",\"sample\":{\"名称/类型/状态/年份\":\"发明申请\",\"数量\":\"59570\"}},{\"title\":\"专利法律状态分布\",\"sample\":{\"名称/类型/状态/年份\":\"专利实施许可合同备案的生效、变更及注销\",\"数量\":\"1429\"}},{\"title\":\"专利检索明细\",\"sample\":{\"专利名称\":\"COMMUNICATION METHOD AND DEVICE\",\"申请号\":\"WOCN21107579\",\"申请人\":\"华为技术有限公司\",\"专利类型\":\"发明申请\",\"申请日期\":\"2021-07-21\",\"法律状态\":\"-\",\"代理机构\":\"北京同达信恒知识产权代理有限公司\"}}]；代表记录=[{\"专利名称\":\"COMMUNICATION METHOD AND DEVICE\",\"专利类型\":\"发明申请\",\"申请日期\":\"2021-07-21\",\"法律状态\":\"-\"},{\"专利名称\":\"METHOD AND APPARATUS FOR COMMUNICATION, TERMINAL DEVICE, NETWORK DEVICE, AND MEDIUM\",\"专利类型\":\"发明申请\",\"申请日期\":\"2021-07-06\",\"法律状态\":\"-\"},{\"专利名称\":\"晶片\",\"专利类型\":\"发明申请\",\"申请日期\":\"2021-07-20\",\"法律状态\":\"-\"}]；解释边界=[{\"feature\":\"专利资产规模\",\"evidence\":\"企业专利总数 133237 件。\",\"interpretation\":\"该数量描述公开数据库中的累计专利记录规模；不能单独证明技术储备、研发投入、专利质量或商业价值。\"},{\"feature\":\"发明申请与授权存量\",\"evidence\":\"发明申请 59570、发明授权 66820。两项均为累计存量，口径不对应同一申请队列，不能相除推算申请结果比例。\",\"interpretation\":\"两项分别描述公开申请记录和授权记录规模；当前权利状态及技术、商业意义仍需逐件核验。\"},{\"feature\":\"专利类型集中度\",\"evidence\":\"“发明授权”占比约 50%，前 3 类合计 97%（CR3）。\",\"interpretation\":\"类型集中度仅描述返回记录的类型构成，不能单独推断研发活动范围或技术布局质量。\"},{\"feature\":\"专利有效性结构\",\"evidence\":\"“授权”为主流状态，占比约 45%。\",\"interpretation\":\"该分布只描述返回的法律状态结构；失效或失败原因需结合逐件法律状态记录核查。\"},{\"feature\":\"专利法律状态结构\",\"evidence\":\"纳入有效率分母的状态中：有效 102142 件（47%）、失效 52420 件（24%）、审查中 43614 件、失败 21134 件。\",\"interpretation\":\"当前状态口径下有效占比约 47%，失效占比水平中等；具体原因不能由聚合数量推断，需逐件核查法律状态。\"},{\"feature\":\"申请趋势研判\",\"evidence\":\"峰值出现在“2024”（11595 件），近年趋势下降 94%，同比 -94%。\",\"interpretation\":\"趋势仅描述申请数量变化，不能单独证明研发投入或业务周期变化，需结合研发费用和产品资料核验。\"},{\"feature\":\"授权趋势研判\",\"evidence\":\"授权峰值在“2025”（16433 件），近年下降 19%。\",\"interpretation\":\"该趋势仅描述各报告期授权数量，不能单独证明研发质量、技术壁垒或申请转化速度。\"}]。"
+            },
+            {
+              "expectation": "不得计算累计申请/授权成功率",
+              "status": "pass",
+              "evidence": "三种格式未出现累计申请/授权成功率派生指标。本轮三种格式标题一致（JSON/HTML/Markdown；html=65f3887b6ba0）；技术状态=passed、真实data调用=2；主体={\"enterprise\":\"华为技术有限公司\",\"matchKeyword\":\"华为技术有限公司\",\"keywordType\":\"name\",\"match_raw\":\"华为技术有限公司\",\"resolved\":true,\"resolve_reason\":\"视为企业全称\",\"searchKeywordType\":\"申请人\",\"fuzzy_total\":null,\"requires_confirmation\":false,\"fuzzy_requested\":false,\"patentType\":null}；调用=[{\"tool\":\"patent_bigdata_patent_stats\",\"status\":\"data\",\"rows\":null,\"total\":null},{\"tool\":\"patent_bigdata_patent_search\",\"status\":\"data\",\"rows\":10,\"total\":232639}]；质量={\"total_sections\":7,\"populated_sections\":7,\"empty_sections\":0,\"coverage_pct\":100}；章节=[{\"title\":\"专利统计\",\"records\":5},{\"title\":\"专利申请趋势（分类型）\",\"records\":10},{\"title\":\"专利授权趋势（分类型）\",\"records\":10},{\"title\":\"专利有效性结构\",\"records\":5},{\"title\":\"专利类型分布\",\"records\":4},{\"title\":\"专利法律状态分布\",\"records\":32},{\"title\":\"专利检索明细\",\"records\":10}]；指标=[{\"label\":\"专利总数\",\"value\":\"133237\",\"hint\":\"企业专利总量\"},{\"label\":\"发明申请\",\"value\":\"59570\",\"hint\":\"发明申请专利数量\"},{\"label\":\"发明授权\",\"value\":\"66820\",\"hint\":\"发明授权专利数量\"},{\"label\":\"实用新型\",\"value\":\"3440\",\"hint\":\"实用新型专利数量\"},{\"label\":\"外观设计\",\"value\":\"3407\",\"hint\":\"外观设计专利数量\"},{\"label\":\"发明型占比\",\"value\":\"95%\",\"hint\":\"发明申请+授权 / 总数\"},{\"label\":\"专利有效率\",\"value\":\"46.6%\",\"hint\":\"有效 /（有效+失效+审查中+失败）\",\"delta\":null},{\"label\":\"检索结果\",\"value\":\"232639\",\"hint\":\"本次检索命中专利条数\"},{\"label\":\"专利类型数\",\"value\":\"1\",\"hint\":\"不同专利类型数量\"},{\"label\":\"申请人/发明人数\",\"value\":\"2\",\"hint\":\"相关专利申请人数量\"}]；章节样本=[{\"title\":\"专利统计\",\"sample\":{\"专利总数\":\"133237\",\"发明申请专利数\":\"59570\",\"发明授权专利数\":\"66820\",\"实用新型专利数\":\"3440\",\"外观设计专利数\":\"3407\"}},{\"title\":\"专利申请趋势（分类型）\",\"sample\":{\"年份\":\"2017\",\"发明申请\":1640,\"发明授权\":5202,\"实用新型\":53,\"外观设计\":102}},{\"title\":\"专利授权趋势（分类型）\",\"sample\":{\"年份\":\"2017\",\"发明申请\":727,\"发明授权\":2681,\"实用新型\":56,\"外观设计\":137}},{\"title\":\"专利有效性结构\",\"sample\":{\"有效性\":\"有效\",\"数量\":102142}},{\"title\":\"专利类型分布\",\"sample\":{\"名称/类型/状态/年份\":\"发明申请\",\"数量\":\"59570\"}},{\"title\":\"专利法律状态分布\",\"sample\":{\"名称/类型/状态/年份\":\"专利实施许可合同备案的生效、变更及注销\",\"数量\":\"1429\"}},{\"title\":\"专利检索明细\",\"sample\":{\"专利名称\":\"COMMUNICATION METHOD AND DEVICE\",\"申请号\":\"WOCN21107579\",\"申请人\":\"华为技术有限公司\",\"专利类型\":\"发明申请\",\"申请日期\":\"2021-07-21\",\"法律状态\":\"-\",\"代理机构\":\"北京同达信恒知识产权代理有限公司\"}}]；代表记录=[{\"专利名称\":\"COMMUNICATION METHOD AND DEVICE\",\"专利类型\":\"发明申请\",\"申请日期\":\"2021-07-21\",\"法律状态\":\"-\"},{\"专利名称\":\"METHOD AND APPARATUS FOR COMMUNICATION, TERMINAL DEVICE, NETWORK DEVICE, AND MEDIUM\",\"专利类型\":\"发明申请\",\"申请日期\":\"2021-07-06\",\"法律状态\":\"-\"},{\"专利名称\":\"晶片\",\"专利类型\":\"发明申请\",\"申请日期\":\"2021-07-20\",\"法律状态\":\"-\"}]；解释边界=[{\"feature\":\"专利资产规模\",\"evidence\":\"企业专利总数 133237 件。\",\"interpretation\":\"该数量描述公开数据库中的累计专利记录规模；不能单独证明技术储备、研发投入、专利质量或商业价值。\"},{\"feature\":\"发明申请与授权存量\",\"evidence\":\"发明申请 59570、发明授权 66820。两项均为累计存量，口径不对应同一申请队列，不能相除推算申请结果比例。\",\"interpretation\":\"两项分别描述公开申请记录和授权记录规模；当前权利状态及技术、商业意义仍需逐件核验。\"},{\"feature\":\"专利类型集中度\",\"evidence\":\"“发明授权”占比约 50%，前 3 类合计 97%（CR3）。\",\"interpretation\":\"类型集中度仅描述返回记录的类型构成，不能单独推断研发活动范围或技术布局质量。\"},{\"feature\":\"专利有效性结构\",\"evidence\":\"“授权”为主流状态，占比约 45%。\",\"interpretation\":\"该分布只描述返回的法律状态结构；失效或失败原因需结合逐件法律状态记录核查。\"},{\"feature\":\"专利法律状态结构\",\"evidence\":\"纳入有效率分母的状态中：有效 102142 件（47%）、失效 52420 件（24%）、审查中 43614 件、失败 21134 件。\",\"interpretation\":\"当前状态口径下有效占比约 47%，失效占比水平中等；具体原因不能由聚合数量推断，需逐件核查法律状态。\"},{\"feature\":\"申请趋势研判\",\"evidence\":\"峰值出现在“2024”（11595 件），近年趋势下降 94%，同比 -94%。\",\"interpretation\":\"趋势仅描述申请数量变化，不能单独证明研发投入或业务周期变化，需结合研发费用和产品资料核验。\"},{\"feature\":\"授权趋势研判\",\"evidence\":\"授权峰值在“2025”（16433 件），近年下降 19%。\",\"interpretation\":\"该趋势仅描述各报告期授权数量，不能单独证明研发质量、技术壁垒或申请转化速度。\"}]。"
+            }
+          ],
+          "issues": [],
+          "evidence_binding": {
+            "report.json": "eecc112fb132dc19d59fe64d632722942bfd0586296082bc604009456dfe5c2c",
+            "report.html": "65f3887b6ba0f7ae989798b644f73c5d357abb3c89cfeef6431b4a439d596d3e",
+            "report.md": "147653dec015876bf609c5dce8c15dbcbd3edd94c1e28e2b10a9a8666fa657ad",
+            "calls.json": "5d453d6ddece16802101bc340bba8714eb07c119cd72c158b8fdb75d25a30d3f",
+            "result.json": "d03fe6da7dba90c1cb2bed39a35d655cfe1158559350a1488dd2970c58726167",
+            "source_manifest_sha256": "014e0c39ccd221d4b037bfafc75dc705b73521da54c003be18fa8ca62d4dab92"
+          }
+        }
+      }
+    },
+    {
+      "scenario": {
+        "id": "10-invention-application-scope",
+        "title": "发明申请筛选作用域核查",
+        "user_request": "检索比亚迪股份有限公司前 10 条发明申请专利，核对筛选明细与企业整体统计的口径差异，并检查申请日期字段；不要计算授权成功率。",
+        "purpose": "验证 patentType=发明申请 只约束检索明细，而不会把企业整体统计误写为筛选结果。",
+        "args": [
+          "--enterprise",
+          "比亚迪股份有限公司",
+          "--patent-type",
+          "发明申请",
+          "--page-size",
+          "10"
+        ],
+        "expected_checks": [
+          "主体必须确认",
+          "至少一条筛选明细真实非空",
+          "每条验收样本的专利类型为发明申请",
+          "样本含名称、申请号、申请人和申请日期",
+          "企业整体统计与筛选明细总量分开"
+        ],
+        "limitations": [
+          "筛选样本不是完整发明申请组合",
+          "趋势峰值不代表未来走势",
+          "不分析权利要求质量和商业价值"
+        ]
+      },
+      "result": {
+        "schema_version": 1,
+        "skill": "patent-skill",
+        "case_id": "10-invention-application-scope",
+        "title": "发明申请筛选作用域核查",
+        "invocation_id": "1793070070666089000",
+        "provenance": {
+          "integrator_id": "683e574805537ace146cc05e",
+          "runner_sha256": "05777c2f2b0791cb5157aef691206606dade8df7af3b17212285b7ae74632a66",
+          "credential_policy_sha256": "bcabf08a1ca92f28357c0e57a8bae9bfa910eb1d4b204d8195ee3b7a77106eed",
+          "scenario_sha256": "a412ffa6aa8d808fea632562e7f231b84353b0f6d8cf0fec9e492f8211420f05",
+          "skill_source_hashes": {
+            "scripts/common.py": "f1d8673c57a3f0259770bab9e02dff5a01e87c639a6b4831173ac52c54168e42",
+            "scripts/compose_report.py": "871e4bc0d9484725855b242a7f93e65ef27d40c706feead0798ef200956f9735",
+            "scripts/mcp_client.py": "79c51eaec8e124e20e49dd461d3ac1879c99d95a6e7e76a51d0ceadfecd54995",
+            "scripts/render_report.py": "4ed8ffbca7848bfbf2eba1c37f03f05f7e52a1dda1b25a66749a3654577733f2",
+            "scripts/validate_config.py": "3bf851c0bea7fecd2120dfef02a8dd59c9d367cc4b3f8fdea45040fda52fe630"
+          },
+          "upstream_source_hashes": {
+            "patent-mcp-server": "6415af144978311c545a4ba5e914de3b1b192eb6b667f2398faaa0e7d599e485"
+          },
+          "upstream_dependency_hashes": {
+            "patent-mcp-server/server/mcp_server.py": "6415af144978311c545a4ba5e914de3b1b192eb6b667f2398faaa0e7d599e485"
+          }
+        },
+        "source_changed_during_run": false,
+        "started_at": "2026-10-27T11:01:10+08:00",
+        "elapsed_seconds": 2.812,
+        "returncode": 0,
+        "exception_type": null,
+        "command": "python3 patent-skill/scripts/compose_report.py --enterprise '比亚迪股份有限公司' --patent-type '发明申请' --page-size 10 --output patent-skill/output/live-replaced-20261027/10-invention-application-scope/report.json --report-output patent-skill/output/live-replaced-20261027/10-invention-application-scope/report.html",
+        "transport": "local MCP servers via loopback streamable-http",
+        "cache_used": false,
+        "call_count": 2,
+        "successful_data_calls": 2,
+        "empty_calls": 0,
+        "failed_calls": 0,
+        "checks": {
+          "issues": [],
+          "warnings": [],
+          "coverage_pct": 100,
+          "subject": {
+            "enterprise": "比亚迪股份有限公司",
+            "matchKeyword": "比亚迪股份有限公司",
+            "keywordType": "name",
+            "match_raw": "比亚迪股份有限公司",
+            "resolved": true,
+            "resolve_reason": "视为企业全称",
+            "searchKeywordType": "申请人",
+            "fuzzy_total": null,
+            "requires_confirmation": false,
+            "fuzzy_requested": false,
+            "patentType": "发明申请"
+          },
+          "title": "比亚迪股份有限公司 专利大数据报告",
+          "data_mode": null,
+          "metrics": [
+            {
+              "label": "专利总数",
+              "value": "46035",
+              "hint": "企业专利总量"
+            },
+            {
+              "label": "发明申请",
+              "value": "13208",
+              "hint": "发明申请专利数量"
+            },
+            {
+              "label": "发明授权",
+              "value": "11064",
+              "hint": "发明授权专利数量"
+            },
+            {
+              "label": "实用新型",
+              "value": "17855",
+              "hint": "实用新型专利数量"
+            },
+            {
+              "label": "外观设计",
+              "value": "3908",
+              "hint": "外观设计专利数量"
+            },
+            {
+              "label": "发明型占比",
+              "value": "53%",
+              "hint": "发明申请+授权 / 总数"
+            },
+            {
+              "label": "专利有效率",
+              "value": "54.1%",
+              "hint": "有效 /（有效+失效+审查中+失败）",
+              "delta": "有效"
+            },
+            {
+              "label": "检索结果",
+              "value": "26416",
+              "hint": "本次检索命中专利条数"
+            },
+            {
+              "label": "专利类型数",
+              "value": "1",
+              "hint": "不同专利类型数量"
+            },
+            {
+              "label": "申请人/发明人数",
+              "value": "2",
+              "hint": "相关专利申请人数量"
+            }
+          ],
+          "quality_report": {
+            "total_sections": 7,
+            "populated_sections": 7,
+            "empty_sections": 0,
+            "coverage_pct": 100
+          },
+          "unregistered_tools": [],
+          "checks": {
+            "json_html_markdown": true,
+            "explicit_live": true,
+            "tool_calls_recorded": 2,
+            "offline_scripts": true,
+            "independent_rerender": true,
+            "offline_browser": true
+          }
+        },
+        "status": "passed",
+        "source_hashes": {
+          "scripts/common.py": "f1d8673c57a3f0259770bab9e02dff5a01e87c639a6b4831173ac52c54168e42",
+          "scripts/compose_report.py": "871e4bc0d9484725855b242a7f93e65ef27d40c706feead0798ef200956f9735",
+          "scripts/mcp_client.py": "79c51eaec8e124e20e49dd461d3ac1879c99d95a6e7e76a51d0ceadfecd54995",
+          "scripts/render_report.py": "4ed8ffbca7848bfbf2eba1c37f03f05f7e52a1dda1b25a66749a3654577733f2",
+          "scripts/validate_config.py": "3bf851c0bea7fecd2120dfef02a8dd59c9d367cc4b3f8fdea45040fda52fe630"
+        },
+        "technical_status": "passed",
+        "audited_at": "2026-10-27T11:13:02+08:00",
+        "evidence_binding": {
+          "report.json": "39df2b49cdd8671921ab0b524dd51649b3aaa5fa53336d32586b8a5123cad96c",
+          "report.html": "e6c83dd2bdf6ea3a561012e438c9dd1641d3619cb74f6d2c267b588956207abf",
+          "report.md": "345cd1cb8eeaf0cdf80fe63170a022b068cef75d8ae5a7726fe1bffcc2a66576",
+          "calls.json": "625961bb0363878f9db334c343e5822e85ca737b6ade2a8596da11cf912ab736",
+          "result.json": "dd4c2986a778af1958c9ece554dfb48bdd0b66231fe20f6cd3ba44f011f1fe69",
+          "source_manifest_sha256": "014e0c39ccd221d4b037bfafc75dc705b73521da54c003be18fa8ca62d4dab92"
+        },
+        "business_review": {
+          "id": "10-invention-application-scope",
+          "verdict": "acceptable",
+          "summary": "当前正式产物满足新专利场景的主体、真实数据、字段和非推断边界。",
+          "checks": [
+            {
+              "expectation": "主体必须确认",
+              "status": "pass",
+              "evidence": "requires_confirmation=False。本轮三种格式标题一致（JSON/HTML/Markdown；html=e6c83dd2bdf6）；技术状态=passed、真实data调用=2；主体={\"enterprise\":\"比亚迪股份有限公司\",\"matchKeyword\":\"比亚迪股份有限公司\",\"keywordType\":\"name\",\"match_raw\":\"比亚迪股份有限公司\",\"resolved\":true,\"resolve_reason\":\"视为企业全称\",\"searchKeywordType\":\"申请人\",\"fuzzy_total\":null,\"requires_confirmation\":false,\"fuzzy_requested\":false,\"patentType\":\"发明申请\"}；调用=[{\"tool\":\"patent_bigdata_patent_stats\",\"status\":\"data\",\"rows\":null,\"total\":null},{\"tool\":\"patent_bigdata_patent_search\",\"status\":\"data\",\"rows\":10,\"total\":26416}]；质量={\"total_sections\":7,\"populated_sections\":7,\"empty_sections\":0,\"coverage_pct\":100}；章节=[{\"title\":\"专利统计\",\"records\":5},{\"title\":\"专利申请趋势（分类型）\",\"records\":10},{\"title\":\"专利授权趋势（分类型）\",\"records\":10},{\"title\":\"专利有效性结构\",\"records\":5},{\"title\":\"专利类型分布\",\"records\":4},{\"title\":\"专利法律状态分布\",\"records\":21},{\"title\":\"专利检索明细\",\"records\":10}]；指标=[{\"label\":\"专利总数\",\"value\":\"46035\",\"hint\":\"企业专利总量\"},{\"label\":\"发明申请\",\"value\":\"13208\",\"hint\":\"发明申请专利数量\"},{\"label\":\"发明授权\",\"value\":\"11064\",\"hint\":\"发明授权专利数量\"},{\"label\":\"实用新型\",\"value\":\"17855\",\"hint\":\"实用新型专利数量\"},{\"label\":\"外观设计\",\"value\":\"3908\",\"hint\":\"外观设计专利数量\"},{\"label\":\"发明型占比\",\"value\":\"53%\",\"hint\":\"发明申请+授权 / 总数\"},{\"label\":\"专利有效率\",\"value\":\"54.1%\",\"hint\":\"有效 /（有效+失效+审查中+失败）\",\"delta\":\"有效\"},{\"label\":\"检索结果\",\"value\":\"26416\",\"hint\":\"本次检索命中专利条数\"},{\"label\":\"专利类型数\",\"value\":\"1\",\"hint\":\"不同专利类型数量\"},{\"label\":\"申请人/发明人数\",\"value\":\"2\",\"hint\":\"相关专利申请人数量\"}]；章节样本=[{\"title\":\"专利统计\",\"sample\":{\"专利总数\":\"46035\",\"发明申请专利数\":\"13208\",\"发明授权专利数\":\"11064\",\"实用新型专利数\":\"17855\",\"外观设计专利数\":\"3908\"}},{\"title\":\"专利申请趋势（分类型）\",\"sample\":{\"年份\":\"2017\",\"发明申请\":322,\"发明授权\":930,\"实用新型\":498,\"外观设计\":128}},{\"title\":\"专利授权趋势（分类型）\",\"sample\":{\"年份\":\"2017\",\"发明申请\":216,\"发明授权\":339,\"实用新型\":455,\"外观设计\":116}},{\"title\":\"专利有效性结构\",\"sample\":{\"有效性\":\"有效\",\"数量\":24557}},{\"title\":\"专利类型分布\",\"sample\":{\"名称/类型/状态/年份\":\"发明申请\",\"数量\":\"13208\"}},{\"title\":\"专利法律状态分布\",\"sample\":{\"名称/类型/状态/年份\":\"授权\",\"数量\":\"24557\"}},{\"title\":\"专利检索明细\",\"sample\":{\"专利名称\":\"电池包及电动车\",\"申请号\":\"TW109139615\",\"申请人\":\"大陆商比亚迪股份有限公司\",\"专利类型\":\"发明申请\",\"申请日期\":\"2020-11-12\",\"法律状态\":\"-\",\"代理机构\":\"蔡清福\"}}]；代表记录=[{\"专利名称\":\"电池包及电动车\",\"专利类型\":\"发明申请\",\"申请日期\":\"2020-11-12\",\"法律状态\":\"-\"},{\"专利名称\":\"一种电池、电池模组、电池包以及电动车\",\"专利类型\":\"发明申请\",\"申请日期\":\"2020-11-12\",\"法律状态\":\"-\"},{\"专利名称\":\"板材及其制备方法、电子装置\",\"专利类型\":\"发明申请\",\"申请日期\":\"2019-10-30\",\"法律状态\":\"-\"}]；解释边界=[{\"feature\":\"专利资产规模\",\"evidence\":\"企业专利总数 46035 件。\",\"interpretation\":\"该数量描述公开数据库中的累计专利记录规模；不能单独证明技术储备、研发投入、专利质量或商业价值。\"},{\"feature\":\"发明申请与授权存量\",\"evidence\":\"发明申请 13208、发明授权 11064。两项均为累计存量，口径不对应同一申请队列，不能相除推算申请结果比例。\",\"interpretation\":\"两项分别描述公开申请记录和授权记录规模；当前权利状态及技术、商业意义仍需逐件核验。\"},{\"feature\":\"专利类型集中度\",\"evidence\":\"“实用新型”占比约 39%，前 3 类合计 92%（CR3）。\",\"interpretation\":\"类型集中度仅描述返回记录的类型构成，不能单独推断研发活动范围或技术布局质量。\"},{\"feature\":\"专利有效性结构\",\"evidence\":\"“授权”为主流状态，占比约 54%。\",\"interpretation\":\"该分布只描述返回的法律状态结构；失效或失败原因需结合逐件法律状态记录核查。\"},{\"feature\":\"专利法律状态结构\",\"evidence\":\"纳入有效率分母的状态中：有效 24557 件（54%）、失效 7812 件（17%）、审查中 10085 件、失败 2899 件。\",\"interpretation\":\"当前状态口径下有效占比约 54%，失效占比水平较低；具体原因不能由聚合数量推断，需逐件核查法律状态。\"},{\"feature\":\"申请趋势研判\",\"evidence\":\"峰值出现在“2024”（7879 件），近年趋势下降 87%，同比 -87%。\",\"interpretation\":\"趋势仅描述申请数量变化，不能单独证明研发投入或业务周期变化，需结合研发费用和产品资料核验。\"},{\"feature\":\"授权趋势研判\",\"evidence\":\"授权峰值在“2025”（8865 件），近年下降 45%。\",\"interpretation\":\"该趋势仅描述各报告期授权数量，不能单独证明研发质量、技术壁垒或申请转化速度。\"}]。"
+            },
+            {
+              "expectation": "至少一条筛选明细真实非空",
+              "status": "pass",
+              "evidence": "search_records=10。本轮三种格式标题一致（JSON/HTML/Markdown；html=e6c83dd2bdf6）；技术状态=passed、真实data调用=2；主体={\"enterprise\":\"比亚迪股份有限公司\",\"matchKeyword\":\"比亚迪股份有限公司\",\"keywordType\":\"name\",\"match_raw\":\"比亚迪股份有限公司\",\"resolved\":true,\"resolve_reason\":\"视为企业全称\",\"searchKeywordType\":\"申请人\",\"fuzzy_total\":null,\"requires_confirmation\":false,\"fuzzy_requested\":false,\"patentType\":\"发明申请\"}；调用=[{\"tool\":\"patent_bigdata_patent_stats\",\"status\":\"data\",\"rows\":null,\"total\":null},{\"tool\":\"patent_bigdata_patent_search\",\"status\":\"data\",\"rows\":10,\"total\":26416}]；质量={\"total_sections\":7,\"populated_sections\":7,\"empty_sections\":0,\"coverage_pct\":100}；章节=[{\"title\":\"专利统计\",\"records\":5},{\"title\":\"专利申请趋势（分类型）\",\"records\":10},{\"title\":\"专利授权趋势（分类型）\",\"records\":10},{\"title\":\"专利有效性结构\",\"records\":5},{\"title\":\"专利类型分布\",\"records\":4},{\"title\":\"专利法律状态分布\",\"records\":21},{\"title\":\"专利检索明细\",\"records\":10}]；指标=[{\"label\":\"专利总数\",\"value\":\"46035\",\"hint\":\"企业专利总量\"},{\"label\":\"发明申请\",\"value\":\"13208\",\"hint\":\"发明申请专利数量\"},{\"label\":\"发明授权\",\"value\":\"11064\",\"hint\":\"发明授权专利数量\"},{\"label\":\"实用新型\",\"value\":\"17855\",\"hint\":\"实用新型专利数量\"},{\"label\":\"外观设计\",\"value\":\"3908\",\"hint\":\"外观设计专利数量\"},{\"label\":\"发明型占比\",\"value\":\"53%\",\"hint\":\"发明申请+授权 / 总数\"},{\"label\":\"专利有效率\",\"value\":\"54.1%\",\"hint\":\"有效 /（有效+失效+审查中+失败）\",\"delta\":\"有效\"},{\"label\":\"检索结果\",\"value\":\"26416\",\"hint\":\"本次检索命中专利条数\"},{\"label\":\"专利类型数\",\"value\":\"1\",\"hint\":\"不同专利类型数量\"},{\"label\":\"申请人/发明人数\",\"value\":\"2\",\"hint\":\"相关专利申请人数量\"}]；章节样本=[{\"title\":\"专利统计\",\"sample\":{\"专利总数\":\"46035\",\"发明申请专利数\":\"13208\",\"发明授权专利数\":\"11064\",\"实用新型专利数\":\"17855\",\"外观设计专利数\":\"3908\"}},{\"title\":\"专利申请趋势（分类型）\",\"sample\":{\"年份\":\"2017\",\"发明申请\":322,\"发明授权\":930,\"实用新型\":498,\"外观设计\":128}},{\"title\":\"专利授权趋势（分类型）\",\"sample\":{\"年份\":\"2017\",\"发明申请\":216,\"发明授权\":339,\"实用新型\":455,\"外观设计\":116}},{\"title\":\"专利有效性结构\",\"sample\":{\"有效性\":\"有效\",\"数量\":24557}},{\"title\":\"专利类型分布\",\"sample\":{\"名称/类型/状态/年份\":\"发明申请\",\"数量\":\"13208\"}},{\"title\":\"专利法律状态分布\",\"sample\":{\"名称/类型/状态/年份\":\"授权\",\"数量\":\"24557\"}},{\"title\":\"专利检索明细\",\"sample\":{\"专利名称\":\"电池包及电动车\",\"申请号\":\"TW109139615\",\"申请人\":\"大陆商比亚迪股份有限公司\",\"专利类型\":\"发明申请\",\"申请日期\":\"2020-11-12\",\"法律状态\":\"-\",\"代理机构\":\"蔡清福\"}}]；代表记录=[{\"专利名称\":\"电池包及电动车\",\"专利类型\":\"发明申请\",\"申请日期\":\"2020-11-12\",\"法律状态\":\"-\"},{\"专利名称\":\"一种电池、电池模组、电池包以及电动车\",\"专利类型\":\"发明申请\",\"申请日期\":\"2020-11-12\",\"法律状态\":\"-\"},{\"专利名称\":\"板材及其制备方法、电子装置\",\"专利类型\":\"发明申请\",\"申请日期\":\"2019-10-30\",\"法律状态\":\"-\"}]；解释边界=[{\"feature\":\"专利资产规模\",\"evidence\":\"企业专利总数 46035 件。\",\"interpretation\":\"该数量描述公开数据库中的累计专利记录规模；不能单独证明技术储备、研发投入、专利质量或商业价值。\"},{\"feature\":\"发明申请与授权存量\",\"evidence\":\"发明申请 13208、发明授权 11064。两项均为累计存量，口径不对应同一申请队列，不能相除推算申请结果比例。\",\"interpretation\":\"两项分别描述公开申请记录和授权记录规模；当前权利状态及技术、商业意义仍需逐件核验。\"},{\"feature\":\"专利类型集中度\",\"evidence\":\"“实用新型”占比约 39%，前 3 类合计 92%（CR3）。\",\"interpretation\":\"类型集中度仅描述返回记录的类型构成，不能单独推断研发活动范围或技术布局质量。\"},{\"feature\":\"专利有效性结构\",\"evidence\":\"“授权”为主流状态，占比约 54%。\",\"interpretation\":\"该分布只描述返回的法律状态结构；失效或失败原因需结合逐件法律状态记录核查。\"},{\"feature\":\"专利法律状态结构\",\"evidence\":\"纳入有效率分母的状态中：有效 24557 件（54%）、失效 7812 件（17%）、审查中 10085 件、失败 2899 件。\",\"interpretation\":\"当前状态口径下有效占比约 54%，失效占比水平较低；具体原因不能由聚合数量推断，需逐件核查法律状态。\"},{\"feature\":\"申请趋势研判\",\"evidence\":\"峰值出现在“2024”（7879 件），近年趋势下降 87%，同比 -87%。\",\"interpretation\":\"趋势仅描述申请数量变化，不能单独证明研发投入或业务周期变化，需结合研发费用和产品资料核验。\"},{\"feature\":\"授权趋势研判\",\"evidence\":\"授权峰值在“2025”（8865 件），近年下降 45%。\",\"interpretation\":\"该趋势仅描述各报告期授权数量，不能单独证明研发质量、技术壁垒或申请转化速度。\"}]。"
+            },
+            {
+              "expectation": "每条验收样本的专利类型为发明申请",
+              "status": "pass",
+              "evidence": "实际类型=[\"发明申请\",\"发明申请\",\"发明申请\",\"发明申请\",\"发明申请\",\"发明申请\",\"发明申请\",\"发明申请\",\"发明申请\",\"发明申请\"]。本轮三种格式标题一致（JSON/HTML/Markdown；html=e6c83dd2bdf6）；技术状态=passed、真实data调用=2；主体={\"enterprise\":\"比亚迪股份有限公司\",\"matchKeyword\":\"比亚迪股份有限公司\",\"keywordType\":\"name\",\"match_raw\":\"比亚迪股份有限公司\",\"resolved\":true,\"resolve_reason\":\"视为企业全称\",\"searchKeywordType\":\"申请人\",\"fuzzy_total\":null,\"requires_confirmation\":false,\"fuzzy_requested\":false,\"patentType\":\"发明申请\"}；调用=[{\"tool\":\"patent_bigdata_patent_stats\",\"status\":\"data\",\"rows\":null,\"total\":null},{\"tool\":\"patent_bigdata_patent_search\",\"status\":\"data\",\"rows\":10,\"total\":26416}]；质量={\"total_sections\":7,\"populated_sections\":7,\"empty_sections\":0,\"coverage_pct\":100}；章节=[{\"title\":\"专利统计\",\"records\":5},{\"title\":\"专利申请趋势（分类型）\",\"records\":10},{\"title\":\"专利授权趋势（分类型）\",\"records\":10},{\"title\":\"专利有效性结构\",\"records\":5},{\"title\":\"专利类型分布\",\"records\":4},{\"title\":\"专利法律状态分布\",\"records\":21},{\"title\":\"专利检索明细\",\"records\":10}]；指标=[{\"label\":\"专利总数\",\"value\":\"46035\",\"hint\":\"企业专利总量\"},{\"label\":\"发明申请\",\"value\":\"13208\",\"hint\":\"发明申请专利数量\"},{\"label\":\"发明授权\",\"value\":\"11064\",\"hint\":\"发明授权专利数量\"},{\"label\":\"实用新型\",\"value\":\"17855\",\"hint\":\"实用新型专利数量\"},{\"label\":\"外观设计\",\"value\":\"3908\",\"hint\":\"外观设计专利数量\"},{\"label\":\"发明型占比\",\"value\":\"53%\",\"hint\":\"发明申请+授权 / 总数\"},{\"label\":\"专利有效率\",\"value\":\"54.1%\",\"hint\":\"有效 /（有效+失效+审查中+失败）\",\"delta\":\"有效\"},{\"label\":\"检索结果\",\"value\":\"26416\",\"hint\":\"本次检索命中专利条数\"},{\"label\":\"专利类型数\",\"value\":\"1\",\"hint\":\"不同专利类型数量\"},{\"label\":\"申请人/发明人数\",\"value\":\"2\",\"hint\":\"相关专利申请人数量\"}]；章节样本=[{\"title\":\"专利统计\",\"sample\":{\"专利总数\":\"46035\",\"发明申请专利数\":\"13208\",\"发明授权专利数\":\"11064\",\"实用新型专利数\":\"17855\",\"外观设计专利数\":\"3908\"}},{\"title\":\"专利申请趋势（分类型）\",\"sample\":{\"年份\":\"2017\",\"发明申请\":322,\"发明授权\":930,\"实用新型\":498,\"外观设计\":128}},{\"title\":\"专利授权趋势（分类型）\",\"sample\":{\"年份\":\"2017\",\"发明申请\":216,\"发明授权\":339,\"实用新型\":455,\"外观设计\":116}},{\"title\":\"专利有效性结构\",\"sample\":{\"有效性\":\"有效\",\"数量\":24557}},{\"title\":\"专利类型分布\",\"sample\":{\"名称/类型/状态/年份\":\"发明申请\",\"数量\":\"13208\"}},{\"title\":\"专利法律状态分布\",\"sample\":{\"名称/类型/状态/年份\":\"授权\",\"数量\":\"24557\"}},{\"title\":\"专利检索明细\",\"sample\":{\"专利名称\":\"电池包及电动车\",\"申请号\":\"TW109139615\",\"申请人\":\"大陆商比亚迪股份有限公司\",\"专利类型\":\"发明申请\",\"申请日期\":\"2020-11-12\",\"法律状态\":\"-\",\"代理机构\":\"蔡清福\"}}]；代表记录=[{\"专利名称\":\"电池包及电动车\",\"专利类型\":\"发明申请\",\"申请日期\":\"2020-11-12\",\"法律状态\":\"-\"},{\"专利名称\":\"一种电池、电池模组、电池包以及电动车\",\"专利类型\":\"发明申请\",\"申请日期\":\"2020-11-12\",\"法律状态\":\"-\"},{\"专利名称\":\"板材及其制备方法、电子装置\",\"专利类型\":\"发明申请\",\"申请日期\":\"2019-10-30\",\"法律状态\":\"-\"}]；解释边界=[{\"feature\":\"专利资产规模\",\"evidence\":\"企业专利总数 46035 件。\",\"interpretation\":\"该数量描述公开数据库中的累计专利记录规模；不能单独证明技术储备、研发投入、专利质量或商业价值。\"},{\"feature\":\"发明申请与授权存量\",\"evidence\":\"发明申请 13208、发明授权 11064。两项均为累计存量，口径不对应同一申请队列，不能相除推算申请结果比例。\",\"interpretation\":\"两项分别描述公开申请记录和授权记录规模；当前权利状态及技术、商业意义仍需逐件核验。\"},{\"feature\":\"专利类型集中度\",\"evidence\":\"“实用新型”占比约 39%，前 3 类合计 92%（CR3）。\",\"interpretation\":\"类型集中度仅描述返回记录的类型构成，不能单独推断研发活动范围或技术布局质量。\"},{\"feature\":\"专利有效性结构\",\"evidence\":\"“授权”为主流状态，占比约 54%。\",\"interpretation\":\"该分布只描述返回的法律状态结构；失效或失败原因需结合逐件法律状态记录核查。\"},{\"feature\":\"专利法律状态结构\",\"evidence\":\"纳入有效率分母的状态中：有效 24557 件（54%）、失效 7812 件（17%）、审查中 10085 件、失败 2899 件。\",\"interpretation\":\"当前状态口径下有效占比约 54%，失效占比水平较低；具体原因不能由聚合数量推断，需逐件核查法律状态。\"},{\"feature\":\"申请趋势研判\",\"evidence\":\"峰值出现在“2024”（7879 件），近年趋势下降 87%，同比 -87%。\",\"interpretation\":\"趋势仅描述申请数量变化，不能单独证明研发投入或业务周期变化，需结合研发费用和产品资料核验。\"},{\"feature\":\"授权趋势研判\",\"evidence\":\"授权峰值在“2025”（8865 件），近年下降 45%。\",\"interpretation\":\"该趋势仅描述各报告期授权数量，不能单独证明研发质量、技术壁垒或申请转化速度。\"}]。"
+            },
+            {
+              "expectation": "样本含名称、申请号、申请人和申请日期",
+              "status": "pass",
+              "evidence": "名称/申请号/申请人/日期首样本=[{\"专利名称\":\"电池包及电动车\",\"申请号\":\"TW109139615\",\"申请人\":\"大陆商比亚迪股份有限公司\",\"专利类型\":\"发明申请\",\"申请日期\":\"2020-11-12\",\"法律状态\":\"-\",\"代理机构\":\"蔡清福\"}]。本轮三种格式标题一致（JSON/HTML/Markdown；html=e6c83dd2bdf6）；技术状态=passed、真实data调用=2；主体={\"enterprise\":\"比亚迪股份有限公司\",\"matchKeyword\":\"比亚迪股份有限公司\",\"keywordType\":\"name\",\"match_raw\":\"比亚迪股份有限公司\",\"resolved\":true,\"resolve_reason\":\"视为企业全称\",\"searchKeywordType\":\"申请人\",\"fuzzy_total\":null,\"requires_confirmation\":false,\"fuzzy_requested\":false,\"patentType\":\"发明申请\"}；调用=[{\"tool\":\"patent_bigdata_patent_stats\",\"status\":\"data\",\"rows\":null,\"total\":null},{\"tool\":\"patent_bigdata_patent_search\",\"status\":\"data\",\"rows\":10,\"total\":26416}]；质量={\"total_sections\":7,\"populated_sections\":7,\"empty_sections\":0,\"coverage_pct\":100}；章节=[{\"title\":\"专利统计\",\"records\":5},{\"title\":\"专利申请趋势（分类型）\",\"records\":10},{\"title\":\"专利授权趋势（分类型）\",\"records\":10},{\"title\":\"专利有效性结构\",\"records\":5},{\"title\":\"专利类型分布\",\"records\":4},{\"title\":\"专利法律状态分布\",\"records\":21},{\"title\":\"专利检索明细\",\"records\":10}]；指标=[{\"label\":\"专利总数\",\"value\":\"46035\",\"hint\":\"企业专利总量\"},{\"label\":\"发明申请\",\"value\":\"13208\",\"hint\":\"发明申请专利数量\"},{\"label\":\"发明授权\",\"value\":\"11064\",\"hint\":\"发明授权专利数量\"},{\"label\":\"实用新型\",\"value\":\"17855\",\"hint\":\"实用新型专利数量\"},{\"label\":\"外观设计\",\"value\":\"3908\",\"hint\":\"外观设计专利数量\"},{\"label\":\"发明型占比\",\"value\":\"53%\",\"hint\":\"发明申请+授权 / 总数\"},{\"label\":\"专利有效率\",\"value\":\"54.1%\",\"hint\":\"有效 /（有效+失效+审查中+失败）\",\"delta\":\"有效\"},{\"label\":\"检索结果\",\"value\":\"26416\",\"hint\":\"本次检索命中专利条数\"},{\"label\":\"专利类型数\",\"value\":\"1\",\"hint\":\"不同专利类型数量\"},{\"label\":\"申请人/发明人数\",\"value\":\"2\",\"hint\":\"相关专利申请人数量\"}]；章节样本=[{\"title\":\"专利统计\",\"sample\":{\"专利总数\":\"46035\",\"发明申请专利数\":\"13208\",\"发明授权专利数\":\"11064\",\"实用新型专利数\":\"17855\",\"外观设计专利数\":\"3908\"}},{\"title\":\"专利申请趋势（分类型）\",\"sample\":{\"年份\":\"2017\",\"发明申请\":322,\"发明授权\":930,\"实用新型\":498,\"外观设计\":128}},{\"title\":\"专利授权趋势（分类型）\",\"sample\":{\"年份\":\"2017\",\"发明申请\":216,\"发明授权\":339,\"实用新型\":455,\"外观设计\":116}},{\"title\":\"专利有效性结构\",\"sample\":{\"有效性\":\"有效\",\"数量\":24557}},{\"title\":\"专利类型分布\",\"sample\":{\"名称/类型/状态/年份\":\"发明申请\",\"数量\":\"13208\"}},{\"title\":\"专利法律状态分布\",\"sample\":{\"名称/类型/状态/年份\":\"授权\",\"数量\":\"24557\"}},{\"title\":\"专利检索明细\",\"sample\":{\"专利名称\":\"电池包及电动车\",\"申请号\":\"TW109139615\",\"申请人\":\"大陆商比亚迪股份有限公司\",\"专利类型\":\"发明申请\",\"申请日期\":\"2020-11-12\",\"法律状态\":\"-\",\"代理机构\":\"蔡清福\"}}]；代表记录=[{\"专利名称\":\"电池包及电动车\",\"专利类型\":\"发明申请\",\"申请日期\":\"2020-11-12\",\"法律状态\":\"-\"},{\"专利名称\":\"一种电池、电池模组、电池包以及电动车\",\"专利类型\":\"发明申请\",\"申请日期\":\"2020-11-12\",\"法律状态\":\"-\"},{\"专利名称\":\"板材及其制备方法、电子装置\",\"专利类型\":\"发明申请\",\"申请日期\":\"2019-10-30\",\"法律状态\":\"-\"}]；解释边界=[{\"feature\":\"专利资产规模\",\"evidence\":\"企业专利总数 46035 件。\",\"interpretation\":\"该数量描述公开数据库中的累计专利记录规模；不能单独证明技术储备、研发投入、专利质量或商业价值。\"},{\"feature\":\"发明申请与授权存量\",\"evidence\":\"发明申请 13208、发明授权 11064。两项均为累计存量，口径不对应同一申请队列，不能相除推算申请结果比例。\",\"interpretation\":\"两项分别描述公开申请记录和授权记录规模；当前权利状态及技术、商业意义仍需逐件核验。\"},{\"feature\":\"专利类型集中度\",\"evidence\":\"“实用新型”占比约 39%，前 3 类合计 92%（CR3）。\",\"interpretation\":\"类型集中度仅描述返回记录的类型构成，不能单独推断研发活动范围或技术布局质量。\"},{\"feature\":\"专利有效性结构\",\"evidence\":\"“授权”为主流状态，占比约 54%。\",\"interpretation\":\"该分布只描述返回的法律状态结构；失效或失败原因需结合逐件法律状态记录核查。\"},{\"feature\":\"专利法律状态结构\",\"evidence\":\"纳入有效率分母的状态中：有效 24557 件（54%）、失效 7812 件（17%）、审查中 10085 件、失败 2899 件。\",\"interpretation\":\"当前状态口径下有效占比约 54%，失效占比水平较低；具体原因不能由聚合数量推断，需逐件核查法律状态。\"},{\"feature\":\"申请趋势研判\",\"evidence\":\"峰值出现在“2024”（7879 件），近年趋势下降 87%，同比 -87%。\",\"interpretation\":\"趋势仅描述申请数量变化，不能单独证明研发投入或业务周期变化，需结合研发费用和产品资料核验。\"},{\"feature\":\"授权趋势研判\",\"evidence\":\"授权峰值在“2025”（8865 件），近年下降 45%。\",\"interpretation\":\"该趋势仅描述各报告期授权数量，不能单独证明研发质量、技术壁垒或申请转化速度。\"}]。"
+            },
+            {
+              "expectation": "企业整体统计与筛选明细总量分开",
+              "status": "pass",
+              "evidence": "整体统计字段={\"专利总数\":\"46035\",\"发明申请专利数\":\"13208\",\"发明授权专利数\":\"11064\",\"实用新型专利数\":\"17855\",\"外观设计专利数\":\"3908\"}；筛选检索样本=10。本轮三种格式标题一致（JSON/HTML/Markdown；html=e6c83dd2bdf6）；技术状态=passed、真实data调用=2；主体={\"enterprise\":\"比亚迪股份有限公司\",\"matchKeyword\":\"比亚迪股份有限公司\",\"keywordType\":\"name\",\"match_raw\":\"比亚迪股份有限公司\",\"resolved\":true,\"resolve_reason\":\"视为企业全称\",\"searchKeywordType\":\"申请人\",\"fuzzy_total\":null,\"requires_confirmation\":false,\"fuzzy_requested\":false,\"patentType\":\"发明申请\"}；调用=[{\"tool\":\"patent_bigdata_patent_stats\",\"status\":\"data\",\"rows\":null,\"total\":null},{\"tool\":\"patent_bigdata_patent_search\",\"status\":\"data\",\"rows\":10,\"total\":26416}]；质量={\"total_sections\":7,\"populated_sections\":7,\"empty_sections\":0,\"coverage_pct\":100}；章节=[{\"title\":\"专利统计\",\"records\":5},{\"title\":\"专利申请趋势（分类型）\",\"records\":10},{\"title\":\"专利授权趋势（分类型）\",\"records\":10},{\"title\":\"专利有效性结构\",\"records\":5},{\"title\":\"专利类型分布\",\"records\":4},{\"title\":\"专利法律状态分布\",\"records\":21},{\"title\":\"专利检索明细\",\"records\":10}]；指标=[{\"label\":\"专利总数\",\"value\":\"46035\",\"hint\":\"企业专利总量\"},{\"label\":\"发明申请\",\"value\":\"13208\",\"hint\":\"发明申请专利数量\"},{\"label\":\"发明授权\",\"value\":\"11064\",\"hint\":\"发明授权专利数量\"},{\"label\":\"实用新型\",\"value\":\"17855\",\"hint\":\"实用新型专利数量\"},{\"label\":\"外观设计\",\"value\":\"3908\",\"hint\":\"外观设计专利数量\"},{\"label\":\"发明型占比\",\"value\":\"53%\",\"hint\":\"发明申请+授权 / 总数\"},{\"label\":\"专利有效率\",\"value\":\"54.1%\",\"hint\":\"有效 /（有效+失效+审查中+失败）\",\"delta\":\"有效\"},{\"label\":\"检索结果\",\"value\":\"26416\",\"hint\":\"本次检索命中专利条数\"},{\"label\":\"专利类型数\",\"value\":\"1\",\"hint\":\"不同专利类型数量\"},{\"label\":\"申请人/发明人数\",\"value\":\"2\",\"hint\":\"相关专利申请人数量\"}]；章节样本=[{\"title\":\"专利统计\",\"sample\":{\"专利总数\":\"46035\",\"发明申请专利数\":\"13208\",\"发明授权专利数\":\"11064\",\"实用新型专利数\":\"17855\",\"外观设计专利数\":\"3908\"}},{\"title\":\"专利申请趋势（分类型）\",\"sample\":{\"年份\":\"2017\",\"发明申请\":322,\"发明授权\":930,\"实用新型\":498,\"外观设计\":128}},{\"title\":\"专利授权趋势（分类型）\",\"sample\":{\"年份\":\"2017\",\"发明申请\":216,\"发明授权\":339,\"实用新型\":455,\"外观设计\":116}},{\"title\":\"专利有效性结构\",\"sample\":{\"有效性\":\"有效\",\"数量\":24557}},{\"title\":\"专利类型分布\",\"sample\":{\"名称/类型/状态/年份\":\"发明申请\",\"数量\":\"13208\"}},{\"title\":\"专利法律状态分布\",\"sample\":{\"名称/类型/状态/年份\":\"授权\",\"数量\":\"24557\"}},{\"title\":\"专利检索明细\",\"sample\":{\"专利名称\":\"电池包及电动车\",\"申请号\":\"TW109139615\",\"申请人\":\"大陆商比亚迪股份有限公司\",\"专利类型\":\"发明申请\",\"申请日期\":\"2020-11-12\",\"法律状态\":\"-\",\"代理机构\":\"蔡清福\"}}]；代表记录=[{\"专利名称\":\"电池包及电动车\",\"专利类型\":\"发明申请\",\"申请日期\":\"2020-11-12\",\"法律状态\":\"-\"},{\"专利名称\":\"一种电池、电池模组、电池包以及电动车\",\"专利类型\":\"发明申请\",\"申请日期\":\"2020-11-12\",\"法律状态\":\"-\"},{\"专利名称\":\"板材及其制备方法、电子装置\",\"专利类型\":\"发明申请\",\"申请日期\":\"2019-10-30\",\"法律状态\":\"-\"}]；解释边界=[{\"feature\":\"专利资产规模\",\"evidence\":\"企业专利总数 46035 件。\",\"interpretation\":\"该数量描述公开数据库中的累计专利记录规模；不能单独证明技术储备、研发投入、专利质量或商业价值。\"},{\"feature\":\"发明申请与授权存量\",\"evidence\":\"发明申请 13208、发明授权 11064。两项均为累计存量，口径不对应同一申请队列，不能相除推算申请结果比例。\",\"interpretation\":\"两项分别描述公开申请记录和授权记录规模；当前权利状态及技术、商业意义仍需逐件核验。\"},{\"feature\":\"专利类型集中度\",\"evidence\":\"“实用新型”占比约 39%，前 3 类合计 92%（CR3）。\",\"interpretation\":\"类型集中度仅描述返回记录的类型构成，不能单独推断研发活动范围或技术布局质量。\"},{\"feature\":\"专利有效性结构\",\"evidence\":\"“授权”为主流状态，占比约 54%。\",\"interpretation\":\"该分布只描述返回的法律状态结构；失效或失败原因需结合逐件法律状态记录核查。\"},{\"feature\":\"专利法律状态结构\",\"evidence\":\"纳入有效率分母的状态中：有效 24557 件（54%）、失效 7812 件（17%）、审查中 10085 件、失败 2899 件。\",\"interpretation\":\"当前状态口径下有效占比约 54%，失效占比水平较低；具体原因不能由聚合数量推断，需逐件核查法律状态。\"},{\"feature\":\"申请趋势研判\",\"evidence\":\"峰值出现在“2024”（7879 件），近年趋势下降 87%，同比 -87%。\",\"interpretation\":\"趋势仅描述申请数量变化，不能单独证明研发投入或业务周期变化，需结合研发费用和产品资料核验。\"},{\"feature\":\"授权趋势研判\",\"evidence\":\"授权峰值在“2025”（8865 件），近年下降 45%。\",\"interpretation\":\"该趋势仅描述各报告期授权数量，不能单独证明研发质量、技术壁垒或申请转化速度。\"}]。"
+            }
+          ],
+          "issues": [],
+          "evidence_binding": {
+            "report.json": "39df2b49cdd8671921ab0b524dd51649b3aaa5fa53336d32586b8a5123cad96c",
+            "report.html": "e6c83dd2bdf6ea3a561012e438c9dd1641d3619cb74f6d2c267b588956207abf",
+            "report.md": "345cd1cb8eeaf0cdf80fe63170a022b068cef75d8ae5a7726fe1bffcc2a66576",
+            "calls.json": "625961bb0363878f9db334c343e5822e85ca737b6ade2a8596da11cf912ab736",
+            "result.json": "dd4c2986a778af1958c9ece554dfb48bdd0b66231fe20f6cd3ba44f011f1fe69",
+            "source_manifest_sha256": "014e0c39ccd221d4b037bfafc75dc705b73521da54c003be18fa8ca62d4dab92"
+          }
+        }
+      }
+    },
+    {
+      "scenario": {
+        "id": "12-granted-invention-status-boundary",
+        "title": "发明授权类型与当前状态边界核查",
+        "user_request": "抽取腾讯科技（深圳）有限公司前 6 条发明授权专利，核对名称、申请号、申请人、类型和返回的法律状态；明确发明授权类型不等于权利当前有效。",
+        "purpose": "验证发明授权过滤和类型/当前法律状态的语义边界。",
+        "args": [
+          "--enterprise",
+          "腾讯科技（深圳）有限公司",
+          "--patent-type",
+          "发明授权",
+          "--page-size",
+          "6"
+        ],
+        "expected_checks": [
+          "主体必须确认",
+          "至少一条筛选明细真实非空",
+          "每条验收样本的专利类型为发明授权",
+          "名称、申请号和申请人必须非空",
+          "不得由发明授权类型直接写成当前有效"
+        ],
+        "limitations": [
+          "当前法律状态需以官方登记复核",
+          "样本不代表完整授权组合",
+          "不评价技术壁垒或资产价值"
+        ]
+      },
+      "result": {
+        "schema_version": 1,
+        "skill": "patent-skill",
+        "case_id": "12-granted-invention-status-boundary",
+        "title": "发明授权类型与当前状态边界核查",
+        "invocation_id": "1793070071340187000",
+        "provenance": {
+          "integrator_id": "683e574805537ace146cc05e",
+          "runner_sha256": "05777c2f2b0791cb5157aef691206606dade8df7af3b17212285b7ae74632a66",
+          "credential_policy_sha256": "bcabf08a1ca92f28357c0e57a8bae9bfa910eb1d4b204d8195ee3b7a77106eed",
+          "scenario_sha256": "5b7371fbb3a35dd2c05c408cc10e6a8ab673ce910c9bc2da8e4473b70c730b23",
+          "skill_source_hashes": {
+            "scripts/common.py": "f1d8673c57a3f0259770bab9e02dff5a01e87c639a6b4831173ac52c54168e42",
+            "scripts/compose_report.py": "871e4bc0d9484725855b242a7f93e65ef27d40c706feead0798ef200956f9735",
+            "scripts/mcp_client.py": "79c51eaec8e124e20e49dd461d3ac1879c99d95a6e7e76a51d0ceadfecd54995",
+            "scripts/render_report.py": "4ed8ffbca7848bfbf2eba1c37f03f05f7e52a1dda1b25a66749a3654577733f2",
+            "scripts/validate_config.py": "3bf851c0bea7fecd2120dfef02a8dd59c9d367cc4b3f8fdea45040fda52fe630"
+          },
+          "upstream_source_hashes": {
+            "patent-mcp-server": "6415af144978311c545a4ba5e914de3b1b192eb6b667f2398faaa0e7d599e485"
+          },
+          "upstream_dependency_hashes": {
+            "patent-mcp-server/server/mcp_server.py": "6415af144978311c545a4ba5e914de3b1b192eb6b667f2398faaa0e7d599e485"
+          }
+        },
+        "source_changed_during_run": false,
+        "started_at": "2026-10-27T11:01:11+08:00",
+        "elapsed_seconds": 3.748,
+        "returncode": 0,
+        "exception_type": null,
+        "command": "python3 patent-skill/scripts/compose_report.py --enterprise '腾讯科技（深圳）有限公司' --patent-type '发明授权' --page-size 6 --output patent-skill/output/live-replaced-20261027/12-granted-invention-status-boundary/report.json --report-output patent-skill/output/live-replaced-20261027/12-granted-invention-status-boundary/report.html",
+        "transport": "local MCP servers via loopback streamable-http",
+        "cache_used": false,
+        "call_count": 2,
+        "successful_data_calls": 2,
+        "empty_calls": 0,
+        "failed_calls": 0,
+        "checks": {
+          "issues": [],
+          "warnings": [],
+          "coverage_pct": 100,
+          "subject": {
+            "enterprise": "腾讯科技（深圳）有限公司",
+            "matchKeyword": "腾讯科技（深圳）有限公司",
+            "keywordType": "name",
+            "match_raw": "腾讯科技（深圳）有限公司",
+            "resolved": true,
+            "resolve_reason": "视为企业全称",
+            "searchKeywordType": "申请人",
+            "fuzzy_total": null,
+            "requires_confirmation": false,
+            "fuzzy_requested": false,
+            "patentType": "发明授权"
+          },
+          "title": "腾讯科技（深圳）有限公司 专利大数据报告",
+          "data_mode": null,
+          "metrics": [
+            {
+              "label": "专利总数",
+              "value": "57879",
+              "hint": "企业专利总量"
+            },
+            {
+              "label": "发明申请",
+              "value": "20734",
+              "hint": "发明申请专利数量"
+            },
+            {
+              "label": "发明授权",
+              "value": "33301",
+              "hint": "发明授权专利数量"
+            },
+            {
+              "label": "实用新型",
+              "value": "305",
+              "hint": "实用新型专利数量"
+            },
+            {
+              "label": "外观设计",
+              "value": "3539",
+              "hint": "外观设计专利数量"
+            },
+            {
+              "label": "发明型占比",
+              "value": "93%",
+              "hint": "发明申请+授权 / 总数"
+            },
+            {
+              "label": "专利有效率",
+              "value": "59.2%",
+              "hint": "有效 /（有效+失效+审查中+失败）",
+              "delta": "有效"
+            },
+            {
+              "label": "检索结果",
+              "value": "34167",
+              "hint": "本次检索命中专利条数"
+            },
+            {
+              "label": "专利类型数",
+              "value": "1",
+              "hint": "不同专利类型数量"
+            },
+            {
+              "label": "申请人/发明人数",
+              "value": "2",
+              "hint": "相关专利申请人数量"
+            }
+          ],
+          "quality_report": {
+            "total_sections": 7,
+            "populated_sections": 7,
+            "empty_sections": 0,
+            "coverage_pct": 100
+          },
+          "unregistered_tools": [],
+          "checks": {
+            "json_html_markdown": true,
+            "explicit_live": true,
+            "tool_calls_recorded": 2,
+            "offline_scripts": true,
+            "independent_rerender": true,
+            "offline_browser": true
+          }
+        },
+        "status": "passed",
+        "source_hashes": {
+          "scripts/common.py": "f1d8673c57a3f0259770bab9e02dff5a01e87c639a6b4831173ac52c54168e42",
+          "scripts/compose_report.py": "871e4bc0d9484725855b242a7f93e65ef27d40c706feead0798ef200956f9735",
+          "scripts/mcp_client.py": "79c51eaec8e124e20e49dd461d3ac1879c99d95a6e7e76a51d0ceadfecd54995",
+          "scripts/render_report.py": "4ed8ffbca7848bfbf2eba1c37f03f05f7e52a1dda1b25a66749a3654577733f2",
+          "scripts/validate_config.py": "3bf851c0bea7fecd2120dfef02a8dd59c9d367cc4b3f8fdea45040fda52fe630"
+        },
+        "technical_status": "passed",
+        "audited_at": "2026-10-27T11:13:02+08:00",
+        "evidence_binding": {
+          "report.json": "85ed0da3e928172befb574b8bf13ff3b1ef7faab40f4e79aadcce8c5ba910433",
+          "report.html": "c9c69df697fc36dec08451a0d2bf380043f46a8f7eb7cb953b7f70b5c0a6e3c9",
+          "report.md": "0b1f5e4323b9eb3b23bf6af82bceadbb0f5714312dd156a58cff444669e0eecf",
+          "calls.json": "983dade7918a6c277eed9946c3f4fbc1aabe4dbae6e574c362a8dc9bf601ab34",
+          "result.json": "909dc13d6f08ca291cf9e0d41073f1b9c227862a483f5de3c895edb918a118a1",
+          "source_manifest_sha256": "014e0c39ccd221d4b037bfafc75dc705b73521da54c003be18fa8ca62d4dab92"
+        },
+        "business_review": {
+          "id": "12-granted-invention-status-boundary",
+          "verdict": "acceptable",
+          "summary": "当前正式产物满足新专利场景的主体、真实数据、字段和非推断边界。",
+          "checks": [
+            {
+              "expectation": "主体必须确认",
+              "status": "pass",
+              "evidence": "requires_confirmation=False。本轮三种格式标题一致（JSON/HTML/Markdown；html=c9c69df697fc）；技术状态=passed、真实data调用=2；主体={\"enterprise\":\"腾讯科技（深圳）有限公司\",\"matchKeyword\":\"腾讯科技（深圳）有限公司\",\"keywordType\":\"name\",\"match_raw\":\"腾讯科技（深圳）有限公司\",\"resolved\":true,\"resolve_reason\":\"视为企业全称\",\"searchKeywordType\":\"申请人\",\"fuzzy_total\":null,\"requires_confirmation\":false,\"fuzzy_requested\":false,\"patentType\":\"发明授权\"}；调用=[{\"tool\":\"patent_bigdata_patent_stats\",\"status\":\"data\",\"rows\":null,\"total\":null},{\"tool\":\"patent_bigdata_patent_search\",\"status\":\"data\",\"rows\":6,\"total\":34167}]；质量={\"total_sections\":7,\"populated_sections\":7,\"empty_sections\":0,\"coverage_pct\":100}；章节=[{\"title\":\"专利统计\",\"records\":5},{\"title\":\"专利申请趋势（分类型）\",\"records\":10},{\"title\":\"专利授权趋势（分类型）\",\"records\":10},{\"title\":\"专利有效性结构\",\"records\":5},{\"title\":\"专利类型分布\",\"records\":4},{\"title\":\"专利法律状态分布\",\"records\":20},{\"title\":\"专利检索明细\",\"records\":6}]；指标=[{\"label\":\"专利总数\",\"value\":\"57879\",\"hint\":\"企业专利总量\"},{\"label\":\"发明申请\",\"value\":\"20734\",\"hint\":\"发明申请专利数量\"},{\"label\":\"发明授权\",\"value\":\"33301\",\"hint\":\"发明授权专利数量\"},{\"label\":\"实用新型\",\"value\":\"305\",\"hint\":\"实用新型专利数量\"},{\"label\":\"外观设计\",\"value\":\"3539\",\"hint\":\"外观设计专利数量\"},{\"label\":\"发明型占比\",\"value\":\"93%\",\"hint\":\"发明申请+授权 / 总数\"},{\"label\":\"专利有效率\",\"value\":\"59.2%\",\"hint\":\"有效 /（有效+失效+审查中+失败）\",\"delta\":\"有效\"},{\"label\":\"检索结果\",\"value\":\"34167\",\"hint\":\"本次检索命中专利条数\"},{\"label\":\"专利类型数\",\"value\":\"1\",\"hint\":\"不同专利类型数量\"},{\"label\":\"申请人/发明人数\",\"value\":\"2\",\"hint\":\"相关专利申请人数量\"}]；章节样本=[{\"title\":\"专利统计\",\"sample\":{\"专利总数\":\"57879\",\"发明申请专利数\":\"20734\",\"发明授权专利数\":\"33301\",\"实用新型专利数\":\"305\",\"外观设计专利数\":\"3539\"}},{\"title\":\"专利申请趋势（分类型）\",\"sample\":{\"年份\":\"2017\",\"发明申请\":318,\"发明授权\":2006,\"实用新型\":15,\"外观设计\":202}},{\"title\":\"专利授权趋势（分类型）\",\"sample\":{\"年份\":\"2017\",\"发明申请\":368,\"发明授权\":750,\"实用新型\":7,\"外观设计\":154}},{\"title\":\"专利有效性结构\",\"sample\":{\"有效性\":\"有效\",\"数量\":32425}},{\"title\":\"专利类型分布\",\"sample\":{\"名称/类型/状态/年份\":\"发明申请\",\"数量\":\"20734\"}},{\"title\":\"专利法律状态分布\",\"sample\":{\"名称/类型/状态/年份\":\"授权\",\"数量\":\"32425\"}},{\"title\":\"专利检索明细\",\"sample\":{\"专利名称\":\"关键词的检测方法以及相关装置\",\"申请号\":\"TW109100644\",\"申请人\":\"大陆商腾讯科技(深圳)有限公司()\",\"专利类型\":\"发明授权\",\"申请日期\":\"2020-01-08\",\"法律状态\":\"-\",\"代理机构\":\"-\"}}]；代表记录=[{\"专利名称\":\"关键词的检测方法以及相关装置\",\"专利类型\":\"发明授权\",\"申请日期\":\"2020-01-08\",\"法律状态\":\"-\"},{\"专利名称\":\"人机对话方法、装置、电子设备及电脑可读媒体\",\"专利类型\":\"发明授权\",\"申请日期\":\"2019-08-16\",\"法律状态\":\"-\"},{\"专利名称\":\"视频档案的生成方法、装置及储存媒体\",\"专利类型\":\"发明授权\",\"申请日期\":\"2019-07-04\",\"法律状态\":\"-\"}]；解释边界=[{\"feature\":\"专利资产规模\",\"evidence\":\"企业专利总数 57879 件。\",\"interpretation\":\"该数量描述公开数据库中的累计专利记录规模；不能单独证明技术储备、研发投入、专利质量或商业价值。\"},{\"feature\":\"发明申请与授权存量\",\"evidence\":\"发明申请 20734、发明授权 33301。两项均为累计存量，口径不对应同一申请队列，不能相除推算申请结果比例。\",\"interpretation\":\"两项分别描述公开申请记录和授权记录规模；当前权利状态及技术、商业意义仍需逐件核验。\"},{\"feature\":\"专利类型集中度\",\"evidence\":\"“发明授权”占比约 58%，前 3 类合计 99%（CR3）。\",\"interpretation\":\"类型集中度仅描述返回记录的类型构成，不能单独推断研发活动范围或技术布局质量。\"},{\"feature\":\"专利有效性结构\",\"evidence\":\"“授权”为主流状态，占比约 56%。\",\"interpretation\":\"该分布只描述返回的法律状态结构；失效或失败原因需结合逐件法律状态记录核查。\"},{\"feature\":\"专利法律状态结构\",\"evidence\":\"纳入有效率分母的状态中：有效 32425 件（59%）、失效 2079 件（4%）、审查中 16259 件、失败 4009 件。\",\"interpretation\":\"当前状态口径下有效占比约 59%，失效占比水平较低；具体原因不能由聚合数量推断，需逐件核查法律状态。\"},{\"feature\":\"申请趋势研判\",\"evidence\":\"峰值出现在“2020”（6634 件），近年趋势下降 80%，同比 -80%。\",\"interpretation\":\"趋势仅描述申请数量变化，不能单独证明研发投入或业务周期变化，需结合研发费用和产品资料核验。\"},{\"feature\":\"授权趋势研判\",\"evidence\":\"授权峰值在“2023”（8836 件），近年下降 33%。\",\"interpretation\":\"该趋势仅描述各报告期授权数量，不能单独证明研发质量、技术壁垒或申请转化速度。\"}]。"
+            },
+            {
+              "expectation": "至少一条筛选明细真实非空",
+              "status": "pass",
+              "evidence": "search_records=6。本轮三种格式标题一致（JSON/HTML/Markdown；html=c9c69df697fc）；技术状态=passed、真实data调用=2；主体={\"enterprise\":\"腾讯科技（深圳）有限公司\",\"matchKeyword\":\"腾讯科技（深圳）有限公司\",\"keywordType\":\"name\",\"match_raw\":\"腾讯科技（深圳）有限公司\",\"resolved\":true,\"resolve_reason\":\"视为企业全称\",\"searchKeywordType\":\"申请人\",\"fuzzy_total\":null,\"requires_confirmation\":false,\"fuzzy_requested\":false,\"patentType\":\"发明授权\"}；调用=[{\"tool\":\"patent_bigdata_patent_stats\",\"status\":\"data\",\"rows\":null,\"total\":null},{\"tool\":\"patent_bigdata_patent_search\",\"status\":\"data\",\"rows\":6,\"total\":34167}]；质量={\"total_sections\":7,\"populated_sections\":7,\"empty_sections\":0,\"coverage_pct\":100}；章节=[{\"title\":\"专利统计\",\"records\":5},{\"title\":\"专利申请趋势（分类型）\",\"records\":10},{\"title\":\"专利授权趋势（分类型）\",\"records\":10},{\"title\":\"专利有效性结构\",\"records\":5},{\"title\":\"专利类型分布\",\"records\":4},{\"title\":\"专利法律状态分布\",\"records\":20},{\"title\":\"专利检索明细\",\"records\":6}]；指标=[{\"label\":\"专利总数\",\"value\":\"57879\",\"hint\":\"企业专利总量\"},{\"label\":\"发明申请\",\"value\":\"20734\",\"hint\":\"发明申请专利数量\"},{\"label\":\"发明授权\",\"value\":\"33301\",\"hint\":\"发明授权专利数量\"},{\"label\":\"实用新型\",\"value\":\"305\",\"hint\":\"实用新型专利数量\"},{\"label\":\"外观设计\",\"value\":\"3539\",\"hint\":\"外观设计专利数量\"},{\"label\":\"发明型占比\",\"value\":\"93%\",\"hint\":\"发明申请+授权 / 总数\"},{\"label\":\"专利有效率\",\"value\":\"59.2%\",\"hint\":\"有效 /（有效+失效+审查中+失败）\",\"delta\":\"有效\"},{\"label\":\"检索结果\",\"value\":\"34167\",\"hint\":\"本次检索命中专利条数\"},{\"label\":\"专利类型数\",\"value\":\"1\",\"hint\":\"不同专利类型数量\"},{\"label\":\"申请人/发明人数\",\"value\":\"2\",\"hint\":\"相关专利申请人数量\"}]；章节样本=[{\"title\":\"专利统计\",\"sample\":{\"专利总数\":\"57879\",\"发明申请专利数\":\"20734\",\"发明授权专利数\":\"33301\",\"实用新型专利数\":\"305\",\"外观设计专利数\":\"3539\"}},{\"title\":\"专利申请趋势（分类型）\",\"sample\":{\"年份\":\"2017\",\"发明申请\":318,\"发明授权\":2006,\"实用新型\":15,\"外观设计\":202}},{\"title\":\"专利授权趋势（分类型）\",\"sample\":{\"年份\":\"2017\",\"发明申请\":368,\"发明授权\":750,\"实用新型\":7,\"外观设计\":154}},{\"title\":\"专利有效性结构\",\"sample\":{\"有效性\":\"有效\",\"数量\":32425}},{\"title\":\"专利类型分布\",\"sample\":{\"名称/类型/状态/年份\":\"发明申请\",\"数量\":\"20734\"}},{\"title\":\"专利法律状态分布\",\"sample\":{\"名称/类型/状态/年份\":\"授权\",\"数量\":\"32425\"}},{\"title\":\"专利检索明细\",\"sample\":{\"专利名称\":\"关键词的检测方法以及相关装置\",\"申请号\":\"TW109100644\",\"申请人\":\"大陆商腾讯科技(深圳)有限公司()\",\"专利类型\":\"发明授权\",\"申请日期\":\"2020-01-08\",\"法律状态\":\"-\",\"代理机构\":\"-\"}}]；代表记录=[{\"专利名称\":\"关键词的检测方法以及相关装置\",\"专利类型\":\"发明授权\",\"申请日期\":\"2020-01-08\",\"法律状态\":\"-\"},{\"专利名称\":\"人机对话方法、装置、电子设备及电脑可读媒体\",\"专利类型\":\"发明授权\",\"申请日期\":\"2019-08-16\",\"法律状态\":\"-\"},{\"专利名称\":\"视频档案的生成方法、装置及储存媒体\",\"专利类型\":\"发明授权\",\"申请日期\":\"2019-07-04\",\"法律状态\":\"-\"}]；解释边界=[{\"feature\":\"专利资产规模\",\"evidence\":\"企业专利总数 57879 件。\",\"interpretation\":\"该数量描述公开数据库中的累计专利记录规模；不能单独证明技术储备、研发投入、专利质量或商业价值。\"},{\"feature\":\"发明申请与授权存量\",\"evidence\":\"发明申请 20734、发明授权 33301。两项均为累计存量，口径不对应同一申请队列，不能相除推算申请结果比例。\",\"interpretation\":\"两项分别描述公开申请记录和授权记录规模；当前权利状态及技术、商业意义仍需逐件核验。\"},{\"feature\":\"专利类型集中度\",\"evidence\":\"“发明授权”占比约 58%，前 3 类合计 99%（CR3）。\",\"interpretation\":\"类型集中度仅描述返回记录的类型构成，不能单独推断研发活动范围或技术布局质量。\"},{\"feature\":\"专利有效性结构\",\"evidence\":\"“授权”为主流状态，占比约 56%。\",\"interpretation\":\"该分布只描述返回的法律状态结构；失效或失败原因需结合逐件法律状态记录核查。\"},{\"feature\":\"专利法律状态结构\",\"evidence\":\"纳入有效率分母的状态中：有效 32425 件（59%）、失效 2079 件（4%）、审查中 16259 件、失败 4009 件。\",\"interpretation\":\"当前状态口径下有效占比约 59%，失效占比水平较低；具体原因不能由聚合数量推断，需逐件核查法律状态。\"},{\"feature\":\"申请趋势研判\",\"evidence\":\"峰值出现在“2020”（6634 件），近年趋势下降 80%，同比 -80%。\",\"interpretation\":\"趋势仅描述申请数量变化，不能单独证明研发投入或业务周期变化，需结合研发费用和产品资料核验。\"},{\"feature\":\"授权趋势研判\",\"evidence\":\"授权峰值在“2023”（8836 件），近年下降 33%。\",\"interpretation\":\"该趋势仅描述各报告期授权数量，不能单独证明研发质量、技术壁垒或申请转化速度。\"}]。"
+            },
+            {
+              "expectation": "每条验收样本的专利类型为发明授权",
+              "status": "pass",
+              "evidence": "实际类型=[\"发明授权\",\"发明授权\",\"发明授权\",\"发明授权\",\"发明授权\",\"发明授权\"]。本轮三种格式标题一致（JSON/HTML/Markdown；html=c9c69df697fc）；技术状态=passed、真实data调用=2；主体={\"enterprise\":\"腾讯科技（深圳）有限公司\",\"matchKeyword\":\"腾讯科技（深圳）有限公司\",\"keywordType\":\"name\",\"match_raw\":\"腾讯科技（深圳）有限公司\",\"resolved\":true,\"resolve_reason\":\"视为企业全称\",\"searchKeywordType\":\"申请人\",\"fuzzy_total\":null,\"requires_confirmation\":false,\"fuzzy_requested\":false,\"patentType\":\"发明授权\"}；调用=[{\"tool\":\"patent_bigdata_patent_stats\",\"status\":\"data\",\"rows\":null,\"total\":null},{\"tool\":\"patent_bigdata_patent_search\",\"status\":\"data\",\"rows\":6,\"total\":34167}]；质量={\"total_sections\":7,\"populated_sections\":7,\"empty_sections\":0,\"coverage_pct\":100}；章节=[{\"title\":\"专利统计\",\"records\":5},{\"title\":\"专利申请趋势（分类型）\",\"records\":10},{\"title\":\"专利授权趋势（分类型）\",\"records\":10},{\"title\":\"专利有效性结构\",\"records\":5},{\"title\":\"专利类型分布\",\"records\":4},{\"title\":\"专利法律状态分布\",\"records\":20},{\"title\":\"专利检索明细\",\"records\":6}]；指标=[{\"label\":\"专利总数\",\"value\":\"57879\",\"hint\":\"企业专利总量\"},{\"label\":\"发明申请\",\"value\":\"20734\",\"hint\":\"发明申请专利数量\"},{\"label\":\"发明授权\",\"value\":\"33301\",\"hint\":\"发明授权专利数量\"},{\"label\":\"实用新型\",\"value\":\"305\",\"hint\":\"实用新型专利数量\"},{\"label\":\"外观设计\",\"value\":\"3539\",\"hint\":\"外观设计专利数量\"},{\"label\":\"发明型占比\",\"value\":\"93%\",\"hint\":\"发明申请+授权 / 总数\"},{\"label\":\"专利有效率\",\"value\":\"59.2%\",\"hint\":\"有效 /（有效+失效+审查中+失败）\",\"delta\":\"有效\"},{\"label\":\"检索结果\",\"value\":\"34167\",\"hint\":\"本次检索命中专利条数\"},{\"label\":\"专利类型数\",\"value\":\"1\",\"hint\":\"不同专利类型数量\"},{\"label\":\"申请人/发明人数\",\"value\":\"2\",\"hint\":\"相关专利申请人数量\"}]；章节样本=[{\"title\":\"专利统计\",\"sample\":{\"专利总数\":\"57879\",\"发明申请专利数\":\"20734\",\"发明授权专利数\":\"33301\",\"实用新型专利数\":\"305\",\"外观设计专利数\":\"3539\"}},{\"title\":\"专利申请趋势（分类型）\",\"sample\":{\"年份\":\"2017\",\"发明申请\":318,\"发明授权\":2006,\"实用新型\":15,\"外观设计\":202}},{\"title\":\"专利授权趋势（分类型）\",\"sample\":{\"年份\":\"2017\",\"发明申请\":368,\"发明授权\":750,\"实用新型\":7,\"外观设计\":154}},{\"title\":\"专利有效性结构\",\"sample\":{\"有效性\":\"有效\",\"数量\":32425}},{\"title\":\"专利类型分布\",\"sample\":{\"名称/类型/状态/年份\":\"发明申请\",\"数量\":\"20734\"}},{\"title\":\"专利法律状态分布\",\"sample\":{\"名称/类型/状态/年份\":\"授权\",\"数量\":\"32425\"}},{\"title\":\"专利检索明细\",\"sample\":{\"专利名称\":\"关键词的检测方法以及相关装置\",\"申请号\":\"TW109100644\",\"申请人\":\"大陆商腾讯科技(深圳)有限公司()\",\"专利类型\":\"发明授权\",\"申请日期\":\"2020-01-08\",\"法律状态\":\"-\",\"代理机构\":\"-\"}}]；代表记录=[{\"专利名称\":\"关键词的检测方法以及相关装置\",\"专利类型\":\"发明授权\",\"申请日期\":\"2020-01-08\",\"法律状态\":\"-\"},{\"专利名称\":\"人机对话方法、装置、电子设备及电脑可读媒体\",\"专利类型\":\"发明授权\",\"申请日期\":\"2019-08-16\",\"法律状态\":\"-\"},{\"专利名称\":\"视频档案的生成方法、装置及储存媒体\",\"专利类型\":\"发明授权\",\"申请日期\":\"2019-07-04\",\"法律状态\":\"-\"}]；解释边界=[{\"feature\":\"专利资产规模\",\"evidence\":\"企业专利总数 57879 件。\",\"interpretation\":\"该数量描述公开数据库中的累计专利记录规模；不能单独证明技术储备、研发投入、专利质量或商业价值。\"},{\"feature\":\"发明申请与授权存量\",\"evidence\":\"发明申请 20734、发明授权 33301。两项均为累计存量，口径不对应同一申请队列，不能相除推算申请结果比例。\",\"interpretation\":\"两项分别描述公开申请记录和授权记录规模；当前权利状态及技术、商业意义仍需逐件核验。\"},{\"feature\":\"专利类型集中度\",\"evidence\":\"“发明授权”占比约 58%，前 3 类合计 99%（CR3）。\",\"interpretation\":\"类型集中度仅描述返回记录的类型构成，不能单独推断研发活动范围或技术布局质量。\"},{\"feature\":\"专利有效性结构\",\"evidence\":\"“授权”为主流状态，占比约 56%。\",\"interpretation\":\"该分布只描述返回的法律状态结构；失效或失败原因需结合逐件法律状态记录核查。\"},{\"feature\":\"专利法律状态结构\",\"evidence\":\"纳入有效率分母的状态中：有效 32425 件（59%）、失效 2079 件（4%）、审查中 16259 件、失败 4009 件。\",\"interpretation\":\"当前状态口径下有效占比约 59%，失效占比水平较低；具体原因不能由聚合数量推断，需逐件核查法律状态。\"},{\"feature\":\"申请趋势研判\",\"evidence\":\"峰值出现在“2020”（6634 件），近年趋势下降 80%，同比 -80%。\",\"interpretation\":\"趋势仅描述申请数量变化，不能单独证明研发投入或业务周期变化，需结合研发费用和产品资料核验。\"},{\"feature\":\"授权趋势研判\",\"evidence\":\"授权峰值在“2023”（8836 件），近年下降 33%。\",\"interpretation\":\"该趋势仅描述各报告期授权数量，不能单独证明研发质量、技术壁垒或申请转化速度。\"}]。"
+            },
+            {
+              "expectation": "名称、申请号和申请人必须非空",
+              "status": "pass",
+              "evidence": "名称/申请号/申请人首样本=[{\"专利名称\":\"关键词的检测方法以及相关装置\",\"申请号\":\"TW109100644\",\"申请人\":\"大陆商腾讯科技(深圳)有限公司()\",\"专利类型\":\"发明授权\",\"申请日期\":\"2020-01-08\",\"法律状态\":\"-\",\"代理机构\":\"-\"}]。本轮三种格式标题一致（JSON/HTML/Markdown；html=c9c69df697fc）；技术状态=passed、真实data调用=2；主体={\"enterprise\":\"腾讯科技（深圳）有限公司\",\"matchKeyword\":\"腾讯科技（深圳）有限公司\",\"keywordType\":\"name\",\"match_raw\":\"腾讯科技（深圳）有限公司\",\"resolved\":true,\"resolve_reason\":\"视为企业全称\",\"searchKeywordType\":\"申请人\",\"fuzzy_total\":null,\"requires_confirmation\":false,\"fuzzy_requested\":false,\"patentType\":\"发明授权\"}；调用=[{\"tool\":\"patent_bigdata_patent_stats\",\"status\":\"data\",\"rows\":null,\"total\":null},{\"tool\":\"patent_bigdata_patent_search\",\"status\":\"data\",\"rows\":6,\"total\":34167}]；质量={\"total_sections\":7,\"populated_sections\":7,\"empty_sections\":0,\"coverage_pct\":100}；章节=[{\"title\":\"专利统计\",\"records\":5},{\"title\":\"专利申请趋势（分类型）\",\"records\":10},{\"title\":\"专利授权趋势（分类型）\",\"records\":10},{\"title\":\"专利有效性结构\",\"records\":5},{\"title\":\"专利类型分布\",\"records\":4},{\"title\":\"专利法律状态分布\",\"records\":20},{\"title\":\"专利检索明细\",\"records\":6}]；指标=[{\"label\":\"专利总数\",\"value\":\"57879\",\"hint\":\"企业专利总量\"},{\"label\":\"发明申请\",\"value\":\"20734\",\"hint\":\"发明申请专利数量\"},{\"label\":\"发明授权\",\"value\":\"33301\",\"hint\":\"发明授权专利数量\"},{\"label\":\"实用新型\",\"value\":\"305\",\"hint\":\"实用新型专利数量\"},{\"label\":\"外观设计\",\"value\":\"3539\",\"hint\":\"外观设计专利数量\"},{\"label\":\"发明型占比\",\"value\":\"93%\",\"hint\":\"发明申请+授权 / 总数\"},{\"label\":\"专利有效率\",\"value\":\"59.2%\",\"hint\":\"有效 /（有效+失效+审查中+失败）\",\"delta\":\"有效\"},{\"label\":\"检索结果\",\"value\":\"34167\",\"hint\":\"本次检索命中专利条数\"},{\"label\":\"专利类型数\",\"value\":\"1\",\"hint\":\"不同专利类型数量\"},{\"label\":\"申请人/发明人数\",\"value\":\"2\",\"hint\":\"相关专利申请人数量\"}]；章节样本=[{\"title\":\"专利统计\",\"sample\":{\"专利总数\":\"57879\",\"发明申请专利数\":\"20734\",\"发明授权专利数\":\"33301\",\"实用新型专利数\":\"305\",\"外观设计专利数\":\"3539\"}},{\"title\":\"专利申请趋势（分类型）\",\"sample\":{\"年份\":\"2017\",\"发明申请\":318,\"发明授权\":2006,\"实用新型\":15,\"外观设计\":202}},{\"title\":\"专利授权趋势（分类型）\",\"sample\":{\"年份\":\"2017\",\"发明申请\":368,\"发明授权\":750,\"实用新型\":7,\"外观设计\":154}},{\"title\":\"专利有效性结构\",\"sample\":{\"有效性\":\"有效\",\"数量\":32425}},{\"title\":\"专利类型分布\",\"sample\":{\"名称/类型/状态/年份\":\"发明申请\",\"数量\":\"20734\"}},{\"title\":\"专利法律状态分布\",\"sample\":{\"名称/类型/状态/年份\":\"授权\",\"数量\":\"32425\"}},{\"title\":\"专利检索明细\",\"sample\":{\"专利名称\":\"关键词的检测方法以及相关装置\",\"申请号\":\"TW109100644\",\"申请人\":\"大陆商腾讯科技(深圳)有限公司()\",\"专利类型\":\"发明授权\",\"申请日期\":\"2020-01-08\",\"法律状态\":\"-\",\"代理机构\":\"-\"}}]；代表记录=[{\"专利名称\":\"关键词的检测方法以及相关装置\",\"专利类型\":\"发明授权\",\"申请日期\":\"2020-01-08\",\"法律状态\":\"-\"},{\"专利名称\":\"人机对话方法、装置、电子设备及电脑可读媒体\",\"专利类型\":\"发明授权\",\"申请日期\":\"2019-08-16\",\"法律状态\":\"-\"},{\"专利名称\":\"视频档案的生成方法、装置及储存媒体\",\"专利类型\":\"发明授权\",\"申请日期\":\"2019-07-04\",\"法律状态\":\"-\"}]；解释边界=[{\"feature\":\"专利资产规模\",\"evidence\":\"企业专利总数 57879 件。\",\"interpretation\":\"该数量描述公开数据库中的累计专利记录规模；不能单独证明技术储备、研发投入、专利质量或商业价值。\"},{\"feature\":\"发明申请与授权存量\",\"evidence\":\"发明申请 20734、发明授权 33301。两项均为累计存量，口径不对应同一申请队列，不能相除推算申请结果比例。\",\"interpretation\":\"两项分别描述公开申请记录和授权记录规模；当前权利状态及技术、商业意义仍需逐件核验。\"},{\"feature\":\"专利类型集中度\",\"evidence\":\"“发明授权”占比约 58%，前 3 类合计 99%（CR3）。\",\"interpretation\":\"类型集中度仅描述返回记录的类型构成，不能单独推断研发活动范围或技术布局质量。\"},{\"feature\":\"专利有效性结构\",\"evidence\":\"“授权”为主流状态，占比约 56%。\",\"interpretation\":\"该分布只描述返回的法律状态结构；失效或失败原因需结合逐件法律状态记录核查。\"},{\"feature\":\"专利法律状态结构\",\"evidence\":\"纳入有效率分母的状态中：有效 32425 件（59%）、失效 2079 件（4%）、审查中 16259 件、失败 4009 件。\",\"interpretation\":\"当前状态口径下有效占比约 59%，失效占比水平较低；具体原因不能由聚合数量推断，需逐件核查法律状态。\"},{\"feature\":\"申请趋势研判\",\"evidence\":\"峰值出现在“2020”（6634 件），近年趋势下降 80%，同比 -80%。\",\"interpretation\":\"趋势仅描述申请数量变化，不能单独证明研发投入或业务周期变化，需结合研发费用和产品资料核验。\"},{\"feature\":\"授权趋势研判\",\"evidence\":\"授权峰值在“2023”（8836 件），近年下降 33%。\",\"interpretation\":\"该趋势仅描述各报告期授权数量，不能单独证明研发质量、技术壁垒或申请转化速度。\"}]。"
+            },
+            {
+              "expectation": "不得由发明授权类型直接写成当前有效",
+              "status": "pass",
+              "evidence": "三种格式未将发明授权类型改写为当前有效，也未派生授权成功率。本轮三种格式标题一致（JSON/HTML/Markdown；html=c9c69df697fc）；技术状态=passed、真实data调用=2；主体={\"enterprise\":\"腾讯科技（深圳）有限公司\",\"matchKeyword\":\"腾讯科技（深圳）有限公司\",\"keywordType\":\"name\",\"match_raw\":\"腾讯科技（深圳）有限公司\",\"resolved\":true,\"resolve_reason\":\"视为企业全称\",\"searchKeywordType\":\"申请人\",\"fuzzy_total\":null,\"requires_confirmation\":false,\"fuzzy_requested\":false,\"patentType\":\"发明授权\"}；调用=[{\"tool\":\"patent_bigdata_patent_stats\",\"status\":\"data\",\"rows\":null,\"total\":null},{\"tool\":\"patent_bigdata_patent_search\",\"status\":\"data\",\"rows\":6,\"total\":34167}]；质量={\"total_sections\":7,\"populated_sections\":7,\"empty_sections\":0,\"coverage_pct\":100}；章节=[{\"title\":\"专利统计\",\"records\":5},{\"title\":\"专利申请趋势（分类型）\",\"records\":10},{\"title\":\"专利授权趋势（分类型）\",\"records\":10},{\"title\":\"专利有效性结构\",\"records\":5},{\"title\":\"专利类型分布\",\"records\":4},{\"title\":\"专利法律状态分布\",\"records\":20},{\"title\":\"专利检索明细\",\"records\":6}]；指标=[{\"label\":\"专利总数\",\"value\":\"57879\",\"hint\":\"企业专利总量\"},{\"label\":\"发明申请\",\"value\":\"20734\",\"hint\":\"发明申请专利数量\"},{\"label\":\"发明授权\",\"value\":\"33301\",\"hint\":\"发明授权专利数量\"},{\"label\":\"实用新型\",\"value\":\"305\",\"hint\":\"实用新型专利数量\"},{\"label\":\"外观设计\",\"value\":\"3539\",\"hint\":\"外观设计专利数量\"},{\"label\":\"发明型占比\",\"value\":\"93%\",\"hint\":\"发明申请+授权 / 总数\"},{\"label\":\"专利有效率\",\"value\":\"59.2%\",\"hint\":\"有效 /（有效+失效+审查中+失败）\",\"delta\":\"有效\"},{\"label\":\"检索结果\",\"value\":\"34167\",\"hint\":\"本次检索命中专利条数\"},{\"label\":\"专利类型数\",\"value\":\"1\",\"hint\":\"不同专利类型数量\"},{\"label\":\"申请人/发明人数\",\"value\":\"2\",\"hint\":\"相关专利申请人数量\"}]；章节样本=[{\"title\":\"专利统计\",\"sample\":{\"专利总数\":\"57879\",\"发明申请专利数\":\"20734\",\"发明授权专利数\":\"33301\",\"实用新型专利数\":\"305\",\"外观设计专利数\":\"3539\"}},{\"title\":\"专利申请趋势（分类型）\",\"sample\":{\"年份\":\"2017\",\"发明申请\":318,\"发明授权\":2006,\"实用新型\":15,\"外观设计\":202}},{\"title\":\"专利授权趋势（分类型）\",\"sample\":{\"年份\":\"2017\",\"发明申请\":368,\"发明授权\":750,\"实用新型\":7,\"外观设计\":154}},{\"title\":\"专利有效性结构\",\"sample\":{\"有效性\":\"有效\",\"数量\":32425}},{\"title\":\"专利类型分布\",\"sample\":{\"名称/类型/状态/年份\":\"发明申请\",\"数量\":\"20734\"}},{\"title\":\"专利法律状态分布\",\"sample\":{\"名称/类型/状态/年份\":\"授权\",\"数量\":\"32425\"}},{\"title\":\"专利检索明细\",\"sample\":{\"专利名称\":\"关键词的检测方法以及相关装置\",\"申请号\":\"TW109100644\",\"申请人\":\"大陆商腾讯科技(深圳)有限公司()\",\"专利类型\":\"发明授权\",\"申请日期\":\"2020-01-08\",\"法律状态\":\"-\",\"代理机构\":\"-\"}}]；代表记录=[{\"专利名称\":\"关键词的检测方法以及相关装置\",\"专利类型\":\"发明授权\",\"申请日期\":\"2020-01-08\",\"法律状态\":\"-\"},{\"专利名称\":\"人机对话方法、装置、电子设备及电脑可读媒体\",\"专利类型\":\"发明授权\",\"申请日期\":\"2019-08-16\",\"法律状态\":\"-\"},{\"专利名称\":\"视频档案的生成方法、装置及储存媒体\",\"专利类型\":\"发明授权\",\"申请日期\":\"2019-07-04\",\"法律状态\":\"-\"}]；解释边界=[{\"feature\":\"专利资产规模\",\"evidence\":\"企业专利总数 57879 件。\",\"interpretation\":\"该数量描述公开数据库中的累计专利记录规模；不能单独证明技术储备、研发投入、专利质量或商业价值。\"},{\"feature\":\"发明申请与授权存量\",\"evidence\":\"发明申请 20734、发明授权 33301。两项均为累计存量，口径不对应同一申请队列，不能相除推算申请结果比例。\",\"interpretation\":\"两项分别描述公开申请记录和授权记录规模；当前权利状态及技术、商业意义仍需逐件核验。\"},{\"feature\":\"专利类型集中度\",\"evidence\":\"“发明授权”占比约 58%，前 3 类合计 99%（CR3）。\",\"interpretation\":\"类型集中度仅描述返回记录的类型构成，不能单独推断研发活动范围或技术布局质量。\"},{\"feature\":\"专利有效性结构\",\"evidence\":\"“授权”为主流状态，占比约 56%。\",\"interpretation\":\"该分布只描述返回的法律状态结构；失效或失败原因需结合逐件法律状态记录核查。\"},{\"feature\":\"专利法律状态结构\",\"evidence\":\"纳入有效率分母的状态中：有效 32425 件（59%）、失效 2079 件（4%）、审查中 16259 件、失败 4009 件。\",\"interpretation\":\"当前状态口径下有效占比约 59%，失效占比水平较低；具体原因不能由聚合数量推断，需逐件核查法律状态。\"},{\"feature\":\"申请趋势研判\",\"evidence\":\"峰值出现在“2020”（6634 件），近年趋势下降 80%，同比 -80%。\",\"interpretation\":\"趋势仅描述申请数量变化，不能单独证明研发投入或业务周期变化，需结合研发费用和产品资料核验。\"},{\"feature\":\"授权趋势研判\",\"evidence\":\"授权峰值在“2023”（8836 件），近年下降 33%。\",\"interpretation\":\"该趋势仅描述各报告期授权数量，不能单独证明研发质量、技术壁垒或申请转化速度。\"}]。"
+            }
+          ],
+          "issues": [],
+          "evidence_binding": {
+            "report.json": "85ed0da3e928172befb574b8bf13ff3b1ef7faab40f4e79aadcce8c5ba910433",
+            "report.html": "c9c69df697fc36dec08451a0d2bf380043f46a8f7eb7cb953b7f70b5c0a6e3c9",
+            "report.md": "0b1f5e4323b9eb3b23bf6af82bceadbb0f5714312dd156a58cff444669e0eecf",
+            "calls.json": "983dade7918a6c277eed9946c3f4fbc1aabe4dbae6e574c362a8dc9bf601ab34",
+            "result.json": "909dc13d6f08ca291cf9e0d41073f1b9c227862a483f5de3c895edb918a118a1",
+            "source_manifest_sha256": "014e0c39ccd221d4b037bfafc75dc705b73521da54c003be18fa8ca62d4dab92"
+          }
+        }
+      }
+    },
+    {
+      "scenario": {
+        "id": "05-design-patent",
+        "title": "消费电子外观专利抽样",
+        "user_request": "查看小米科技有限责任公司的外观设计专利样本和类型占比。",
+        "purpose": "观察产品外观保护线索。",
+        "args": [
+          "--enterprise",
+          "小米科技有限责任公司",
+          "--patent-type",
+          "外观设计",
+          "--page-size",
+          "8"
+        ],
+        "expected_checks": [
+          "筛选记录应优先为外观设计",
+          "类型占比要明确统计数据的总口径",
+          "不得根据名称推断产品销量或市场份额"
+        ],
+        "limitations": [
+          "仅反映本次 HandaaS 数据产品返回范围与生成时点，不等同于官方证明。",
+          "空结果必须保留为空，不能解释为该事项客观不存在。",
+          "外观设计相似性和稳定性需专业检索判断。"
+        ]
+      },
+      "result": {
+        "schema_version": 1,
+        "skill": "patent-skill",
+        "case_id": "05-design-patent",
+        "title": "消费电子外观专利抽样",
+        "invocation_id": "1793070072263176000",
+        "provenance": {
+          "integrator_id": "683e574805537ace146cc05e",
+          "runner_sha256": "05777c2f2b0791cb5157aef691206606dade8df7af3b17212285b7ae74632a66",
+          "credential_policy_sha256": "bcabf08a1ca92f28357c0e57a8bae9bfa910eb1d4b204d8195ee3b7a77106eed",
+          "scenario_sha256": "c2aadf61813a66b2bc5bcb77c20864f57581f634efce1a6b2b05b6e12eebad1c",
+          "skill_source_hashes": {
+            "scripts/common.py": "f1d8673c57a3f0259770bab9e02dff5a01e87c639a6b4831173ac52c54168e42",
+            "scripts/compose_report.py": "871e4bc0d9484725855b242a7f93e65ef27d40c706feead0798ef200956f9735",
+            "scripts/mcp_client.py": "79c51eaec8e124e20e49dd461d3ac1879c99d95a6e7e76a51d0ceadfecd54995",
+            "scripts/render_report.py": "4ed8ffbca7848bfbf2eba1c37f03f05f7e52a1dda1b25a66749a3654577733f2",
+            "scripts/validate_config.py": "3bf851c0bea7fecd2120dfef02a8dd59c9d367cc4b3f8fdea45040fda52fe630"
+          },
+          "upstream_source_hashes": {
+            "patent-mcp-server": "6415af144978311c545a4ba5e914de3b1b192eb6b667f2398faaa0e7d599e485"
+          },
+          "upstream_dependency_hashes": {
+            "patent-mcp-server/server/mcp_server.py": "6415af144978311c545a4ba5e914de3b1b192eb6b667f2398faaa0e7d599e485"
+          }
+        },
+        "source_changed_during_run": false,
+        "started_at": "2026-10-27T11:01:12+08:00",
+        "elapsed_seconds": 3.651,
+        "returncode": 0,
+        "exception_type": null,
+        "command": "python3 patent-skill/scripts/compose_report.py --enterprise '小米科技有限责任公司' --patent-type '外观设计' --page-size 8 --output patent-skill/output/live-replaced-20261027/05-design-patent/report.json --report-output patent-skill/output/live-replaced-20261027/05-design-patent/report.html",
+        "transport": "local MCP servers via loopback streamable-http",
+        "cache_used": false,
+        "call_count": 2,
+        "successful_data_calls": 2,
+        "empty_calls": 0,
+        "failed_calls": 0,
+        "checks": {
+          "issues": [],
+          "warnings": [],
+          "coverage_pct": 100,
+          "subject": {
+            "enterprise": "小米科技有限责任公司",
+            "matchKeyword": "小米科技有限责任公司",
+            "keywordType": "name",
+            "match_raw": "小米科技有限责任公司",
+            "resolved": true,
+            "resolve_reason": "视为企业全称",
+            "searchKeywordType": "申请人",
+            "fuzzy_total": null,
+            "requires_confirmation": false,
+            "fuzzy_requested": false,
+            "patentType": "外观设计"
+          },
+          "title": "小米科技有限责任公司 专利大数据报告",
+          "data_mode": null,
+          "metrics": [
+            {
+              "label": "专利总数",
+              "value": "9436",
+              "hint": "企业专利总量"
+            },
+            {
+              "label": "发明申请",
+              "value": "5616",
+              "hint": "发明申请专利数量"
+            },
+            {
+              "label": "发明授权",
+              "value": "3236",
+              "hint": "发明授权专利数量"
+            },
+            {
+              "label": "实用新型",
+              "value": "365",
+              "hint": "实用新型专利数量"
+            },
+            {
+              "label": "外观设计",
+              "value": "219",
+              "hint": "外观设计专利数量"
+            },
+            {
+              "label": "发明型占比",
+              "value": "94%",
+              "hint": "发明申请+授权 / 总数"
+            },
+            {
+              "label": "专利有效率",
+              "value": "58.9%",
+              "hint": "有效 /（有效+失效+审查中+失败）",
+              "delta": "有效"
+            },
+            {
+              "label": "检索结果",
+              "value": "219",
+              "hint": "本次检索命中专利条数"
+            },
+            {
+              "label": "专利类型数",
+              "value": "1",
+              "hint": "不同专利类型数量"
+            },
+            {
+              "label": "申请人/发明人数",
+              "value": "2",
+              "hint": "相关专利申请人数量"
+            }
+          ],
+          "quality_report": {
+            "total_sections": 7,
+            "populated_sections": 7,
+            "empty_sections": 0,
+            "coverage_pct": 100
+          },
+          "unregistered_tools": [],
+          "checks": {
+            "json_html_markdown": true,
+            "explicit_live": true,
+            "tool_calls_recorded": 2,
+            "offline_scripts": true,
+            "independent_rerender": true,
+            "offline_browser": true
+          }
+        },
+        "status": "passed",
+        "source_hashes": {
+          "scripts/common.py": "f1d8673c57a3f0259770bab9e02dff5a01e87c639a6b4831173ac52c54168e42",
+          "scripts/compose_report.py": "871e4bc0d9484725855b242a7f93e65ef27d40c706feead0798ef200956f9735",
+          "scripts/mcp_client.py": "79c51eaec8e124e20e49dd461d3ac1879c99d95a6e7e76a51d0ceadfecd54995",
+          "scripts/render_report.py": "4ed8ffbca7848bfbf2eba1c37f03f05f7e52a1dda1b25a66749a3654577733f2",
+          "scripts/validate_config.py": "3bf851c0bea7fecd2120dfef02a8dd59c9d367cc4b3f8fdea45040fda52fe630"
+        },
+        "technical_status": "passed",
+        "audited_at": "2026-10-27T11:13:02+08:00",
+        "evidence_binding": {
+          "report.json": "6086d2fc9f8edca365ab5052852107407d8294287a12b5148b51528a6317b049",
+          "report.html": "875fafa6b5183d480f331d22d208da38ba11bf46a0622774a759837ba1a952fa",
+          "report.md": "b9340931dc4405e6c8d3685a6e4b60cf7034730e0011fef47032d0211331c4c3",
+          "calls.json": "f63b2105c32b783038500c92e3b564bac5a586ade283b5374f25b1052d560f33",
+          "result.json": "3e25f7edfa47528de994a79a62cbdc452ae823e8341dd16443e0fee0559a2563",
+          "source_manifest_sha256": "014e0c39ccd221d4b037bfafc75dc705b73521da54c003be18fa8ca62d4dab92"
+        },
+        "business_review": {
+          "id": "05-design-patent",
+          "verdict": "acceptable",
+          "summary": "已重新读取并绑定本轮正式产物；外观设计筛选一致，类型占比使用整体统计口径，未推断销量或市场份额。",
+          "checks": [
+            {
+              "expectation": "筛选记录应优先为外观设计",
+              "status": "pass",
+              "evidence": "针对“筛选记录应优先为外观设计”复核当前冻结产物。本轮三种格式标题一致（JSON/HTML/Markdown；html=875fafa6b518）；技术状态=passed、真实data调用=2；主体={\"enterprise\":\"小米科技有限责任公司\",\"matchKeyword\":\"小米科技有限责任公司\",\"keywordType\":\"name\",\"match_raw\":\"小米科技有限责任公司\",\"resolved\":true,\"resolve_reason\":\"视为企业全称\",\"searchKeywordType\":\"申请人\",\"fuzzy_total\":null,\"requires_confirmation\":false,\"fuzzy_requested\":false,\"patentType\":\"外观设计\"}；调用=[{\"tool\":\"patent_bigdata_patent_stats\",\"status\":\"data\",\"rows\":null,\"total\":null},{\"tool\":\"patent_bigdata_patent_search\",\"status\":\"data\",\"rows\":8,\"total\":219}]；质量={\"total_sections\":7,\"populated_sections\":7,\"empty_sections\":0,\"coverage_pct\":100}；章节=[{\"title\":\"专利统计\",\"records\":5},{\"title\":\"专利申请趋势（分类型）\",\"records\":4},{\"title\":\"专利授权趋势（分类型）\",\"records\":9},{\"title\":\"专利有效性结构\",\"records\":5},{\"title\":\"专利类型分布\",\"records\":4},{\"title\":\"专利法律状态分布\",\"records\":16},{\"title\":\"专利检索明细\",\"records\":8}]；指标=[{\"label\":\"专利总数\",\"value\":\"9436\",\"hint\":\"企业专利总量\"},{\"label\":\"发明申请\",\"value\":\"5616\",\"hint\":\"发明申请专利数量\"},{\"label\":\"发明授权\",\"value\":\"3236\",\"hint\":\"发明授权专利数量\"},{\"label\":\"实用新型\",\"value\":\"365\",\"hint\":\"实用新型专利数量\"},{\"label\":\"外观设计\",\"value\":\"219\",\"hint\":\"外观设计专利数量\"},{\"label\":\"发明型占比\",\"value\":\"94%\",\"hint\":\"发明申请+授权 / 总数\"},{\"label\":\"专利有效率\",\"value\":\"58.9%\",\"hint\":\"有效 /（有效+失效+审查中+失败）\",\"delta\":\"有效\"},{\"label\":\"检索结果\",\"value\":\"219\",\"hint\":\"本次检索命中专利条数\"},{\"label\":\"专利类型数\",\"value\":\"1\",\"hint\":\"不同专利类型数量\"},{\"label\":\"申请人/发明人数\",\"value\":\"2\",\"hint\":\"相关专利申请人数量\"}]；章节样本=[{\"title\":\"专利统计\",\"sample\":{\"专利总数\":\"9436\",\"发明申请专利数\":\"5616\",\"发明授权专利数\":\"3236\",\"实用新型专利数\":\"365\",\"外观设计专利数\":\"219\"}},{\"title\":\"专利申请趋势（分类型）\",\"sample\":{\"年份\":\"2017\",\"发明申请\":2,\"发明授权\":2,\"实用新型\":0,\"外观设计\":0}},{\"title\":\"专利授权趋势（分类型）\",\"sample\":{\"年份\":\"2017\",\"发明申请\":277,\"发明授权\":643,\"实用新型\":3,\"外观设计\":2}},{\"title\":\"专利有效性结构\",\"sample\":{\"有效性\":\"有效\",\"数量\":5431}},{\"title\":\"专利类型分布\",\"sample\":{\"名称/类型/状态/年份\":\"发明申请\",\"数量\":\"5616\"}},{\"title\":\"专利法律状态分布\",\"sample\":{\"名称/类型/状态/年份\":\"专利申请权、专利权的转移\",\"数量\":\"96\"}},{\"title\":\"专利检索明细\",\"sample\":{\"专利名称\":\"手机壳\",\"申请号\":\"CN202130158176.0\",\"申请人\":\"北京小米科技有限责任公司\",\"专利类型\":\"外观设计\",\"申请日期\":\"2021-03-23\",\"法律状态\":\"专利权终止\",\"代理机构\":\"北京律智知识产权代理有限公司\"}}]；代表记录=[{\"专利名称\":\"手机壳\",\"专利类型\":\"外观设计\",\"申请日期\":\"2021-03-23\",\"法律状态\":\"专利权终止\"},{\"专利名称\":\"手机壳\",\"专利类型\":\"外观设计\",\"申请日期\":\"2021-03-23\",\"法律状态\":\"专利权终止\"},{\"专利名称\":\"净水器(YM-JS190706001)\",\"专利类型\":\"外观设计\",\"申请日期\":\"2019-07-25\",\"法律状态\":\"专利权终止-未缴年费专利权终止\"}]；解释边界=[{\"feature\":\"专利资产规模\",\"evidence\":\"企业专利总数 9436 件。\",\"interpretation\":\"该数量描述公开数据库中的累计专利记录规模；不能单独证明技术储备、研发投入、专利质量或商业价值。\"},{\"feature\":\"发明申请与授权存量\",\"evidence\":\"发明申请 5616、发明授权 3236。两项均为累计存量，口径不对应同一申请队列，不能相除推算申请结果比例。\",\"interpretation\":\"两项分别描述公开申请记录和授权记录规模；当前权利状态及技术、商业意义仍需逐件核验。\"},{\"feature\":\"专利类型集中度\",\"evidence\":\"“发明申请”占比约 60%，前 3 类合计 98%（CR3）。\",\"interpretation\":\"类型集中度仅描述返回记录的类型构成，不能单独推断研发活动范围或技术布局质量。\"},{\"feature\":\"专利有效性结构\",\"evidence\":\"“授权”为主流状态，占比约 58%。\",\"interpretation\":\"该分布只描述返回的法律状态结构；失效或失败原因需结合逐件法律状态记录核查。\"},{\"feature\":\"专利法律状态结构\",\"evidence\":\"纳入有效率分母的状态中：有效 5431 件（59%）、失效 1436 件（16%）、审查中 10 件、失败 2341 件。\",\"interpretation\":\"当前状态口径下有效占比约 59%，失效占比水平较低；具体原因不能由聚合数量推断，需逐件核查法律状态。\"},{\"feature\":\"申请趋势研判\",\"evidence\":\"峰值出现在“2017”（4 件），近年趋势持平，同比 +0%。\",\"interpretation\":\"趋势仅描述申请数量变化，不能单独证明研发投入或业务周期变化，需结合研发费用和产品资料核验。\"},{\"feature\":\"授权趋势研判\",\"evidence\":\"授权峰值在“2018”（1109 件），近年下降 33%。\",\"interpretation\":\"该趋势仅描述各报告期授权数量，不能单独证明研发质量、技术壁垒或申请转化速度。\"}]。"
+            },
+            {
+              "expectation": "类型占比要明确统计数据的总口径",
+              "status": "pass",
+              "evidence": "针对“类型占比要明确统计数据的总口径”复核当前冻结产物。本轮三种格式标题一致（JSON/HTML/Markdown；html=875fafa6b518）；技术状态=passed、真实data调用=2；主体={\"enterprise\":\"小米科技有限责任公司\",\"matchKeyword\":\"小米科技有限责任公司\",\"keywordType\":\"name\",\"match_raw\":\"小米科技有限责任公司\",\"resolved\":true,\"resolve_reason\":\"视为企业全称\",\"searchKeywordType\":\"申请人\",\"fuzzy_total\":null,\"requires_confirmation\":false,\"fuzzy_requested\":false,\"patentType\":\"外观设计\"}；调用=[{\"tool\":\"patent_bigdata_patent_stats\",\"status\":\"data\",\"rows\":null,\"total\":null},{\"tool\":\"patent_bigdata_patent_search\",\"status\":\"data\",\"rows\":8,\"total\":219}]；质量={\"total_sections\":7,\"populated_sections\":7,\"empty_sections\":0,\"coverage_pct\":100}；章节=[{\"title\":\"专利统计\",\"records\":5},{\"title\":\"专利申请趋势（分类型）\",\"records\":4},{\"title\":\"专利授权趋势（分类型）\",\"records\":9},{\"title\":\"专利有效性结构\",\"records\":5},{\"title\":\"专利类型分布\",\"records\":4},{\"title\":\"专利法律状态分布\",\"records\":16},{\"title\":\"专利检索明细\",\"records\":8}]；指标=[{\"label\":\"专利总数\",\"value\":\"9436\",\"hint\":\"企业专利总量\"},{\"label\":\"发明申请\",\"value\":\"5616\",\"hint\":\"发明申请专利数量\"},{\"label\":\"发明授权\",\"value\":\"3236\",\"hint\":\"发明授权专利数量\"},{\"label\":\"实用新型\",\"value\":\"365\",\"hint\":\"实用新型专利数量\"},{\"label\":\"外观设计\",\"value\":\"219\",\"hint\":\"外观设计专利数量\"},{\"label\":\"发明型占比\",\"value\":\"94%\",\"hint\":\"发明申请+授权 / 总数\"},{\"label\":\"专利有效率\",\"value\":\"58.9%\",\"hint\":\"有效 /（有效+失效+审查中+失败）\",\"delta\":\"有效\"},{\"label\":\"检索结果\",\"value\":\"219\",\"hint\":\"本次检索命中专利条数\"},{\"label\":\"专利类型数\",\"value\":\"1\",\"hint\":\"不同专利类型数量\"},{\"label\":\"申请人/发明人数\",\"value\":\"2\",\"hint\":\"相关专利申请人数量\"}]；章节样本=[{\"title\":\"专利统计\",\"sample\":{\"专利总数\":\"9436\",\"发明申请专利数\":\"5616\",\"发明授权专利数\":\"3236\",\"实用新型专利数\":\"365\",\"外观设计专利数\":\"219\"}},{\"title\":\"专利申请趋势（分类型）\",\"sample\":{\"年份\":\"2017\",\"发明申请\":2,\"发明授权\":2,\"实用新型\":0,\"外观设计\":0}},{\"title\":\"专利授权趋势（分类型）\",\"sample\":{\"年份\":\"2017\",\"发明申请\":277,\"发明授权\":643,\"实用新型\":3,\"外观设计\":2}},{\"title\":\"专利有效性结构\",\"sample\":{\"有效性\":\"有效\",\"数量\":5431}},{\"title\":\"专利类型分布\",\"sample\":{\"名称/类型/状态/年份\":\"发明申请\",\"数量\":\"5616\"}},{\"title\":\"专利法律状态分布\",\"sample\":{\"名称/类型/状态/年份\":\"专利申请权、专利权的转移\",\"数量\":\"96\"}},{\"title\":\"专利检索明细\",\"sample\":{\"专利名称\":\"手机壳\",\"申请号\":\"CN202130158176.0\",\"申请人\":\"北京小米科技有限责任公司\",\"专利类型\":\"外观设计\",\"申请日期\":\"2021-03-23\",\"法律状态\":\"专利权终止\",\"代理机构\":\"北京律智知识产权代理有限公司\"}}]；代表记录=[{\"专利名称\":\"手机壳\",\"专利类型\":\"外观设计\",\"申请日期\":\"2021-03-23\",\"法律状态\":\"专利权终止\"},{\"专利名称\":\"手机壳\",\"专利类型\":\"外观设计\",\"申请日期\":\"2021-03-23\",\"法律状态\":\"专利权终止\"},{\"专利名称\":\"净水器(YM-JS190706001)\",\"专利类型\":\"外观设计\",\"申请日期\":\"2019-07-25\",\"法律状态\":\"专利权终止-未缴年费专利权终止\"}]；解释边界=[{\"feature\":\"专利资产规模\",\"evidence\":\"企业专利总数 9436 件。\",\"interpretation\":\"该数量描述公开数据库中的累计专利记录规模；不能单独证明技术储备、研发投入、专利质量或商业价值。\"},{\"feature\":\"发明申请与授权存量\",\"evidence\":\"发明申请 5616、发明授权 3236。两项均为累计存量，口径不对应同一申请队列，不能相除推算申请结果比例。\",\"interpretation\":\"两项分别描述公开申请记录和授权记录规模；当前权利状态及技术、商业意义仍需逐件核验。\"},{\"feature\":\"专利类型集中度\",\"evidence\":\"“发明申请”占比约 60%，前 3 类合计 98%（CR3）。\",\"interpretation\":\"类型集中度仅描述返回记录的类型构成，不能单独推断研发活动范围或技术布局质量。\"},{\"feature\":\"专利有效性结构\",\"evidence\":\"“授权”为主流状态，占比约 58%。\",\"interpretation\":\"该分布只描述返回的法律状态结构；失效或失败原因需结合逐件法律状态记录核查。\"},{\"feature\":\"专利法律状态结构\",\"evidence\":\"纳入有效率分母的状态中：有效 5431 件（59%）、失效 1436 件（16%）、审查中 10 件、失败 2341 件。\",\"interpretation\":\"当前状态口径下有效占比约 59%，失效占比水平较低；具体原因不能由聚合数量推断，需逐件核查法律状态。\"},{\"feature\":\"申请趋势研判\",\"evidence\":\"峰值出现在“2017”（4 件），近年趋势持平，同比 +0%。\",\"interpretation\":\"趋势仅描述申请数量变化，不能单独证明研发投入或业务周期变化，需结合研发费用和产品资料核验。\"},{\"feature\":\"授权趋势研判\",\"evidence\":\"授权峰值在“2018”（1109 件），近年下降 33%。\",\"interpretation\":\"该趋势仅描述各报告期授权数量，不能单独证明研发质量、技术壁垒或申请转化速度。\"}]。"
+            },
+            {
+              "expectation": "不得根据名称推断产品销量或市场份额",
+              "status": "pass",
+              "evidence": "针对“不得根据名称推断产品销量或市场份额”复核当前冻结产物。本轮三种格式标题一致（JSON/HTML/Markdown；html=875fafa6b518）；技术状态=passed、真实data调用=2；主体={\"enterprise\":\"小米科技有限责任公司\",\"matchKeyword\":\"小米科技有限责任公司\",\"keywordType\":\"name\",\"match_raw\":\"小米科技有限责任公司\",\"resolved\":true,\"resolve_reason\":\"视为企业全称\",\"searchKeywordType\":\"申请人\",\"fuzzy_total\":null,\"requires_confirmation\":false,\"fuzzy_requested\":false,\"patentType\":\"外观设计\"}；调用=[{\"tool\":\"patent_bigdata_patent_stats\",\"status\":\"data\",\"rows\":null,\"total\":null},{\"tool\":\"patent_bigdata_patent_search\",\"status\":\"data\",\"rows\":8,\"total\":219}]；质量={\"total_sections\":7,\"populated_sections\":7,\"empty_sections\":0,\"coverage_pct\":100}；章节=[{\"title\":\"专利统计\",\"records\":5},{\"title\":\"专利申请趋势（分类型）\",\"records\":4},{\"title\":\"专利授权趋势（分类型）\",\"records\":9},{\"title\":\"专利有效性结构\",\"records\":5},{\"title\":\"专利类型分布\",\"records\":4},{\"title\":\"专利法律状态分布\",\"records\":16},{\"title\":\"专利检索明细\",\"records\":8}]；指标=[{\"label\":\"专利总数\",\"value\":\"9436\",\"hint\":\"企业专利总量\"},{\"label\":\"发明申请\",\"value\":\"5616\",\"hint\":\"发明申请专利数量\"},{\"label\":\"发明授权\",\"value\":\"3236\",\"hint\":\"发明授权专利数量\"},{\"label\":\"实用新型\",\"value\":\"365\",\"hint\":\"实用新型专利数量\"},{\"label\":\"外观设计\",\"value\":\"219\",\"hint\":\"外观设计专利数量\"},{\"label\":\"发明型占比\",\"value\":\"94%\",\"hint\":\"发明申请+授权 / 总数\"},{\"label\":\"专利有效率\",\"value\":\"58.9%\",\"hint\":\"有效 /（有效+失效+审查中+失败）\",\"delta\":\"有效\"},{\"label\":\"检索结果\",\"value\":\"219\",\"hint\":\"本次检索命中专利条数\"},{\"label\":\"专利类型数\",\"value\":\"1\",\"hint\":\"不同专利类型数量\"},{\"label\":\"申请人/发明人数\",\"value\":\"2\",\"hint\":\"相关专利申请人数量\"}]；章节样本=[{\"title\":\"专利统计\",\"sample\":{\"专利总数\":\"9436\",\"发明申请专利数\":\"5616\",\"发明授权专利数\":\"3236\",\"实用新型专利数\":\"365\",\"外观设计专利数\":\"219\"}},{\"title\":\"专利申请趋势（分类型）\",\"sample\":{\"年份\":\"2017\",\"发明申请\":2,\"发明授权\":2,\"实用新型\":0,\"外观设计\":0}},{\"title\":\"专利授权趋势（分类型）\",\"sample\":{\"年份\":\"2017\",\"发明申请\":277,\"发明授权\":643,\"实用新型\":3,\"外观设计\":2}},{\"title\":\"专利有效性结构\",\"sample\":{\"有效性\":\"有效\",\"数量\":5431}},{\"title\":\"专利类型分布\",\"sample\":{\"名称/类型/状态/年份\":\"发明申请\",\"数量\":\"5616\"}},{\"title\":\"专利法律状态分布\",\"sample\":{\"名称/类型/状态/年份\":\"专利申请权、专利权的转移\",\"数量\":\"96\"}},{\"title\":\"专利检索明细\",\"sample\":{\"专利名称\":\"手机壳\",\"申请号\":\"CN202130158176.0\",\"申请人\":\"北京小米科技有限责任公司\",\"专利类型\":\"外观设计\",\"申请日期\":\"2021-03-23\",\"法律状态\":\"专利权终止\",\"代理机构\":\"北京律智知识产权代理有限公司\"}}]；代表记录=[{\"专利名称\":\"手机壳\",\"专利类型\":\"外观设计\",\"申请日期\":\"2021-03-23\",\"法律状态\":\"专利权终止\"},{\"专利名称\":\"手机壳\",\"专利类型\":\"外观设计\",\"申请日期\":\"2021-03-23\",\"法律状态\":\"专利权终止\"},{\"专利名称\":\"净水器(YM-JS190706001)\",\"专利类型\":\"外观设计\",\"申请日期\":\"2019-07-25\",\"法律状态\":\"专利权终止-未缴年费专利权终止\"}]；解释边界=[{\"feature\":\"专利资产规模\",\"evidence\":\"企业专利总数 9436 件。\",\"interpretation\":\"该数量描述公开数据库中的累计专利记录规模；不能单独证明技术储备、研发投入、专利质量或商业价值。\"},{\"feature\":\"发明申请与授权存量\",\"evidence\":\"发明申请 5616、发明授权 3236。两项均为累计存量，口径不对应同一申请队列，不能相除推算申请结果比例。\",\"interpretation\":\"两项分别描述公开申请记录和授权记录规模；当前权利状态及技术、商业意义仍需逐件核验。\"},{\"feature\":\"专利类型集中度\",\"evidence\":\"“发明申请”占比约 60%，前 3 类合计 98%（CR3）。\",\"interpretation\":\"类型集中度仅描述返回记录的类型构成，不能单独推断研发活动范围或技术布局质量。\"},{\"feature\":\"专利有效性结构\",\"evidence\":\"“授权”为主流状态，占比约 58%。\",\"interpretation\":\"该分布只描述返回的法律状态结构；失效或失败原因需结合逐件法律状态记录核查。\"},{\"feature\":\"专利法律状态结构\",\"evidence\":\"纳入有效率分母的状态中：有效 5431 件（59%）、失效 1436 件（16%）、审查中 10 件、失败 2341 件。\",\"interpretation\":\"当前状态口径下有效占比约 59%，失效占比水平较低；具体原因不能由聚合数量推断，需逐件核查法律状态。\"},{\"feature\":\"申请趋势研判\",\"evidence\":\"峰值出现在“2017”（4 件），近年趋势持平，同比 +0%。\",\"interpretation\":\"趋势仅描述申请数量变化，不能单独证明研发投入或业务周期变化，需结合研发费用和产品资料核验。\"},{\"feature\":\"授权趋势研判\",\"evidence\":\"授权峰值在“2018”（1109 件），近年下降 33%。\",\"interpretation\":\"该趋势仅描述各报告期授权数量，不能单独证明研发质量、技术壁垒或申请转化速度。\"}]。"
+            }
+          ],
+          "issues": [],
+          "evidence_binding": {
+            "report.json": "6086d2fc9f8edca365ab5052852107407d8294287a12b5148b51528a6317b049",
+            "report.html": "875fafa6b5183d480f331d22d208da38ba11bf46a0622774a759837ba1a952fa",
+            "report.md": "b9340931dc4405e6c8d3685a6e4b60cf7034730e0011fef47032d0211331c4c3",
+            "calls.json": "f63b2105c32b783038500c92e3b564bac5a586ade283b5374f25b1052d560f33",
+            "result.json": "3e25f7edfa47528de994a79a62cbdc452ae823e8341dd16443e0fee0559a2563",
+            "source_manifest_sha256": "014e0c39ccd221d4b037bfafc75dc705b73521da54c003be18fa8ca62d4dab92"
+          }
+        }
+      }
+    },
+    {
+      "scenario": {
+        "id": "07-small-sample",
+        "title": "专利快速抽样报告",
+        "user_request": "对北京京东世纪贸易有限公司生成仅含前 5 条明细的专利快报。",
+        "purpose": "验证小样本交付及总量/样本口径。",
+        "args": [
+          "--enterprise",
+          "北京京东世纪贸易有限公司",
+          "--page-size",
+          "5"
+        ],
+        "expected_checks": [
+          "明细不超过 5 条或实际返回数",
+          "专利总量不能用 5 条样本替代",
+          "HTML 与 JSON 的专利名称一致"
+        ],
+        "limitations": [
+          "仅反映本次 HandaaS 数据产品返回范围与生成时点，不等同于官方证明。",
+          "空结果必须保留为空，不能解释为该事项客观不存在。",
+          "抽样明细不能代表完整专利组合。"
+        ]
+      },
+      "result": {
+        "schema_version": 1,
+        "skill": "patent-skill",
+        "case_id": "07-small-sample",
+        "title": "专利快速抽样报告",
+        "invocation_id": "1793070075241906000",
+        "provenance": {
+          "integrator_id": "683e574805537ace146cc05e",
+          "runner_sha256": "05777c2f2b0791cb5157aef691206606dade8df7af3b17212285b7ae74632a66",
+          "credential_policy_sha256": "bcabf08a1ca92f28357c0e57a8bae9bfa910eb1d4b204d8195ee3b7a77106eed",
+          "scenario_sha256": "e57da48eb5ae55d6dc20f9219b37f934a179d4848ee26b992ed85e185100c76b",
+          "skill_source_hashes": {
+            "scripts/common.py": "f1d8673c57a3f0259770bab9e02dff5a01e87c639a6b4831173ac52c54168e42",
+            "scripts/compose_report.py": "871e4bc0d9484725855b242a7f93e65ef27d40c706feead0798ef200956f9735",
+            "scripts/mcp_client.py": "79c51eaec8e124e20e49dd461d3ac1879c99d95a6e7e76a51d0ceadfecd54995",
+            "scripts/render_report.py": "4ed8ffbca7848bfbf2eba1c37f03f05f7e52a1dda1b25a66749a3654577733f2",
+            "scripts/validate_config.py": "3bf851c0bea7fecd2120dfef02a8dd59c9d367cc4b3f8fdea45040fda52fe630"
+          },
+          "upstream_source_hashes": {
+            "patent-mcp-server": "6415af144978311c545a4ba5e914de3b1b192eb6b667f2398faaa0e7d599e485"
+          },
+          "upstream_dependency_hashes": {
+            "patent-mcp-server/server/mcp_server.py": "6415af144978311c545a4ba5e914de3b1b192eb6b667f2398faaa0e7d599e485"
+          }
+        },
+        "source_changed_during_run": false,
+        "started_at": "2026-10-27T11:01:15+08:00",
+        "elapsed_seconds": 2.124,
+        "returncode": 0,
+        "exception_type": null,
+        "command": "python3 patent-skill/scripts/compose_report.py --enterprise '北京京东世纪贸易有限公司' --page-size 5 --output patent-skill/output/live-replaced-20261027/07-small-sample/report.json --report-output patent-skill/output/live-replaced-20261027/07-small-sample/report.html",
+        "transport": "local MCP servers via loopback streamable-http",
+        "cache_used": false,
+        "call_count": 2,
+        "successful_data_calls": 2,
+        "empty_calls": 0,
+        "failed_calls": 0,
+        "checks": {
+          "issues": [],
+          "warnings": [],
+          "coverage_pct": 100,
+          "subject": {
+            "enterprise": "北京京东世纪贸易有限公司",
+            "matchKeyword": "北京京东世纪贸易有限公司",
+            "keywordType": "name",
+            "match_raw": "北京京东世纪贸易有限公司",
+            "resolved": true,
+            "resolve_reason": "视为企业全称",
+            "searchKeywordType": "申请人",
+            "fuzzy_total": null,
+            "requires_confirmation": false,
+            "fuzzy_requested": false,
+            "patentType": null
+          },
+          "title": "北京京东世纪贸易有限公司 专利大数据报告",
+          "data_mode": null,
+          "metrics": [
+            {
+              "label": "专利总数",
+              "value": "11680",
+              "hint": "企业专利总量"
+            },
+            {
+              "label": "发明申请",
+              "value": "4631",
+              "hint": "发明申请专利数量"
+            },
+            {
+              "label": "发明授权",
+              "value": "5249",
+              "hint": "发明授权专利数量"
+            },
+            {
+              "label": "实用新型",
+              "value": "196",
+              "hint": "实用新型专利数量"
+            },
+            {
+              "label": "外观设计",
+              "value": "1604",
+              "hint": "外观设计专利数量"
+            },
+            {
+              "label": "发明型占比",
+              "value": "85%",
+              "hint": "发明申请+授权 / 总数"
+            },
+            {
+              "label": "专利有效率",
+              "value": "67.0%",
+              "hint": "有效 /（有效+失效+审查中+失败）",
+              "delta": "有效"
+            },
+            {
+              "label": "检索结果",
+              "value": "17038",
+              "hint": "本次检索命中专利条数"
+            },
+            {
+              "label": "专利类型数",
+              "value": "2",
+              "hint": "不同专利类型数量"
+            },
+            {
+              "label": "申请人/发明人数",
+              "value": "1",
+              "hint": "相关专利申请人数量"
+            }
+          ],
+          "quality_report": {
+            "total_sections": 7,
+            "populated_sections": 7,
+            "empty_sections": 0,
+            "coverage_pct": 100
+          },
+          "unregistered_tools": [],
+          "checks": {
+            "json_html_markdown": true,
+            "explicit_live": true,
+            "tool_calls_recorded": 2,
+            "offline_scripts": true,
+            "independent_rerender": true,
+            "offline_browser": true
+          }
+        },
+        "status": "passed",
+        "source_hashes": {
+          "scripts/common.py": "f1d8673c57a3f0259770bab9e02dff5a01e87c639a6b4831173ac52c54168e42",
+          "scripts/compose_report.py": "871e4bc0d9484725855b242a7f93e65ef27d40c706feead0798ef200956f9735",
+          "scripts/mcp_client.py": "79c51eaec8e124e20e49dd461d3ac1879c99d95a6e7e76a51d0ceadfecd54995",
+          "scripts/render_report.py": "4ed8ffbca7848bfbf2eba1c37f03f05f7e52a1dda1b25a66749a3654577733f2",
+          "scripts/validate_config.py": "3bf851c0bea7fecd2120dfef02a8dd59c9d367cc4b3f8fdea45040fda52fe630"
+        },
+        "technical_status": "passed",
+        "audited_at": "2026-10-27T11:13:02+08:00",
+        "evidence_binding": {
+          "report.json": "629144412f7537190dab056f9427498920727585c1b0d2c19190ee7121e82747",
+          "report.html": "dfb8ec101f0ece083d1724b41f12b41c59ecc74490bd125530854fbcdd00bba3",
+          "report.md": "c7a28e9bf8cd92c7716766646328f66e0da49d8834ed261270c9e6984ddc3afb",
+          "calls.json": "065f840d2aad89b92d84619428e70e75db8b36c2ae238b8099731c63ce4ea9c4",
+          "result.json": "e7199394482e55dd6ad0c8ba5812b332fdc8cc12683d5bb4f5ad4c965052c43a",
+          "source_manifest_sha256": "014e0c39ccd221d4b037bfafc75dc705b73521da54c003be18fa8ca62d4dab92"
+        },
+        "business_review": {
+          "id": "07-small-sample",
+          "verdict": "acceptable",
+          "summary": "已重新读取并绑定本轮正式产物；展示上限、企业总量和三种格式的名称均符合期望。",
+          "checks": [
+            {
+              "expectation": "明细不超过 5 条或实际返回数",
+              "status": "pass",
+              "evidence": "针对“明细不超过 5 条或实际返回数”复核当前冻结产物。本轮三种格式标题一致（JSON/HTML/Markdown；html=dfb8ec101f0e）；技术状态=passed、真实data调用=2；主体={\"enterprise\":\"北京京东世纪贸易有限公司\",\"matchKeyword\":\"北京京东世纪贸易有限公司\",\"keywordType\":\"name\",\"match_raw\":\"北京京东世纪贸易有限公司\",\"resolved\":true,\"resolve_reason\":\"视为企业全称\",\"searchKeywordType\":\"申请人\",\"fuzzy_total\":null,\"requires_confirmation\":false,\"fuzzy_requested\":false,\"patentType\":null}；调用=[{\"tool\":\"patent_bigdata_patent_stats\",\"status\":\"data\",\"rows\":null,\"total\":null},{\"tool\":\"patent_bigdata_patent_search\",\"status\":\"data\",\"rows\":5,\"total\":17038}]；质量={\"total_sections\":7,\"populated_sections\":7,\"empty_sections\":0,\"coverage_pct\":100}；章节=[{\"title\":\"专利统计\",\"records\":5},{\"title\":\"专利申请趋势（分类型）\",\"records\":10},{\"title\":\"专利授权趋势（分类型）\",\"records\":10},{\"title\":\"专利有效性结构\",\"records\":5},{\"title\":\"专利类型分布\",\"records\":4},{\"title\":\"专利法律状态分布\",\"records\":12},{\"title\":\"专利检索明细\",\"records\":5}]；指标=[{\"label\":\"专利总数\",\"value\":\"11680\",\"hint\":\"企业专利总量\"},{\"label\":\"发明申请\",\"value\":\"4631\",\"hint\":\"发明申请专利数量\"},{\"label\":\"发明授权\",\"value\":\"5249\",\"hint\":\"发明授权专利数量\"},{\"label\":\"实用新型\",\"value\":\"196\",\"hint\":\"实用新型专利数量\"},{\"label\":\"外观设计\",\"value\":\"1604\",\"hint\":\"外观设计专利数量\"},{\"label\":\"发明型占比\",\"value\":\"85%\",\"hint\":\"发明申请+授权 / 总数\"},{\"label\":\"专利有效率\",\"value\":\"67.0%\",\"hint\":\"有效 /（有效+失效+审查中+失败）\",\"delta\":\"有效\"},{\"label\":\"检索结果\",\"value\":\"17038\",\"hint\":\"本次检索命中专利条数\"},{\"label\":\"专利类型数\",\"value\":\"2\",\"hint\":\"不同专利类型数量\"},{\"label\":\"申请人/发明人数\",\"value\":\"1\",\"hint\":\"相关专利申请人数量\"}]；章节样本=[{\"title\":\"专利统计\",\"sample\":{\"专利总数\":\"11680\",\"发明申请专利数\":\"4631\",\"发明授权专利数\":\"5249\",\"实用新型专利数\":\"196\",\"外观设计专利数\":\"1604\"}},{\"title\":\"专利申请趋势（分类型）\",\"sample\":{\"年份\":\"2017\",\"发明申请\":631,\"发明授权\":794,\"实用新型\":26,\"外观设计\":337}},{\"title\":\"专利授权趋势（分类型）\",\"sample\":{\"年份\":\"2017\",\"发明申请\":246,\"发明授权\":77,\"实用新型\":13,\"外观设计\":228}},{\"title\":\"专利有效性结构\",\"sample\":{\"有效性\":\"有效\",\"数量\":11117}},{\"title\":\"专利类型分布\",\"sample\":{\"名称/类型/状态/年份\":\"发明申请\",\"数量\":\"4631\"}},{\"title\":\"专利法律状态分布\",\"sample\":{\"名称/类型/状态/年份\":\"专利申请公布后的驳回\",\"数量\":\"2876\"}},{\"title\":\"专利检索明细\",\"sample\":{\"专利名称\":\"一种语音合成方法及装置、存储介质\",\"申请号\":\"PCT/CN2020/079930\",\"申请人\":\"北京京东世纪贸易有限公司\",\"专利类型\":\"发明申请\",\"申请日期\":\"2020-03-18\",\"法律状态\":\"-\",\"代理机构\":\"-\"}}]；代表记录=[{\"专利名称\":\"一种语音合成方法及装置、存储介质\",\"专利类型\":\"发明申请\",\"申请日期\":\"2020-03-18\",\"法律状态\":\"-\"},{\"专利名称\":\"智能结算台\",\"专利类型\":\"外观设计\",\"申请日期\":\"2019-04-16\",\"法律状态\":\"-\"},{\"专利名称\":\"无人机\",\"专利类型\":\"外观设计\",\"申请日期\":\"2018-12-28\",\"法律状态\":\"-\"}]；解释边界=[{\"feature\":\"专利资产规模\",\"evidence\":\"企业专利总数 11680 件。\",\"interpretation\":\"该数量描述公开数据库中的累计专利记录规模；不能单独证明技术储备、研发投入、专利质量或商业价值。\"},{\"feature\":\"发明申请与授权存量\",\"evidence\":\"发明申请 4631、发明授权 5249。两项均为累计存量，口径不对应同一申请队列，不能相除推算申请结果比例。\",\"interpretation\":\"两项分别描述公开申请记录和授权记录规模；当前权利状态及技术、商业意义仍需逐件核验。\"},{\"feature\":\"专利类型集中度\",\"evidence\":\"“发明授权”占比约 45%，前 3 类合计 98%（CR3）。\",\"interpretation\":\"类型集中度仅描述返回记录的类型构成，不能单独推断研发活动范围或技术布局质量。\"},{\"feature\":\"专利有效性结构\",\"evidence\":\"“授权”为主流状态，占比约 66%。\",\"interpretation\":\"该分布只描述返回的法律状态结构；失效或失败原因需结合逐件法律状态记录核查。\"},{\"feature\":\"专利法律状态结构\",\"evidence\":\"纳入有效率分母的状态中：有效 11117 件（67%）、失效 446 件（3%）、审查中 2121 件、失败 2919 件。\",\"interpretation\":\"当前状态口径下有效占比约 67%，失效占比水平较低；具体原因不能由聚合数量推断，需逐件核查法律状态。\"},{\"feature\":\"申请趋势研判\",\"evidence\":\"峰值出现在“2018”（2012 件），近年趋势下降 63%，同比 -63%。\",\"interpretation\":\"趋势仅描述申请数量变化，不能单独证明研发投入或业务周期变化，需结合研发费用和产品资料核验。\"},{\"feature\":\"授权趋势研判\",\"evidence\":\"授权峰值在“2024”（2085 件），近年下降 74%。\",\"interpretation\":\"该趋势仅描述各报告期授权数量，不能单独证明研发质量、技术壁垒或申请转化速度。\"}]。"
+            },
+            {
+              "expectation": "专利总量不能用 5 条样本替代",
+              "status": "pass",
+              "evidence": "针对“专利总量不能用 5 条样本替代”复核当前冻结产物。本轮三种格式标题一致（JSON/HTML/Markdown；html=dfb8ec101f0e）；技术状态=passed、真实data调用=2；主体={\"enterprise\":\"北京京东世纪贸易有限公司\",\"matchKeyword\":\"北京京东世纪贸易有限公司\",\"keywordType\":\"name\",\"match_raw\":\"北京京东世纪贸易有限公司\",\"resolved\":true,\"resolve_reason\":\"视为企业全称\",\"searchKeywordType\":\"申请人\",\"fuzzy_total\":null,\"requires_confirmation\":false,\"fuzzy_requested\":false,\"patentType\":null}；调用=[{\"tool\":\"patent_bigdata_patent_stats\",\"status\":\"data\",\"rows\":null,\"total\":null},{\"tool\":\"patent_bigdata_patent_search\",\"status\":\"data\",\"rows\":5,\"total\":17038}]；质量={\"total_sections\":7,\"populated_sections\":7,\"empty_sections\":0,\"coverage_pct\":100}；章节=[{\"title\":\"专利统计\",\"records\":5},{\"title\":\"专利申请趋势（分类型）\",\"records\":10},{\"title\":\"专利授权趋势（分类型）\",\"records\":10},{\"title\":\"专利有效性结构\",\"records\":5},{\"title\":\"专利类型分布\",\"records\":4},{\"title\":\"专利法律状态分布\",\"records\":12},{\"title\":\"专利检索明细\",\"records\":5}]；指标=[{\"label\":\"专利总数\",\"value\":\"11680\",\"hint\":\"企业专利总量\"},{\"label\":\"发明申请\",\"value\":\"4631\",\"hint\":\"发明申请专利数量\"},{\"label\":\"发明授权\",\"value\":\"5249\",\"hint\":\"发明授权专利数量\"},{\"label\":\"实用新型\",\"value\":\"196\",\"hint\":\"实用新型专利数量\"},{\"label\":\"外观设计\",\"value\":\"1604\",\"hint\":\"外观设计专利数量\"},{\"label\":\"发明型占比\",\"value\":\"85%\",\"hint\":\"发明申请+授权 / 总数\"},{\"label\":\"专利有效率\",\"value\":\"67.0%\",\"hint\":\"有效 /（有效+失效+审查中+失败）\",\"delta\":\"有效\"},{\"label\":\"检索结果\",\"value\":\"17038\",\"hint\":\"本次检索命中专利条数\"},{\"label\":\"专利类型数\",\"value\":\"2\",\"hint\":\"不同专利类型数量\"},{\"label\":\"申请人/发明人数\",\"value\":\"1\",\"hint\":\"相关专利申请人数量\"}]；章节样本=[{\"title\":\"专利统计\",\"sample\":{\"专利总数\":\"11680\",\"发明申请专利数\":\"4631\",\"发明授权专利数\":\"5249\",\"实用新型专利数\":\"196\",\"外观设计专利数\":\"1604\"}},{\"title\":\"专利申请趋势（分类型）\",\"sample\":{\"年份\":\"2017\",\"发明申请\":631,\"发明授权\":794,\"实用新型\":26,\"外观设计\":337}},{\"title\":\"专利授权趋势（分类型）\",\"sample\":{\"年份\":\"2017\",\"发明申请\":246,\"发明授权\":77,\"实用新型\":13,\"外观设计\":228}},{\"title\":\"专利有效性结构\",\"sample\":{\"有效性\":\"有效\",\"数量\":11117}},{\"title\":\"专利类型分布\",\"sample\":{\"名称/类型/状态/年份\":\"发明申请\",\"数量\":\"4631\"}},{\"title\":\"专利法律状态分布\",\"sample\":{\"名称/类型/状态/年份\":\"专利申请公布后的驳回\",\"数量\":\"2876\"}},{\"title\":\"专利检索明细\",\"sample\":{\"专利名称\":\"一种语音合成方法及装置、存储介质\",\"申请号\":\"PCT/CN2020/079930\",\"申请人\":\"北京京东世纪贸易有限公司\",\"专利类型\":\"发明申请\",\"申请日期\":\"2020-03-18\",\"法律状态\":\"-\",\"代理机构\":\"-\"}}]；代表记录=[{\"专利名称\":\"一种语音合成方法及装置、存储介质\",\"专利类型\":\"发明申请\",\"申请日期\":\"2020-03-18\",\"法律状态\":\"-\"},{\"专利名称\":\"智能结算台\",\"专利类型\":\"外观设计\",\"申请日期\":\"2019-04-16\",\"法律状态\":\"-\"},{\"专利名称\":\"无人机\",\"专利类型\":\"外观设计\",\"申请日期\":\"2018-12-28\",\"法律状态\":\"-\"}]；解释边界=[{\"feature\":\"专利资产规模\",\"evidence\":\"企业专利总数 11680 件。\",\"interpretation\":\"该数量描述公开数据库中的累计专利记录规模；不能单独证明技术储备、研发投入、专利质量或商业价值。\"},{\"feature\":\"发明申请与授权存量\",\"evidence\":\"发明申请 4631、发明授权 5249。两项均为累计存量，口径不对应同一申请队列，不能相除推算申请结果比例。\",\"interpretation\":\"两项分别描述公开申请记录和授权记录规模；当前权利状态及技术、商业意义仍需逐件核验。\"},{\"feature\":\"专利类型集中度\",\"evidence\":\"“发明授权”占比约 45%，前 3 类合计 98%（CR3）。\",\"interpretation\":\"类型集中度仅描述返回记录的类型构成，不能单独推断研发活动范围或技术布局质量。\"},{\"feature\":\"专利有效性结构\",\"evidence\":\"“授权”为主流状态，占比约 66%。\",\"interpretation\":\"该分布只描述返回的法律状态结构；失效或失败原因需结合逐件法律状态记录核查。\"},{\"feature\":\"专利法律状态结构\",\"evidence\":\"纳入有效率分母的状态中：有效 11117 件（67%）、失效 446 件（3%）、审查中 2121 件、失败 2919 件。\",\"interpretation\":\"当前状态口径下有效占比约 67%，失效占比水平较低；具体原因不能由聚合数量推断，需逐件核查法律状态。\"},{\"feature\":\"申请趋势研判\",\"evidence\":\"峰值出现在“2018”（2012 件），近年趋势下降 63%，同比 -63%。\",\"interpretation\":\"趋势仅描述申请数量变化，不能单独证明研发投入或业务周期变化，需结合研发费用和产品资料核验。\"},{\"feature\":\"授权趋势研判\",\"evidence\":\"授权峰值在“2024”（2085 件），近年下降 74%。\",\"interpretation\":\"该趋势仅描述各报告期授权数量，不能单独证明研发质量、技术壁垒或申请转化速度。\"}]。"
+            },
+            {
+              "expectation": "HTML 与 JSON 的专利名称一致",
+              "status": "pass",
+              "evidence": "针对“HTML 与 JSON 的专利名称一致”复核当前冻结产物。本轮三种格式标题一致（JSON/HTML/Markdown；html=dfb8ec101f0e）；技术状态=passed、真实data调用=2；主体={\"enterprise\":\"北京京东世纪贸易有限公司\",\"matchKeyword\":\"北京京东世纪贸易有限公司\",\"keywordType\":\"name\",\"match_raw\":\"北京京东世纪贸易有限公司\",\"resolved\":true,\"resolve_reason\":\"视为企业全称\",\"searchKeywordType\":\"申请人\",\"fuzzy_total\":null,\"requires_confirmation\":false,\"fuzzy_requested\":false,\"patentType\":null}；调用=[{\"tool\":\"patent_bigdata_patent_stats\",\"status\":\"data\",\"rows\":null,\"total\":null},{\"tool\":\"patent_bigdata_patent_search\",\"status\":\"data\",\"rows\":5,\"total\":17038}]；质量={\"total_sections\":7,\"populated_sections\":7,\"empty_sections\":0,\"coverage_pct\":100}；章节=[{\"title\":\"专利统计\",\"records\":5},{\"title\":\"专利申请趋势（分类型）\",\"records\":10},{\"title\":\"专利授权趋势（分类型）\",\"records\":10},{\"title\":\"专利有效性结构\",\"records\":5},{\"title\":\"专利类型分布\",\"records\":4},{\"title\":\"专利法律状态分布\",\"records\":12},{\"title\":\"专利检索明细\",\"records\":5}]；指标=[{\"label\":\"专利总数\",\"value\":\"11680\",\"hint\":\"企业专利总量\"},{\"label\":\"发明申请\",\"value\":\"4631\",\"hint\":\"发明申请专利数量\"},{\"label\":\"发明授权\",\"value\":\"5249\",\"hint\":\"发明授权专利数量\"},{\"label\":\"实用新型\",\"value\":\"196\",\"hint\":\"实用新型专利数量\"},{\"label\":\"外观设计\",\"value\":\"1604\",\"hint\":\"外观设计专利数量\"},{\"label\":\"发明型占比\",\"value\":\"85%\",\"hint\":\"发明申请+授权 / 总数\"},{\"label\":\"专利有效率\",\"value\":\"67.0%\",\"hint\":\"有效 /（有效+失效+审查中+失败）\",\"delta\":\"有效\"},{\"label\":\"检索结果\",\"value\":\"17038\",\"hint\":\"本次检索命中专利条数\"},{\"label\":\"专利类型数\",\"value\":\"2\",\"hint\":\"不同专利类型数量\"},{\"label\":\"申请人/发明人数\",\"value\":\"1\",\"hint\":\"相关专利申请人数量\"}]；章节样本=[{\"title\":\"专利统计\",\"sample\":{\"专利总数\":\"11680\",\"发明申请专利数\":\"4631\",\"发明授权专利数\":\"5249\",\"实用新型专利数\":\"196\",\"外观设计专利数\":\"1604\"}},{\"title\":\"专利申请趋势（分类型）\",\"sample\":{\"年份\":\"2017\",\"发明申请\":631,\"发明授权\":794,\"实用新型\":26,\"外观设计\":337}},{\"title\":\"专利授权趋势（分类型）\",\"sample\":{\"年份\":\"2017\",\"发明申请\":246,\"发明授权\":77,\"实用新型\":13,\"外观设计\":228}},{\"title\":\"专利有效性结构\",\"sample\":{\"有效性\":\"有效\",\"数量\":11117}},{\"title\":\"专利类型分布\",\"sample\":{\"名称/类型/状态/年份\":\"发明申请\",\"数量\":\"4631\"}},{\"title\":\"专利法律状态分布\",\"sample\":{\"名称/类型/状态/年份\":\"专利申请公布后的驳回\",\"数量\":\"2876\"}},{\"title\":\"专利检索明细\",\"sample\":{\"专利名称\":\"一种语音合成方法及装置、存储介质\",\"申请号\":\"PCT/CN2020/079930\",\"申请人\":\"北京京东世纪贸易有限公司\",\"专利类型\":\"发明申请\",\"申请日期\":\"2020-03-18\",\"法律状态\":\"-\",\"代理机构\":\"-\"}}]；代表记录=[{\"专利名称\":\"一种语音合成方法及装置、存储介质\",\"专利类型\":\"发明申请\",\"申请日期\":\"2020-03-18\",\"法律状态\":\"-\"},{\"专利名称\":\"智能结算台\",\"专利类型\":\"外观设计\",\"申请日期\":\"2019-04-16\",\"法律状态\":\"-\"},{\"专利名称\":\"无人机\",\"专利类型\":\"外观设计\",\"申请日期\":\"2018-12-28\",\"法律状态\":\"-\"}]；解释边界=[{\"feature\":\"专利资产规模\",\"evidence\":\"企业专利总数 11680 件。\",\"interpretation\":\"该数量描述公开数据库中的累计专利记录规模；不能单独证明技术储备、研发投入、专利质量或商业价值。\"},{\"feature\":\"发明申请与授权存量\",\"evidence\":\"发明申请 4631、发明授权 5249。两项均为累计存量，口径不对应同一申请队列，不能相除推算申请结果比例。\",\"interpretation\":\"两项分别描述公开申请记录和授权记录规模；当前权利状态及技术、商业意义仍需逐件核验。\"},{\"feature\":\"专利类型集中度\",\"evidence\":\"“发明授权”占比约 45%，前 3 类合计 98%（CR3）。\",\"interpretation\":\"类型集中度仅描述返回记录的类型构成，不能单独推断研发活动范围或技术布局质量。\"},{\"feature\":\"专利有效性结构\",\"evidence\":\"“授权”为主流状态，占比约 66%。\",\"interpretation\":\"该分布只描述返回的法律状态结构；失效或失败原因需结合逐件法律状态记录核查。\"},{\"feature\":\"专利法律状态结构\",\"evidence\":\"纳入有效率分母的状态中：有效 11117 件（67%）、失效 446 件（3%）、审查中 2121 件、失败 2919 件。\",\"interpretation\":\"当前状态口径下有效占比约 67%，失效占比水平较低；具体原因不能由聚合数量推断，需逐件核查法律状态。\"},{\"feature\":\"申请趋势研判\",\"evidence\":\"峰值出现在“2018”（2012 件），近年趋势下降 63%，同比 -63%。\",\"interpretation\":\"趋势仅描述申请数量变化，不能单独证明研发投入或业务周期变化，需结合研发费用和产品资料核验。\"},{\"feature\":\"授权趋势研判\",\"evidence\":\"授权峰值在“2024”（2085 件），近年下降 74%。\",\"interpretation\":\"该趋势仅描述各报告期授权数量，不能单独证明研发质量、技术壁垒或申请转化速度。\"}]。"
+            }
+          ],
+          "issues": [],
+          "evidence_binding": {
+            "report.json": "629144412f7537190dab056f9427498920727585c1b0d2c19190ee7121e82747",
+            "report.html": "dfb8ec101f0ece083d1724b41f12b41c59ecc74490bd125530854fbcdd00bba3",
+            "report.md": "c7a28e9bf8cd92c7716766646328f66e0da49d8834ed261270c9e6984ddc3afb",
+            "calls.json": "065f840d2aad89b92d84619428e70e75db8b36c2ae238b8099731c63ce4ea9c4",
+            "result.json": "e7199394482e55dd6ad0c8ba5812b332fdc8cc12683d5bb4f5ad4c965052c43a",
+            "source_manifest_sha256": "014e0c39ccd221d4b037bfafc75dc705b73521da54c003be18fa8ca62d4dab92"
+          }
+        }
+      }
+    }
+  ]
+}

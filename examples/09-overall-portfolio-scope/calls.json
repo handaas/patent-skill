@@ -1,0 +1,250 @@
+[
+  {
+    "tool": "patent_bigdata_patent_stats",
+    "domain": null,
+    "arguments": {
+      "matchKeyword": "华为技术有限公司",
+      "keywordType": "name"
+    },
+    "invocation_id": "1793070069852305000",
+    "elapsed_seconds": 0.608,
+    "status": "data",
+    "error_category": null,
+    "result_type": "dict",
+    "top_level_fields": [
+      "patentDivAppLegalStat",
+      "patentTypeAppTimeStat",
+      "patentTypePubTimeStat",
+      "patentTypeStat"
+    ],
+    "row_count": null,
+    "reported_total": null,
+    "numeric_evidence": [
+      {
+        "path": "patentDivAppLegalStat[0].patentCount",
+        "value": 1429
+      },
+      {
+        "path": "patentDivAppLegalStat[1].patentCount",
+        "value": 217
+      },
+      {
+        "path": "patentDivAppLegalStat[2].patentCount",
+        "value": 13
+      },
+      {
+        "path": "patentDivAppLegalStat[3].patentCount",
+        "value": 2
+      },
+      {
+        "path": "patentDivAppLegalStat[4].patentCount",
+        "value": 11772
+      },
+      {
+        "path": "patentTypeAppTimeStat[0].appearanceDesignPatentCount",
+        "value": 102
+      },
+      {
+        "path": "patentTypeAppTimeStat[0].inventionAppPatentCount",
+        "value": 1640
+      },
+      {
+        "path": "patentTypeAppTimeStat[0].inventionLicPatentCount",
+        "value": 5202
+      },
+      {
+        "path": "patentTypeAppTimeStat[0].utilityModelPatentCount",
+        "value": 53
+      },
+      {
+        "path": "patentTypeAppTimeStat[1].appearanceDesignPatentCount",
+        "value": 133
+      },
+      {
+        "path": "patentTypeAppTimeStat[1].inventionAppPatentCount",
+        "value": 1773
+      },
+      {
+        "path": "patentTypeAppTimeStat[1].inventionLicPatentCount",
+        "value": 4633
+      },
+      {
+        "path": "patentTypeAppTimeStat[1].utilityModelPatentCount",
+        "value": 126
+      },
+      {
+        "path": "patentTypeAppTimeStat[2].appearanceDesignPatentCount",
+        "value": 282
+      },
+      {
+        "path": "patentTypeAppTimeStat[2].inventionAppPatentCount",
+        "value": 2283
+      },
+      {
+        "path": "patentTypeAppTimeStat[2].inventionLicPatentCount",
+        "value": 5746
+      },
+      {
+        "path": "patentTypeAppTimeStat[2].utilityModelPatentCount",
+        "value": 270
+      },
+      {
+        "path": "patentTypeAppTimeStat[3].appearanceDesignPatentCount",
+        "value": 321
+      },
+      {
+        "path": "patentTypeAppTimeStat[3].inventionAppPatentCount",
+        "value": 4142
+      },
+      {
+        "path": "patentTypeAppTimeStat[3].inventionLicPatentCount",
+        "value": 6428
+      },
+      {
+        "path": "patentTypeAppTimeStat[3].utilityModelPatentCount",
+        "value": 252
+      },
+      {
+        "path": "patentTypeAppTimeStat[4].appearanceDesignPatentCount",
+        "value": 333
+      },
+      {
+        "path": "patentTypeAppTimeStat[4].inventionAppPatentCount",
+        "value": 6290
+      },
+      {
+        "path": "patentTypeAppTimeStat[4].inventionLicPatentCount",
+        "value": 3310
+      },
+      {
+        "path": "patentTypeAppTimeStat[4].utilityModelPatentCount",
+        "value": 206
+      },
+      {
+        "path": "patentTypePubTimeStat[0].appearanceDesignPatentCount",
+        "value": 137
+      },
+      {
+        "path": "patentTypePubTimeStat[0].inventionAppPatentCount",
+        "value": 727
+      },
+      {
+        "path": "patentTypePubTimeStat[0].inventionLicPatentCount",
+        "value": 2681
+      },
+      {
+        "path": "patentTypePubTimeStat[0].utilityModelPatentCount",
+        "value": 56
+      },
+      {
+        "path": "patentTypePubTimeStat[1].appearanceDesignPatentCount",
+        "value": 80
+      },
+      {
+        "path": "patentTypePubTimeStat[1].inventionAppPatentCount",
+        "value": 1682
+      },
+      {
+        "path": "patentTypePubTimeStat[1].inventionLicPatentCount",
+        "value": 2908
+      },
+      {
+        "path": "patentTypePubTimeStat[1].utilityModelPatentCount",
+        "value": 61
+      },
+      {
+        "path": "patentTypePubTimeStat[2].appearanceDesignPatentCount",
+        "value": 137
+      },
+      {
+        "path": "patentTypePubTimeStat[2].inventionAppPatentCount",
+        "value": 1813
+      },
+      {
+        "path": "patentTypePubTimeStat[2].inventionLicPatentCount",
+        "value": 4028
+      },
+      {
+        "path": "patentTypePubTimeStat[2].utilityModelPatentCount",
+        "value": 140
+      },
+      {
+        "path": "patentTypePubTimeStat[3].appearanceDesignPatentCount",
+        "value": 301
+      },
+      {
+        "path": "patentTypePubTimeStat[3].inventionAppPatentCount",
+        "value": 1049
+      },
+      {
+        "path": "patentTypePubTimeStat[3].inventionLicPatentCount",
+        "value": 5652
+      },
+      {
+        "path": "patentTypePubTimeStat[3].utilityModelPatentCount",
+        "value": 272
+      },
+      {
+        "path": "patentTypePubTimeStat[4].appearanceDesignPatentCount",
+        "value": 273
+      },
+      {
+        "path": "patentTypePubTimeStat[4].inventionAppPatentCount",
+        "value": 2621
+      },
+      {
+        "path": "patentTypePubTimeStat[4].inventionLicPatentCount",
+        "value": 7047
+      },
+      {
+        "path": "patentTypePubTimeStat[4].utilityModelPatentCount",
+        "value": 244
+      },
+      {
+        "path": "patentTypeStat.appearanceDesignPatentCount",
+        "value": 3407
+      },
+      {
+        "path": "patentTypeStat.inventionAppPatentCount",
+        "value": 59570
+      },
+      {
+        "path": "patentTypeStat.inventionLicPatentCount",
+        "value": 66820
+      },
+      {
+        "path": "patentTypeStat.utilityModelPatentCount",
+        "value": 3440
+      }
+    ],
+    "response_sha256": "78d6a10840365eb35f2672a8dfb4de0d4aff6bf490034d448fc5a266f7831e5a"
+  },
+  {
+    "tool": "patent_bigdata_patent_search",
+    "domain": null,
+    "arguments": {
+      "matchKeyword": "华为技术有限公司",
+      "keywordType": "申请人",
+      "pageIndex": 1,
+      "pageSize": 10
+    },
+    "invocation_id": "1793070069852305000",
+    "elapsed_seconds": 1.391,
+    "status": "data",
+    "error_category": null,
+    "result_type": "dict",
+    "top_level_fields": [
+      "resultList",
+      "total"
+    ],
+    "row_count": 10,
+    "reported_total": 232639,
+    "numeric_evidence": [
+      {
+        "path": "total",
+        "value": 232639
+      }
+    ],
+    "response_sha256": "6117a199d1e014a6b36befd1477536a4a1a8fd4927a3ca55d5615c6afcbaebe1"
+  }
+]

@@ -1,0 +1,144 @@
+{
+  "schema_version": 1,
+  "skill": "patent-skill",
+  "case_id": "07-small-sample",
+  "title": "专利快速抽样报告",
+  "invocation_id": "1793070075241906000",
+  "provenance": {
+    "integrator_id": "683e574805537ace146cc05e",
+    "runner_sha256": "05777c2f2b0791cb5157aef691206606dade8df7af3b17212285b7ae74632a66",
+    "credential_policy_sha256": "bcabf08a1ca92f28357c0e57a8bae9bfa910eb1d4b204d8195ee3b7a77106eed",
+    "scenario_sha256": "e57da48eb5ae55d6dc20f9219b37f934a179d4848ee26b992ed85e185100c76b",
+    "skill_source_hashes": {
+      "scripts/common.py": "f1d8673c57a3f0259770bab9e02dff5a01e87c639a6b4831173ac52c54168e42",
+      "scripts/compose_report.py": "871e4bc0d9484725855b242a7f93e65ef27d40c706feead0798ef200956f9735",
+      "scripts/mcp_client.py": "79c51eaec8e124e20e49dd461d3ac1879c99d95a6e7e76a51d0ceadfecd54995",
+      "scripts/render_report.py": "4ed8ffbca7848bfbf2eba1c37f03f05f7e52a1dda1b25a66749a3654577733f2",
+      "scripts/validate_config.py": "3bf851c0bea7fecd2120dfef02a8dd59c9d367cc4b3f8fdea45040fda52fe630"
+    },
+    "upstream_source_hashes": {
+      "patent-mcp-server": "6415af144978311c545a4ba5e914de3b1b192eb6b667f2398faaa0e7d599e485"
+    },
+    "upstream_dependency_hashes": {
+      "patent-mcp-server/server/mcp_server.py": "6415af144978311c545a4ba5e914de3b1b192eb6b667f2398faaa0e7d599e485"
+    }
+  },
+  "source_changed_during_run": false,
+  "started_at": "2026-10-27T11:01:15+08:00",
+  "elapsed_seconds": 2.124,
+  "returncode": 0,
+  "exception_type": null,
+  "command": "python3 patent-skill/scripts/compose_report.py --enterprise '北京京东世纪贸易有限公司' --page-size 5 --output patent-skill/output/live-replaced-20261027/07-small-sample/report.json --report-output patent-skill/output/live-replaced-20261027/07-small-sample/report.html",
+  "transport": "local MCP servers via loopback streamable-http",
+  "cache_used": false,
+  "call_count": 2,
+  "successful_data_calls": 2,
+  "empty_calls": 0,
+  "failed_calls": 0,
+  "checks": {
+    "issues": [],
+    "warnings": [],
+    "coverage_pct": 100,
+    "subject": {
+      "enterprise": "北京京东世纪贸易有限公司",
+      "matchKeyword": "北京京东世纪贸易有限公司",
+      "keywordType": "name",
+      "match_raw": "北京京东世纪贸易有限公司",
+      "resolved": true,
+      "resolve_reason": "视为企业全称",
+      "searchKeywordType": "申请人",
+      "fuzzy_total": null,
+      "requires_confirmation": false,
+      "fuzzy_requested": false,
+      "patentType": null
+    },
+    "title": "北京京东世纪贸易有限公司 专利大数据报告",
+    "data_mode": null,
+    "metrics": [
+      {
+        "label": "专利总数",
+        "value": "11680",
+        "hint": "企业专利总量"
+      },
+      {
+        "label": "发明申请",
+        "value": "4631",
+        "hint": "发明申请专利数量"
+      },
+      {
+        "label": "发明授权",
+        "value": "5249",
+        "hint": "发明授权专利数量"
+      },
+      {
+        "label": "实用新型",
+        "value": "196",
+        "hint": "实用新型专利数量"
+      },
+      {
+        "label": "外观设计",
+        "value": "1604",
+        "hint": "外观设计专利数量"
+      },
+      {
+        "label": "发明型占比",
+        "value": "85%",
+        "hint": "发明申请+授权 / 总数"
+      },
+      {
+        "label": "专利有效率",
+        "value": "67.0%",
+        "hint": "有效 /（有效+失效+审查中+失败）",
+        "delta": "有效"
+      },
+      {
+        "label": "检索结果",
+        "value": "17038",
+        "hint": "本次检索命中专利条数"
+      },
+      {
+        "label": "专利类型数",
+        "value": "2",
+        "hint": "不同专利类型数量"
+      },
+      {
+        "label": "申请人/发明人数",
+        "value": "1",
+        "hint": "相关专利申请人数量"
+      }
+    ],
+    "quality_report": {
+      "total_sections": 7,
+      "populated_sections": 7,
+      "empty_sections": 0,
+      "coverage_pct": 100
+    },
+    "unregistered_tools": [],
+    "checks": {
+      "json_html_markdown": true,
+      "explicit_live": true,
+      "tool_calls_recorded": 2,
+      "offline_scripts": true,
+      "independent_rerender": true,
+      "offline_browser": true
+    }
+  },
+  "status": "passed",
+  "source_hashes": {
+    "scripts/common.py": "f1d8673c57a3f0259770bab9e02dff5a01e87c639a6b4831173ac52c54168e42",
+    "scripts/compose_report.py": "871e4bc0d9484725855b242a7f93e65ef27d40c706feead0798ef200956f9735",
+    "scripts/mcp_client.py": "79c51eaec8e124e20e49dd461d3ac1879c99d95a6e7e76a51d0ceadfecd54995",
+    "scripts/render_report.py": "4ed8ffbca7848bfbf2eba1c37f03f05f7e52a1dda1b25a66749a3654577733f2",
+    "scripts/validate_config.py": "3bf851c0bea7fecd2120dfef02a8dd59c9d367cc4b3f8fdea45040fda52fe630"
+  },
+  "technical_status": "passed",
+  "audited_at": "2026-10-27T11:13:02+08:00",
+  "evidence_binding": {
+    "report.json": "629144412f7537190dab056f9427498920727585c1b0d2c19190ee7121e82747",
+    "report.html": "dfb8ec101f0ece083d1724b41f12b41c59ecc74490bd125530854fbcdd00bba3",
+    "report.md": "c7a28e9bf8cd92c7716766646328f66e0da49d8834ed261270c9e6984ddc3afb",
+    "calls.json": "065f840d2aad89b92d84619428e70e75db8b36c2ae238b8099731c63ce4ea9c4",
+    "result.json": "e7199394482e55dd6ad0c8ba5812b332fdc8cc12683d5bb4f5ad4c965052c43a",
+    "source_manifest_sha256": "014e0c39ccd221d4b037bfafc75dc705b73521da54c003be18fa8ca62d4dab92"
+  }
+}

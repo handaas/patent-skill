@@ -1,0 +1,60 @@
+{
+  "metric_overflows": [],
+  "document_title": "北京京东世纪贸易有限公司 专利大数据报告",
+  "title_matches": true,
+  "charts": 5,
+  "rendered_charts": 5,
+  "zero_size_charts": 0,
+  "chart_details": [
+    {
+      "width": 984,
+      "height": 300,
+      "instance": true,
+      "renderer": true,
+      "graphics": 135
+    },
+    {
+      "width": 984,
+      "height": 300,
+      "instance": true,
+      "renderer": true,
+      "graphics": 137
+    },
+    {
+      "width": 984,
+      "height": 300,
+      "instance": true,
+      "renderer": true,
+      "graphics": 31
+    },
+    {
+      "width": 984,
+      "height": 300,
+      "instance": true,
+      "renderer": true,
+      "graphics": 25
+    },
+    {
+      "width": 984,
+      "height": 300,
+      "instance": true,
+      "renderer": true,
+      "graphics": 65
+    }
+  ],
+  "page_width": 1905,
+  "viewport_width": 1920,
+  "empty_headers": 0,
+  "script_errors": [],
+  "external_resources": 0,
+  "external_asset_references": 0,
+  "ok": true,
+  "report_html_sha256": "dfb8ec101f0ece083d1724b41f12b41c59ecc74490bd125530854fbcdd00bba3",
+  "report_json_sha256": "629144412f7537190dab056f9427498920727585c1b0d2c19190ee7121e82747",
+  "skill": "patent-skill",
+  "id": "07-small-sample",
+  "browser": "Ego Lite",
+  "space_id": 4,
+  "offline": true,
+  "checked_at": "2026-10-27T03:03:47.155Z"
+}

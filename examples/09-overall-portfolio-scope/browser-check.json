@@ -1,0 +1,61 @@
+{
+  "metric_overflows": [],
+  "document_title": "华为技术有限公司 专利大数据报告",
+  "title_matches": true,
+  "charts": 5,
+  "rendered_charts": 5,
+  "zero_size_charts": 0,
+  "chart_details": [
+    {
+      "width": 984,
+      "height": 300,
+      "instance": true,
+      "renderer": true,
+      "graphics": 137
+    },
+    {
+      "width": 984,
+      "height": 300,
+      "instance": true,
+      "renderer": true,
+      "graphics": 137
+    },
+    {
+      "width": 984,
+      "height": 300,
+      "instance": true,
+      "renderer": true,
+      "graphics": 31
+    },
+    {
+      "width": 984,
+      "height": 300,
+      "instance": true,
+      "renderer": true,
+      "graphics": 25
+    },
+    {
+      "width": 984,
+      "height": 300,
+      "instance": true,
+      "renderer": true,
+      "graphics": 145
+    }
+  ],
+  "page_width": 1905,
+  "viewport_width": 1920,
+  "empty_headers": 0,
+  "script_errors": [],
+  "external_resources": 0,
+  "external_asset_references": 0,
+  "ok": true,
+  "report_html_sha256": "65f3887b6ba0f7ae989798b644f73c5d357abb3c89cfeef6431b4a439d596d3e",
+  "report_json_sha256": "eecc112fb132dc19d59fe64d632722942bfd0586296082bc604009456dfe5c2c",
+  "screenshot": "browser.png",
+  "skill": "patent-skill",
+  "id": "09-overall-portfolio-scope",
+  "browser": "Ego Lite",
+  "space_id": 4,
+  "offline": true,
+  "checked_at": "2026-10-27T03:03:39.851Z"
+}

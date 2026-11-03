@@ -1,0 +1,95 @@
+{
+  "run_id": "live-replaced-20261027",
+  "cases": [
+    {
+      "skill": "patent-skill",
+      "id": "09-overall-portfolio-scope",
+      "status": "passed",
+      "positive_business_pass": true,
+      "files_sha256": {
+        "report.json": "eecc112fb132dc19d59fe64d632722942bfd0586296082bc604009456dfe5c2c",
+        "report.html": "65f3887b6ba0f7ae989798b644f73c5d357abb3c89cfeef6431b4a439d596d3e",
+        "report.md": "147653dec015876bf609c5dce8c15dbcbd3edd94c1e28e2b10a9a8666fa657ad",
+        "calls.json": "5d453d6ddece16802101bc340bba8714eb07c119cd72c158b8fdb75d25a30d3f",
+        "result.json": "d03fe6da7dba90c1cb2bed39a35d655cfe1158559350a1488dd2970c58726167",
+        "audit.json": "4a4b29530644ab173b5876bf2e0d27d69b500b477e783c64a718e58ae21ab506",
+        "acceptance.json": "e3b8fecdb4defcba5ad9b89e9147f893efb081d5b29a4af0da1b3c0a35e3a17f",
+        "business-review.json": "3abb16e1d53772619d5f0f138b448c8b5a0b62f15ff3803ab5d0431d3bbd6152",
+        "browser-check.json": "da93607ee1fe2e85618377ac413ce63dc5589702d28ab64e5a3023ef5de58796"
+      },
+      "audit_record": "../../test-records/live-replaced-20261027/09-overall-portfolio-scope.md"
+    },
+    {
+      "skill": "patent-skill",
+      "id": "10-invention-application-scope",
+      "status": "passed",
+      "positive_business_pass": true,
+      "files_sha256": {
+        "report.json": "39df2b49cdd8671921ab0b524dd51649b3aaa5fa53336d32586b8a5123cad96c",
+        "report.html": "e6c83dd2bdf6ea3a561012e438c9dd1641d3619cb74f6d2c267b588956207abf",
+        "report.md": "345cd1cb8eeaf0cdf80fe63170a022b068cef75d8ae5a7726fe1bffcc2a66576",
+        "calls.json": "625961bb0363878f9db334c343e5822e85ca737b6ade2a8596da11cf912ab736",
+        "result.json": "dd4c2986a778af1958c9ece554dfb48bdd0b66231fe20f6cd3ba44f011f1fe69",
+        "audit.json": "eaacdff81512def1b990c8329f39da3fc0a9555acea9ba1c1078c4391b98eb00",
+        "acceptance.json": "6f3b826074807ca35bfdce0bda43014899793d85df715f685fc439ff29b27c94",
+        "business-review.json": "5776f5af670dbbc8b80ff2386c65d0502f04faa160b49e3f9b05d0cc22c9e8c3",
+        "browser-check.json": "d35bf30005d822640a44187646c6f1c71699e4d70018a22feefdfa18203572f0"
+      },
+      "audit_record": "../../test-records/live-replaced-20261027/10-invention-application-scope.md"
+    },
+    {
+      "skill": "patent-skill",
+      "id": "12-granted-invention-status-boundary",
+      "status": "passed",
+      "positive_business_pass": true,
+      "files_sha256": {
+        "report.json": "85ed0da3e928172befb574b8bf13ff3b1ef7faab40f4e79aadcce8c5ba910433",
+        "report.html": "c9c69df697fc36dec08451a0d2bf380043f46a8f7eb7cb953b7f70b5c0a6e3c9",
+        "report.md": "0b1f5e4323b9eb3b23bf6af82bceadbb0f5714312dd156a58cff444669e0eecf",
+        "calls.json": "983dade7918a6c277eed9946c3f4fbc1aabe4dbae6e574c362a8dc9bf601ab34",
+        "result.json": "909dc13d6f08ca291cf9e0d41073f1b9c227862a483f5de3c895edb918a118a1",
+        "audit.json": "072398d5b4e4d5d3b2b824692fe3cf58771a00450ed684b505ee1e150498d7dc",
+        "acceptance.json": "23ff9edb2163e7cce142e4a77cafa35955cf270a441ef5fe2c11c069ed5c7614",
+        "business-review.json": "e0af4ad4ca60a26a92823688334c0871f56af17ae8fb5b44b26a5f1cee8309be",
+        "browser-check.json": "61ab6a4214c0a63bcf2acf1bce28eb53ff5256c142a6b7903e6760b8fd814f96"
+      },
+      "audit_record": "../../test-records/live-replaced-20261027/12-granted-invention-status-boundary.md"
+    },
+    {
+      "skill": "patent-skill",
+      "id": "05-design-patent",
+      "status": "passed",
+      "positive_business_pass": true,
+      "files_sha256": {
+        "report.json": "6086d2fc9f8edca365ab5052852107407d8294287a12b5148b51528a6317b049",
+        "report.html": "875fafa6b5183d480f331d22d208da38ba11bf46a0622774a759837ba1a952fa",
+        "report.md": "b9340931dc4405e6c8d3685a6e4b60cf7034730e0011fef47032d0211331c4c3",
+        "calls.json": "f63b2105c32b783038500c92e3b564bac5a586ade283b5374f25b1052d560f33",
+        "result.json": "3e25f7edfa47528de994a79a62cbdc452ae823e8341dd16443e0fee0559a2563",
+        "audit.json": "eb7933cbe11398c8ea9f5ac4831e8af6b1ff00e4f5b1f4a404a6268ec5a733a5",
+        "acceptance.json": "f0beba7e0b7870c8f675b99c06994d00d1a68a9b5489df85187d377b3da14a97",
+        "business-review.json": "de6969a0de092c43d896951e4fe5b1fac19cfd61b82a5da85ee7c8be767b4420",
+        "browser-check.json": "ad74dfe49655e1efdd0a7737cdd8758b87411d658685b4420bedaf0988d6cbcd"
+      },
+      "audit_record": "../../test-records/live-replaced-20261027/05-design-patent.md"
+    },
+    {
+      "skill": "patent-skill",
+      "id": "07-small-sample",
+      "status": "passed",
+      "positive_business_pass": true,
+      "files_sha256": {
+        "report.json": "629144412f7537190dab056f9427498920727585c1b0d2c19190ee7121e82747",
+        "report.html": "dfb8ec101f0ece083d1724b41f12b41c59ecc74490bd125530854fbcdd00bba3",
+        "report.md": "c7a28e9bf8cd92c7716766646328f66e0da49d8834ed261270c9e6984ddc3afb",
+        "calls.json": "065f840d2aad89b92d84619428e70e75db8b36c2ae238b8099731c63ce4ea9c4",
+        "result.json": "e7199394482e55dd6ad0c8ba5812b332fdc8cc12683d5bb4f5ad4c965052c43a",
+        "audit.json": "970c558cab1dbf59777d7adab16b675adea641e31853e98daab73c39b0135596",
+        "acceptance.json": "3f0e016faef6cffa2c21211cb6bc1302f364df5447727ae5760aceb960133b91",
+        "business-review.json": "51b93473043fdafb3f5370ad48fca1e22785f50bb9ea1a300094c96aec9c279f",
+        "browser-check.json": "01011c69f6d74aab3565847f38594e4ba25955ef82b11e75d2bf44b712077308"
+      },
+      "audit_record": "../../test-records/live-replaced-20261027/07-small-sample.md"
+    }
+  ]
+}

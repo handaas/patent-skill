@@ -1,0 +1,144 @@
+{
+  "schema_version": 1,
+  "skill": "patent-skill",
+  "case_id": "12-granted-invention-status-boundary",
+  "title": "发明授权类型与当前状态边界核查",
+  "invocation_id": "1793070071340187000",
+  "provenance": {
+    "integrator_id": "683e574805537ace146cc05e",
+    "runner_sha256": "05777c2f2b0791cb5157aef691206606dade8df7af3b17212285b7ae74632a66",
+    "credential_policy_sha256": "bcabf08a1ca92f28357c0e57a8bae9bfa910eb1d4b204d8195ee3b7a77106eed",
+    "scenario_sha256": "5b7371fbb3a35dd2c05c408cc10e6a8ab673ce910c9bc2da8e4473b70c730b23",
+    "skill_source_hashes": {
+      "scripts/common.py": "f1d8673c57a3f0259770bab9e02dff5a01e87c639a6b4831173ac52c54168e42",
+      "scripts/compose_report.py": "871e4bc0d9484725855b242a7f93e65ef27d40c706feead0798ef200956f9735",
+      "scripts/mcp_client.py": "79c51eaec8e124e20e49dd461d3ac1879c99d95a6e7e76a51d0ceadfecd54995",
+      "scripts/render_report.py": "4ed8ffbca7848bfbf2eba1c37f03f05f7e52a1dda1b25a66749a3654577733f2",
+      "scripts/validate_config.py": "3bf851c0bea7fecd2120dfef02a8dd59c9d367cc4b3f8fdea45040fda52fe630"
+    },
+    "upstream_source_hashes": {
+      "patent-mcp-server": "6415af144978311c545a4ba5e914de3b1b192eb6b667f2398faaa0e7d599e485"
+    },
+    "upstream_dependency_hashes": {
+      "patent-mcp-server/server/mcp_server.py": "6415af144978311c545a4ba5e914de3b1b192eb6b667f2398faaa0e7d599e485"
+    }
+  },
+  "source_changed_during_run": false,
+  "started_at": "2026-10-27T11:01:11+08:00",
+  "elapsed_seconds": 3.748,
+  "returncode": 0,
+  "exception_type": null,
+  "command": "python3 patent-skill/scripts/compose_report.py --enterprise '腾讯科技（深圳）有限公司' --patent-type '发明授权' --page-size 6 --output patent-skill/output/live-replaced-20261027/12-granted-invention-status-boundary/report.json --report-output patent-skill/output/live-replaced-20261027/12-granted-invention-status-boundary/report.html",
+  "transport": "local MCP servers via loopback streamable-http",
+  "cache_used": false,
+  "call_count": 2,
+  "successful_data_calls": 2,
+  "empty_calls": 0,
+  "failed_calls": 0,
+  "checks": {
+    "issues": [],
+    "warnings": [],
+    "coverage_pct": 100,
+    "subject": {
+      "enterprise": "腾讯科技（深圳）有限公司",
+      "matchKeyword": "腾讯科技（深圳）有限公司",
+      "keywordType": "name",
+      "match_raw": "腾讯科技（深圳）有限公司",
+      "resolved": true,
+      "resolve_reason": "视为企业全称",
+      "searchKeywordType": "申请人",
+      "fuzzy_total": null,
+      "requires_confirmation": false,
+      "fuzzy_requested": false,
+      "patentType": "发明授权"
+    },
+    "title": "腾讯科技（深圳）有限公司 专利大数据报告",
+    "data_mode": null,
+    "metrics": [
+      {
+        "label": "专利总数",
+        "value": "57879",
+        "hint": "企业专利总量"
+      },
+      {
+        "label": "发明申请",
+        "value": "20734",
+        "hint": "发明申请专利数量"
+      },
+      {
+        "label": "发明授权",
+        "value": "33301",
+        "hint": "发明授权专利数量"
+      },
+      {
+        "label": "实用新型",
+        "value": "305",
+        "hint": "实用新型专利数量"
+      },
+      {
+        "label": "外观设计",
+        "value": "3539",
+        "hint": "外观设计专利数量"
+      },
+      {
+        "label": "发明型占比",
+        "value": "93%",
+        "hint": "发明申请+授权 / 总数"
+      },
+      {
+        "label": "专利有效率",
+        "value": "59.2%",
+        "hint": "有效 /（有效+失效+审查中+失败）",
+        "delta": "有效"
+      },
+      {
+        "label": "检索结果",
+        "value": "34167",
+        "hint": "本次检索命中专利条数"
+      },
+      {
+        "label": "专利类型数",
+        "value": "1",
+        "hint": "不同专利类型数量"
+      },
+      {
+        "label": "申请人/发明人数",
+        "value": "2",
+        "hint": "相关专利申请人数量"
+      }
+    ],
+    "quality_report": {
+      "total_sections": 7,
+      "populated_sections": 7,
+      "empty_sections": 0,
+      "coverage_pct": 100
+    },
+    "unregistered_tools": [],
+    "checks": {
+      "json_html_markdown": true,
+      "explicit_live": true,
+      "tool_calls_recorded": 2,
+      "offline_scripts": true,
+      "independent_rerender": true,
+      "offline_browser": true
+    }
+  },
+  "status": "passed",
+  "source_hashes": {
+    "scripts/common.py": "f1d8673c57a3f0259770bab9e02dff5a01e87c639a6b4831173ac52c54168e42",
+    "scripts/compose_report.py": "871e4bc0d9484725855b242a7f93e65ef27d40c706feead0798ef200956f9735",
+    "scripts/mcp_client.py": "79c51eaec8e124e20e49dd461d3ac1879c99d95a6e7e76a51d0ceadfecd54995",
+    "scripts/render_report.py": "4ed8ffbca7848bfbf2eba1c37f03f05f7e52a1dda1b25a66749a3654577733f2",
+    "scripts/validate_config.py": "3bf851c0bea7fecd2120dfef02a8dd59c9d367cc4b3f8fdea45040fda52fe630"
+  },
+  "technical_status": "passed",
+  "audited_at": "2026-10-27T11:13:02+08:00",
+  "evidence_binding": {
+    "report.json": "85ed0da3e928172befb574b8bf13ff3b1ef7faab40f4e79aadcce8c5ba910433",
+    "report.html": "c9c69df697fc36dec08451a0d2bf380043f46a8f7eb7cb953b7f70b5c0a6e3c9",
+    "report.md": "0b1f5e4323b9eb3b23bf6af82bceadbb0f5714312dd156a58cff444669e0eecf",
+    "calls.json": "983dade7918a6c277eed9946c3f4fbc1aabe4dbae6e574c362a8dc9bf601ab34",
+    "result.json": "909dc13d6f08ca291cf9e0d41073f1b9c227862a483f5de3c895edb918a118a1",
+    "source_manifest_sha256": "014e0c39ccd221d4b037bfafc75dc705b73521da54c003be18fa8ca62d4dab92"
+  }
+}
