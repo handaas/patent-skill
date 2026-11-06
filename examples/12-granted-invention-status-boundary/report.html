@@ -37,6 +37,7 @@
     .biz-metric .m-tag.t-down { color:#dc2626; }
     .biz-metric .m-tag.t-neutral { color:#6366f1; }
     .biz-metric .m-value { color:#0b3768; font-size:26px; line-height:1.1; font-weight:900; letter-spacing:-.02em; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif; margin-top:auto; }
+    .biz-metric .m-hint { color:#64748b; font-size:11px; line-height:1.5; margin-top:6px; text-align:left; }
     .biz-metric .m-value .m-tag.t-up { color:#16a34a; }
     .biz-metric .m-value .m-tag.t-down { color:#dc2626; }
     .biz-metric .m-value .m-tag.t-neutral { color:#6366f1; }
@@ -165,7 +166,57 @@
     .glossary-term { display:flex; align-items:flex-start; padding:12px 14px; background:#f1f6fb; color:#0b5ca8; font-size:13px; font-weight:800; border-right:3px solid #0b5ca8; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif; }
     .glossary-def { padding:12px 16px; color:#334155; font-size:13px; line-height:1.7; }
   </style>
-  <script>
+  <style>
+.chart-frame{position:relative;width:100%;height:300px;}
+.chart-box-gauge .chart-frame{height:240px;}
+.chart-static{position:absolute;top:0;left:0;width:100%;height:100%;overflow:hidden;}
+.chart-static svg{display:block;width:100%;height:100%;}
+.chart-frame .chart-canvas{position:absolute;top:0;left:0;width:100%;height:100% !important;visibility:hidden;z-index:1;}
+.chart-frame[data-chart-state="ready"] .chart-canvas{visibility:visible;}
+.chart-frame[data-chart-state="ready"] .chart-static{visibility:hidden;}
+.chart-frame .chart-status{position:absolute;left:0;right:0;bottom:0;margin:0;padding:2px 8px;font-size:11px;color:#64748b;text-align:center;background:rgba(255,255,255,.88);z-index:2;}
+.chart-frame .chart-status:empty{display:none;}
+@media print{
+  .chart-frame{height:auto;overflow:visible;}
+  .chart-frame .chart-canvas{display:none !important;visibility:hidden;}
+  .chart-frame .chart-static{position:static;display:block !important;visibility:visible !important;}
+  .chart-frame .chart-status{display:none;}
+  .chart-static svg{height:auto;}
+}
+</style>
+<script>function handaasChartOption(spec){
+  if(!spec || ['line','bar','pie','gauge','radar'].indexOf(spec.type)<0){return null;}
+  var PALETTE=['#0b5ca8','#0284c7','#0b3768','#d97706','#059669','#dc2626','#7c3aed','#db2777','#0891b2','#65a30d'];
+  var FONTS="-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif";
+  var opt={animation:false,color:PALETTE,tooltip:{trigger: spec.type==='pie'?'item':'axis'},textStyle:{fontFamily:FONTS,fontSize:12,color:'#334155'},grid:{left:48,right:24,top:30,bottom:40},legend:{top:0,textStyle:{fontSize:11}}};
+  if(spec.type==='line'){
+    opt.xAxis={type:'category',data:spec.x,axisLabel:{fontSize:11,interval:0,rotate: spec.x && spec.x.length>6?35:0}};
+    opt.yAxis={type:'value'};
+    opt.series=spec.series.map(function(s){return{name:s.name,type:'line',smooth:true,areaStyle: spec.area?{opacity:0.18}:undefined,stack: spec.stack?s.name:undefined,data:s.data,label:{show:true,position:'top',fontSize:11}};});
+    if(spec.stack){opt.tooltip={trigger:'axis'};}
+  }else if(spec.type==='bar'){
+    var horiz=spec.orient==='h';
+    var cats=spec.names, vals=spec.values;
+    if(horiz){opt.yAxis={type:'category',data:cats,axisLabel:{fontSize:11}};opt.xAxis={type:'value'};opt.grid={left:120,right:30,top:20,bottom:30};}
+    else{opt.xAxis={type:'category',data:cats,axisLabel:{fontSize:11,interval:0,rotate: cats&&cats.length>6?35:0}};opt.yAxis={type:'value'};}
+    opt.series=[{type:'bar',data:vals,itemStyle:{color:PALETTE[0]},label:{show:true,position: horiz?'right':'top',fontSize:11},barMaxWidth:42}];
+    opt.tooltip={trigger:'axis',axisPointer:{type:'shadow'}};
+  }else if(spec.type==='pie'){
+    opt.series=[{type:'pie',radius: spec.donut?['42%','68%']:'68%',center:['50%','55%'],data:spec.data,itemStyle:{borderColor:'#fff',borderWidth:2},label:{fontSize:11,formatter:'{b}: {c} ({d}%)'}}];
+    opt.legend={bottom:0,textStyle:{fontSize:11}};
+    opt.tooltip={trigger:'item',formatter:'{b}: {c} ({d}%)'};
+  }else if(spec.type==='gauge'){
+    var v=spec.value, mx=spec.max||100;
+    var col=v/mx>0.66?'#dc2626':(v/mx>0.33?'#d97706':'#059669');
+    opt.series=[{type:'gauge',min:0,max:mx,progress:{show:true,width:14,itemStyle:{color:col}},axisLine:{lineStyle:{width:14}},axisTick:{show:false},splitLine:{length:8,lineStyle:{color:'#fff'}},pointer:{width:5},detail:{valueAnimation:false,formatter:'{value}',fontSize:28,color:col,offsetCenter:[0,'30%']},data:[{value:v,name:spec.level||''}],title:{fontSize:13,color:'#475569',offsetCenter:[0,'62%']}}];
+  }else if(spec.type==='radar'){
+    opt.radar={indicator:spec.indicators,radius:'62%',axisName:{color:'#475569',fontSize:11},splitArea:{areaStyle:{color:['#f8fbff','#eef4fb']}}};
+    opt.series=[{type:'radar',areaStyle:{opacity:0.18},data:spec.series}];
+  }
+  return opt;
+}
+</script>
+<script>
 /*
 * Licensed to the Apache Software Foundation (ASF) under one
 * or more contributor license agreements.  See the NOTICE file
@@ -218,8 +269,10 @@ var Fr={},Gr={};var Wr,Hr=function(){function t(t,e,n){var i=this;this._sleepAft
   var status=window.__handaas_chart_status={state:'waiting',total:0,ready:0,failed:0};
   var timer=null, retries=0, MAX_RETRIES=100;
   var layoutRetries=0, MAX_LAYOUT_RETRIES=50;
-  var PALETTE=['#0b5ca8','#0284c7','#0b3768','#d97706','#059669','#dc2626','#7c3aed','#db2777','#0891b2','#65a30d'];
-  var FONTS='-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif';
+  var MSG_LOADING='图表库正在加载，数据明细仍可查看。';
+  var MSG_MISSING='图表交互不可用，已保留静态图表，数据明细仍可查看。';
+  var MSG_LAYOUT='图表等待布局完成后渲染，数据明细仍可查看。';
+  var MSG_FAILED='图表交互初始化失败，已保留静态图表，数据明细仍可查看。';
   function summarize(nodes){
     status.total=nodes.length;status.ready=0;status.failed=0;
     nodes.forEach(function(el){
@@ -229,18 +282,40 @@ var Fr={},Gr={};var Wr,Hr=function(){function t(t,e,n){var i=this;this._sleepAft
     status.state=status.ready===status.total?'ready':
       (status.ready+status.failed===status.total?(status.ready?'degraded':'error'):'waiting');
   }
+  function frameOf(el){
+    var p=el.parentElement;
+    if(p&&(' '+p.className+' ').indexOf(' chart-frame ')>-1){return p;}
+    return null;
+  }
+  function setStatus(el,msg){
+    var f=frameOf(el);
+    if(f){
+      var p=f.querySelector('.chart-status');
+      if(p){p.textContent=msg;}
+    }else{
+      el.textContent=msg;
+    }
+  }
   function raf(fn){if(window.requestAnimationFrame){window.requestAnimationFrame(fn);}else{fn();}}
+  function hasGeometry(chart,el){
+    if(!chart || chart.getWidth()<2 || chart.getHeight()<2){return false;}
+    var svg=el.querySelector('svg');
+    if(!svg){return false;}
+    return !!svg.querySelector('path,rect,circle,line,text,polygon,polyline');
+  }
   function boot(){
     if(document.readyState==='loading'){return;}
     var nodes=document.querySelectorAll('.chart-canvas');
     if(!nodes.length){summarize(nodes);return;}
-    if(!window.echarts || typeof window.echarts.init!=='function'){
+    if(!window.echarts || typeof window.echarts.init!=='function' || typeof window.handaasChartOption!=='function'){
       var exhausted=retries>=MAX_RETRIES;
       nodes.forEach(function(el){
         if(el.__handaas_chart_ready){return;}
         el.__handaas_dependency_error=true;
         el.setAttribute('data-chart-state',exhausted?'error':'waiting');
-        el.textContent=exhausted?'图表库加载失败或不可用，请查看数据明细或重新生成离线报告。':'图表库正在加载，数据明细仍可查看。';
+        setStatus(el,exhausted?MSG_MISSING:MSG_LOADING);
+        var f=frameOf(el);
+        if(f){f.setAttribute('data-chart-state',exhausted?'error':'static');}
       });
       summarize(nodes);
       if(!exhausted && timer===null){
@@ -253,6 +328,7 @@ var Fr={},Gr={};var Wr,Hr=function(){function t(t,e,n){var i=this;this._sleepAft
     var pendingLayout=0;
     nodes.forEach(function(el){
       if(el.__handaas_chart_ready){return;}
+      var f=frameOf(el);
       if(el.getAttribute('data-chart-state')==='error' && !el.__handaas_dependency_error){return;}
       if(window.ResizeObserver && !el.__handaas_resize_observer){
         el.__handaas_resize_observer=new ResizeObserver(function(){
@@ -264,7 +340,8 @@ var Fr={},Gr={};var Wr,Hr=function(){function t(t,e,n){var i=this;this._sleepAft
       }
       if((el.getClientRects && el.getClientRects().length===0) || el.clientWidth<2 || el.clientHeight<2){
         el.setAttribute('data-chart-state','waiting');
-        el.textContent='图表等待布局完成后渲染，数据明细仍可查看。';
+        setStatus(el,MSG_LAYOUT);
+        if(f){f.setAttribute('data-chart-state','static');}
         pendingLayout++;
         return;
       }
@@ -274,46 +351,36 @@ var Fr={},Gr={};var Wr,Hr=function(){function t(t,e,n){var i=this;this._sleepAft
         if(!raw){throw new Error('Missing chart configuration');}
         // getAttribute already decodes HTML entities; a second decode corrupts labels.
         var spec=JSON.parse(raw);
-        if(['line','bar','pie','gauge','radar'].indexOf(spec.type)<0){throw new Error('Unsupported chart type');}
+        var opt=window.handaasChartOption(spec);
+        if(!opt){throw new Error('Unsupported chart type');}
         el.textContent='';
         chart=window.echarts.init(el,null,{renderer:'svg'});
-      var opt={color:PALETTE,tooltip:{trigger: spec.type==='pie'?'item':'axis'},textStyle:{fontFamily:FONTS,fontSize:12,color:'#334155'},grid:{left:48,right:24,top:30,bottom:40},legend:{top:0,textStyle:{fontSize:11}}};
-      if(spec.type==='line'){
-        opt.xAxis={type:'category',data:spec.x,axisLabel:{fontSize:11,interval:0,rotate: spec.x && spec.x.length>6?35:0}};
-        opt.yAxis={type:'value'};
-        opt.series=spec.series.map(function(s){return{name:s.name,type:'line',smooth:true,areaStyle: spec.area?{opacity:0.18}:undefined,stack: spec.stack?s.name:undefined,data:s.data,label:{show:true,position:'top',fontSize:11}};});
-        if(spec.stack){opt.tooltip={trigger:'axis'};}
-      }else if(spec.type==='bar'){
-        var horiz=spec.orient==='h';
-        var cats=spec.names, vals=spec.values;
-        if(horiz){opt.yAxis={type:'category',data:cats,axisLabel:{fontSize:11}};opt.xAxis={type:'value'};opt.grid={left:120,right:30,top:20,bottom:30};}
-        else{opt.xAxis={type:'category',data:cats,axisLabel:{fontSize:11,interval:0,rotate: cats&&cats.length>6?35:0}};opt.yAxis={type:'value'};}
-        opt.series=[{type:'bar',data:vals,itemStyle:{color:PALETTE[0]},label:{show:true,position: horiz?'right':'top',fontSize:11},barMaxWidth:42}];
-        opt.tooltip={trigger:'axis',axisPointer:{type:'shadow'}};
-      }else if(spec.type==='pie'){
-        opt.series=[{type:'pie',radius: spec.donut?['42%','68%']:'68%',center:['50%','55%'],data:spec.data,itemStyle:{borderColor:'#fff',borderWidth:2},label:{fontSize:11,formatter:'{b}: {c} ({d}%)'}}];
-        opt.legend={bottom:0,textStyle:{fontSize:11}};
-        opt.tooltip={trigger:'item',formatter:'{b}: {c} ({d}%)'};
-      }else if(spec.type==='gauge'){
-        var v=spec.value, mx=spec.max||100;
-        var col=v/mx>0.66?'#dc2626':(v/mx>0.33?'#d97706':'#059669');
-        opt.series=[{type:'gauge',min:0,max:mx,progress:{show:true,width:14,itemStyle:{color:col}},axisLine:{lineStyle:{width:14}},axisTick:{show:false},splitLine:{length:8,lineStyle:{color:'#fff'}},pointer:{width:5},detail:{valueAnimation:true,formatter:'{value}',fontSize:28,color:col,offsetCenter:[0,'30%']},data:[{value:v,name:spec.level||''}],title:{fontSize:13,color:'#475569',offsetCenter:[0,'62%']}}];
-      }else if(spec.type==='radar'){
-        opt.radar={indicator:spec.indicators,radius:'62%',axisName:{color:'#475569',fontSize:11},splitArea:{areaStyle:{color:['#f8fbff','#eef4fb']}}};
-        opt.series=[{type:'radar',areaStyle:{opacity:0.18},data:spec.series}];
-      }
         chart.setOption(opt);
+        // Real synchronous flush: setOption already flushes internally, but
+        // drive the zrender painter once more before the geometry gate. Any
+        // throw here falls into catch and keeps the static SVG.
+        var zr=chart.getZr();
+        if(zr && typeof zr.flush==='function'){zr.flush();}
+        // Never reveal the interactive layer (and never hide the static SVG)
+        // before real SVG geometry exists on the canvas overlay.
+        if(!hasGeometry(chart,el)){throw new Error('Empty chart geometry');}
         el.__handaas_chart=chart;
         el.__handaas_chart_ready=true;
         el.__handaas_dependency_error=false;
         el.setAttribute('data-chart-state','ready');
         window.__echarts_instances.push(chart);
+        if(f){
+          f.setAttribute('data-chart-state','ready');
+          var p=f.querySelector('.chart-status');
+          if(p){p.textContent='';}
+        }
         raf(function(){try{chart.resize();}catch(ignored){}});
       }catch(e){
         if(chart && typeof chart.dispose==='function'){try{chart.dispose();}catch(ignored){}}
         el.__handaas_dependency_error=false;
         el.setAttribute('data-chart-state','error');
-        el.textContent='图表绘制失败，请查看数据明细。';
+        setStatus(el,MSG_FAILED);
+        if(f){f.setAttribute('data-chart-state','error');}
       }
     });
     summarize(nodes);
@@ -363,7 +430,7 @@ var Fr={},Gr={};var Wr,Hr=function(){function t(t,e,n){var i=this;this._sleepAft
         <h1>腾讯科技（深圳）有限公司 专利大数据报告</h1>
         <p class="report-lead">本报告以“腾讯科技（深圳）有限公司”为分析对象，基于专利公开数据，系统呈现企业专利统计、申请/授权趋势、类型分布、状态分布与专利检索明细。关键指标包括：专利总数 57879、发明申请 20734、发明授权 33301、实用新型 305、外观设计 3539。报告同时对专利类型与申请、授权趋势作结构化观察；聚合数量不能替代逐件法律状态和权利要求核验</p>
         <div class="abstract-box">报告涵盖查询对象、数据总览、核心分析、代表性记录与结构洞察，所有数据均标注口径与来源。</div>
-        <div class="biz-metrics"><div class="biz-metric"><span class="m-name">专利总数</span><span class="m-tag"></span><span class="m-value">57879</span></div><div class="biz-metric"><span class="m-name">发明申请</span><span class="m-tag"></span><span class="m-value">20734</span></div><div class="biz-metric"><span class="m-name">发明授权</span><span class="m-tag"></span><span class="m-value">33301</span></div><div class="biz-metric"><span class="m-name">实用新型</span><span class="m-tag"></span><span class="m-value">305</span></div><div class="biz-metric"><span class="m-name">外观设计</span><span class="m-tag"></span><span class="m-value">3539</span></div><div class="biz-metric"><span class="m-name">发明型占比</span><span class="m-tag"></span><span class="m-value">93%</span></div><div class="biz-metric"><span class="m-name">专利有效率</span><span class="m-tag t-neutral">有效</span><span class="m-value">59.2%</span></div><div class="biz-metric"><span class="m-name">检索结果</span><span class="m-tag"></span><span class="m-value">34167</span></div><div class="biz-metric"><span class="m-name">专利类型数</span><span class="m-tag"></span><span class="m-value">1</span></div><div class="biz-metric"><span class="m-name">申请人/发明人数</span><span class="m-tag"></span><span class="m-value">2</span></div><div class="biz-metric-empty"></div><div class="biz-metric-empty"></div></div>
+        <div class="biz-metrics"><div class="biz-metric"><span class="m-name">专利总数</span><span class="m-tag"></span><span class="m-value">57879</span><span class="m-hint">企业专利总量</span></div><div class="biz-metric"><span class="m-name">发明申请</span><span class="m-tag"></span><span class="m-value">20734</span><span class="m-hint">发明申请专利数量</span></div><div class="biz-metric"><span class="m-name">发明授权</span><span class="m-tag"></span><span class="m-value">33301</span><span class="m-hint">发明授权专利数量</span></div><div class="biz-metric"><span class="m-name">实用新型</span><span class="m-tag"></span><span class="m-value">305</span><span class="m-hint">实用新型专利数量</span></div><div class="biz-metric"><span class="m-name">外观设计</span><span class="m-tag"></span><span class="m-value">3539</span><span class="m-hint">外观设计专利数量</span></div><div class="biz-metric"><span class="m-name">发明型占比</span><span class="m-tag"></span><span class="m-value">93%</span><span class="m-hint">发明申请+授权 / 总数</span></div><div class="biz-metric"><span class="m-name">专利有效率</span><span class="m-tag t-neutral">有效</span><span class="m-value">59.2%</span><span class="m-hint">有效 /（有效+失效+审查中+失败）</span></div><div class="biz-metric"><span class="m-name">检索结果</span><span class="m-tag"></span><span class="m-value">34167</span><span class="m-hint">本次检索命中专利条数</span></div><div class="biz-metric"><span class="m-name">专利类型数</span><span class="m-tag"></span><span class="m-value">1</span><span class="m-hint">不同专利类型数量</span></div><div class="biz-metric"><span class="m-name">申请人/发明人数</span><span class="m-tag"></span><span class="m-value">2</span><span class="m-hint">相关专利申请人数量</span></div><div class="biz-metric-empty"></div><div class="biz-metric-empty"></div></div>
         <ul class="exec-list"><li>该数量描述公开数据库中的累计专利记录规模；不能单独证明技术储备、研发投入、专利质量或商业价值。</li><li>两项分别描述公开申请记录和授权记录规模；当前权利状态及技术、商业意义仍需逐件核验。</li><li>类型集中度仅描述返回记录的类型构成，不能单独推断研发活动范围或技术布局质量。</li><li>该分布只描述返回的法律状态结构；失效或失败原因需结合逐件法律状态记录核查。</li><li>当前状态口径下有效占比约 59%，失效占比水平较低；具体原因不能由聚合数量推断，需逐件核查法律状态。</li></ul>
         <div class="cover-findings"><h3 class="cover-findings-title">核心发现</h3><div class="cover-findings-grid"><div class="finding-card"><p class="f-label">专利资产规模</p><p class="f-text">企业专利总数 57879 件。</p></div><div class="finding-card"><p class="f-label">发明申请与授权存量</p><p class="f-text">发明申请 20734、发明授权 33301。两项均为累计存量，口径不对应同一申请队列，不能相除推算申请结果比例。</p></div><div class="finding-card"><p class="f-label">专利类型集中度</p><p class="f-text">“发明授权”占比约 58%，前 3 类合计 99%（CR3）。</p></div><div class="finding-card"><p class="f-label">专利有效性结构</p><p class="f-text">“授权”为主流状态，占比约 56%。</p></div></div></div>
         <div class="cover-dimensions"><span class="dim-label">分析维度</span><div class="dim-tags"><span class="dim-tag">专利统计</span><span class="dim-tag">专利申请趋势（分类型）</span><span class="dim-tag">专利授权趋势（分类型）</span><span class="dim-tag">专利有效性结构</span><span class="dim-tag">专利类型分布</span><span class="dim-tag">专利法律状态分布</span><span class="dim-tag">专利检索明细</span></div></div>
@@ -374,13 +441,618 @@ var Fr={},Gr={};var Wr,Hr=function(){function t(t,e,n){var i=this;this._sleepAft
   <main class="research-doc">
     <section class="report-page biz-section"><div class="report-topbar"><div class="report-stripe"></div><div class="report-banner">专利大数据报告</div></div><div class="biz-section-head"><div><h2>报告摘要</h2><p class="biz-section-note">概述分析对象、数据覆盖范围与核心发现。</p></div><span class="biz-tag">Summary</span></div><p class="biz-summary">本报告以“腾讯科技（深圳）有限公司”为分析对象，基于专利公开数据，系统呈现企业专利统计、申请/授权趋势、类型分布、状态分布与专利检索明细。关键指标包括：专利总数 57879、发明申请 20734、发明授权 33301、实用新型 305、外观设计 3539。报告同时对专利类型与申请、授权趋势作结构化观察；聚合数量不能替代逐件法律状态和权利要求核验</p></section>
     <section class="report-page biz-section"><div class="report-topbar"><div class="report-stripe"></div><div class="report-banner">专利大数据报告</div></div><div class="biz-section-head"><div><h2>查询对象与口径</h2><p class="biz-section-note">说明匹配对象、匹配方式与数据范围。</p></div><span class="biz-tag">Caliber</span></div><div class="info-list"><div class="info-row"><span class="info-label">匹配对象</span><span class="info-value">腾讯科技（深圳）有限公司</span></div><div class="info-row"><span class="info-label">匹配方式</span><span class="info-value">专利统计按企业主体匹配（keywordType=name）；检索支持专利名称/申请号/申请人/代理机构</span></div><div class="info-row"><span class="info-label">数据范围</span><span class="info-value">专利统计（企业整体口径）；专利检索明细（明细筛选：申请人=目标企业，专利类型=发明授权）；申请/授权趋势、类型分布、状态分布</span></div><div class="info-row"><span class="info-label">局限说明</span><span class="info-value">数据来自专利公开数据库；少量字段可能存在更新延迟。</span></div></div></section>
-    <section class="report-page biz-section"><div class="report-topbar"><div class="report-stripe"></div><div class="report-banner">专利大数据报告</div></div><div class="biz-section-head"><div><h2>数据总览</h2><p class="biz-section-note">关键指标一览。</p></div><span class="biz-tag">Metrics</span></div><div class="biz-metrics"><div class="biz-metric"><span class="m-name">专利总数</span><span class="m-tag"></span><span class="m-value">57879</span></div><div class="biz-metric"><span class="m-name">发明申请</span><span class="m-tag"></span><span class="m-value">20734</span></div><div class="biz-metric"><span class="m-name">发明授权</span><span class="m-tag"></span><span class="m-value">33301</span></div><div class="biz-metric"><span class="m-name">实用新型</span><span class="m-tag"></span><span class="m-value">305</span></div><div class="biz-metric"><span class="m-name">外观设计</span><span class="m-tag"></span><span class="m-value">3539</span></div><div class="biz-metric"><span class="m-name">发明型占比</span><span class="m-tag"></span><span class="m-value">93%</span></div><div class="biz-metric"><span class="m-name">专利有效率</span><span class="m-tag t-neutral">有效</span><span class="m-value">59.2%</span></div><div class="biz-metric"><span class="m-name">检索结果</span><span class="m-tag"></span><span class="m-value">34167</span></div><div class="biz-metric"><span class="m-name">专利类型数</span><span class="m-tag"></span><span class="m-value">1</span></div><div class="biz-metric"><span class="m-name">申请人/发明人数</span><span class="m-tag"></span><span class="m-value">2</span></div><div class="biz-metric-empty"></div><div class="biz-metric-empty"></div></div></section>
+    <section class="report-page biz-section"><div class="report-topbar"><div class="report-stripe"></div><div class="report-banner">专利大数据报告</div></div><div class="biz-section-head"><div><h2>数据总览</h2><p class="biz-section-note">关键指标一览。</p></div><span class="biz-tag">Metrics</span></div><div class="biz-metrics"><div class="biz-metric"><span class="m-name">专利总数</span><span class="m-tag"></span><span class="m-value">57879</span><span class="m-hint">企业专利总量</span></div><div class="biz-metric"><span class="m-name">发明申请</span><span class="m-tag"></span><span class="m-value">20734</span><span class="m-hint">发明申请专利数量</span></div><div class="biz-metric"><span class="m-name">发明授权</span><span class="m-tag"></span><span class="m-value">33301</span><span class="m-hint">发明授权专利数量</span></div><div class="biz-metric"><span class="m-name">实用新型</span><span class="m-tag"></span><span class="m-value">305</span><span class="m-hint">实用新型专利数量</span></div><div class="biz-metric"><span class="m-name">外观设计</span><span class="m-tag"></span><span class="m-value">3539</span><span class="m-hint">外观设计专利数量</span></div><div class="biz-metric"><span class="m-name">发明型占比</span><span class="m-tag"></span><span class="m-value">93%</span><span class="m-hint">发明申请+授权 / 总数</span></div><div class="biz-metric"><span class="m-name">专利有效率</span><span class="m-tag t-neutral">有效</span><span class="m-value">59.2%</span><span class="m-hint">有效 /（有效+失效+审查中+失败）</span></div><div class="biz-metric"><span class="m-name">检索结果</span><span class="m-tag"></span><span class="m-value">34167</span><span class="m-hint">本次检索命中专利条数</span></div><div class="biz-metric"><span class="m-name">专利类型数</span><span class="m-tag"></span><span class="m-value">1</span><span class="m-hint">不同专利类型数量</span></div><div class="biz-metric"><span class="m-name">申请人/发明人数</span><span class="m-tag"></span><span class="m-value">2</span><span class="m-hint">相关专利申请人数量</span></div><div class="biz-metric-empty"></div><div class="biz-metric-empty"></div></div></section>
     <section class="report-page biz-section"><div class="report-topbar"><div class="report-stripe"></div><div class="report-banner">专利大数据报告</div></div><div class="biz-section-head"><div><h2>核心分析</h2><p class="biz-section-note">按维度展开目标核心数据与结构化明细。</p></div><span class="biz-tag">Analysis</span></div><h3 class="biz-subsection-title">专利统计</h3><div class="info-list"><div class="info-row"><span class="info-label">专利总数</span><span class="info-value">57879</span></div><div class="info-row"><span class="info-label">发明申请专利数</span><span class="info-value">20734</span></div><div class="info-row"><span class="info-label">发明授权专利数</span><span class="info-value">33301</span></div><div class="info-row"><span class="info-label">实用新型专利数</span><span class="info-value">305</span></div><div class="info-row"><span class="info-label">外观设计专利数</span><span class="info-value">3539</span></div></div>
-<p class="biz-section-note">按年度统计 4 类专利（发明申请/发明授权/实用新型/外观设计）申请数量</p><div class="chart-box"><h4 class="chart-title">专利申请趋势（分类型）</h4><div class="chart-canvas" data-chart="line" data-spec="{&quot;type&quot;:&quot;line&quot;,&quot;area&quot;:false,&quot;stack&quot;:false,&quot;x&quot;:[&quot;2017&quot;,&quot;2018&quot;,&quot;2019&quot;,&quot;2020&quot;,&quot;2021&quot;,&quot;2022&quot;,&quot;2023&quot;,&quot;2024&quot;,&quot;2025&quot;,&quot;2026&quot;],&quot;series&quot;:[{&quot;name&quot;:&quot;发明申请&quot;,&quot;data&quot;:[318.0,346.0,543.0,830.0,1291.0,3415.0,5160.0,4592.0,1180.0,207.0]},{&quot;name&quot;:&quot;发明授权&quot;,&quot;data&quot;:[2006.0,2311.0,5007.0,5381.0,4806.0,2825.0,1070.0,624.0,39.0,60.0]},{&quot;name&quot;:&quot;实用新型&quot;,&quot;data&quot;:[15.0,10.0,25.0,39.0,43.0,69.0,48.0,19.0,14.0,0.0]},{&quot;name&quot;:&quot;外观设计&quot;,&quot;data&quot;:[202.0,217.0,715.0,384.0,245.0,272.0,298.0,264.0,106.0,3.0]}]}"></div><details class="chart-data"><summary>数据明细</summary><div class="table-wrap"><table><thead><tr><th>年份</th><th>发明申请</th><th>发明授权</th><th>实用新型</th><th>外观设计</th></tr></thead><tbody><tr><td>2017</td><td>318</td><td>2006</td><td>15</td><td>202</td></tr><tr><td>2018</td><td>346</td><td>2311</td><td>10</td><td>217</td></tr><tr><td>2019</td><td>543</td><td>5007</td><td>25</td><td>715</td></tr><tr><td>2020</td><td>830</td><td>5381</td><td>39</td><td>384</td></tr><tr><td>2021</td><td>1291</td><td>4806</td><td>43</td><td>245</td></tr><tr><td>2022</td><td>3415</td><td>2825</td><td>69</td><td>272</td></tr><tr><td>2023</td><td>5160</td><td>1070</td><td>48</td><td>298</td></tr><tr><td>2024</td><td>4592</td><td>624</td><td>19</td><td>264</td></tr><tr><td>2025</td><td>1180</td><td>39</td><td>14</td><td>106</td></tr><tr><td>2026</td><td>207</td><td>60</td><td>0</td><td>3</td></tr></tbody></table></div></details></div>
-<p class="biz-section-note">按年度统计 4 类专利授权数量</p><div class="chart-box"><h4 class="chart-title">专利授权趋势（分类型）</h4><div class="chart-canvas" data-chart="line" data-spec="{&quot;type&quot;:&quot;line&quot;,&quot;area&quot;:false,&quot;stack&quot;:false,&quot;x&quot;:[&quot;2017&quot;,&quot;2018&quot;,&quot;2019&quot;,&quot;2020&quot;,&quot;2021&quot;,&quot;2022&quot;,&quot;2023&quot;,&quot;2024&quot;,&quot;2025&quot;,&quot;2026&quot;],&quot;series&quot;:[{&quot;name&quot;:&quot;发明申请&quot;,&quot;data&quot;:[368.0,371.0,523.0,595.0,556.0,792.0,4142.0,3673.0,4371.0,2856.0]},{&quot;name&quot;:&quot;发明授权&quot;,&quot;data&quot;:[750.0,1629.0,2115.0,2696.0,4452.0,4075.0,4511.0,4267.0,3579.0,2457.0]},{&quot;name&quot;:&quot;实用新型&quot;,&quot;data&quot;:[7.0,15.0,13.0,28.0,59.0,57.0,50.0,32.0,12.0,14.0]},{&quot;name&quot;:&quot;外观设计&quot;,&quot;data&quot;:[154.0,198.0,272.0,816.0,286.0,109.0,133.0,523.0,178.0,130.0]}]}"></div><details class="chart-data"><summary>数据明细</summary><div class="table-wrap"><table><thead><tr><th>年份</th><th>发明申请</th><th>发明授权</th><th>实用新型</th><th>外观设计</th></tr></thead><tbody><tr><td>2017</td><td>368</td><td>750</td><td>7</td><td>154</td></tr><tr><td>2018</td><td>371</td><td>1629</td><td>15</td><td>198</td></tr><tr><td>2019</td><td>523</td><td>2115</td><td>13</td><td>272</td></tr><tr><td>2020</td><td>595</td><td>2696</td><td>28</td><td>816</td></tr><tr><td>2021</td><td>556</td><td>4452</td><td>59</td><td>286</td></tr><tr><td>2022</td><td>792</td><td>4075</td><td>57</td><td>109</td></tr><tr><td>2023</td><td>4142</td><td>4511</td><td>50</td><td>133</td></tr><tr><td>2024</td><td>3673</td><td>4267</td><td>32</td><td>523</td></tr><tr><td>2025</td><td>4371</td><td>3579</td><td>12</td><td>178</td></tr><tr><td>2026</td><td>2856</td><td>2457</td><td>14</td><td>130</td></tr></tbody></table></div></details></div>
-<p class="biz-section-note">将法律状态归并为 有效/失效/审查中/失败</p><div class="chart-box"><h4 class="chart-title">专利有效性结构</h4><div class="chart-canvas" data-chart="pie" data-spec="{&quot;type&quot;:&quot;pie&quot;,&quot;donut&quot;:true,&quot;data&quot;:[{&quot;name&quot;:&quot;有效&quot;,&quot;value&quot;:32425.0},{&quot;name&quot;:&quot;失效&quot;,&quot;value&quot;:2079.0},{&quot;name&quot;:&quot;审查中&quot;,&quot;value&quot;:16259.0},{&quot;name&quot;:&quot;失败&quot;,&quot;value&quot;:4009.0},{&quot;name&quot;:&quot;其他&quot;,&quot;value&quot;:2873.0}]}"></div><details class="chart-data"><summary>数据明细</summary><div class="table-wrap"><table><thead><tr><th>有效性</th><th>数量</th></tr></thead><tbody><tr><td>有效</td><td>32425</td></tr><tr><td>失效</td><td>2079</td></tr><tr><td>审查中</td><td>16259</td></tr><tr><td>失败</td><td>4009</td></tr><tr><td>其他</td><td>2873</td></tr></tbody></table></div></details></div>
-<p class="biz-section-note">按专利类型统计数量</p><div class="chart-box"><h4 class="chart-title">专利类型分布</h4><div class="chart-canvas" data-chart="pie" data-spec="{&quot;type&quot;:&quot;pie&quot;,&quot;donut&quot;:true,&quot;data&quot;:[{&quot;name&quot;:&quot;发明申请&quot;,&quot;value&quot;:20734.0},{&quot;name&quot;:&quot;发明授权&quot;,&quot;value&quot;:33301.0},{&quot;name&quot;:&quot;实用新型&quot;,&quot;value&quot;:305.0},{&quot;name&quot;:&quot;外观设计&quot;,&quot;value&quot;:3539.0}]}"></div><details class="chart-data"><summary>数据明细</summary><div class="table-wrap"><table><thead><tr><th>类型</th><th>数量</th></tr></thead><tbody><tr><td>发明申请</td><td>20734</td></tr><tr><td>发明授权</td><td>33301</td></tr><tr><td>实用新型</td><td>305</td></tr><tr><td>外观设计</td><td>3539</td></tr></tbody></table></div></details></div>
-<p class="biz-section-note">按专利法律状态统计数量</p><div class="chart-box"><h4 class="chart-title">专利法律状态分布</h4><div class="chart-canvas" data-chart="bar" data-spec="{&quot;type&quot;:&quot;bar&quot;,&quot;orient&quot;:&quot;v&quot;,&quot;names&quot;:[&quot;授权&quot;,&quot;公布&quot;,&quot;实质审查的生效&quot;,&quot;发明专利申请公布后的驳回&quot;,&quot;专利权期限的补偿&quot;,&quot;专利申请权、专利权的转移&quot;,&quot;专利权的终止&quot;,&quot;专利权终止&quot;,&quot;专利实施许可合同备案的生效、变更及注销&quot;,&quot;著录事项变更&quot;,&quot;发明专利申请公布后的视为撤回&quot;,&quot;发明专利申请公布后的撤回&quot;,&quot;专利权的视为放弃&quot;,&quot;开放许可的声明及撤回&quot;,&quot;专利权的保全及其解除&quot;,&quot;专利权人的姓名或者名称、国籍和地址的变更&quot;,&quot;专利权人的姓名或者名称、地址的变更&quot;,&quot;其他有关事项&quot;,&quot;避免重复授权放弃专利权&quot;,&quot;专利权终止-未缴年费专利权终止&quot;],&quot;values&quot;:[32425.0,3949.0,12310.0,3798.0,1406.0,1414.0,250.0,1817.0,23.0,14.0,152.0,43.0,10.0,16.0,1.0,8.0,6.0,1.0,1.0,1.0]}"></div><details class="chart-data"><summary>数据明细</summary><div class="table-wrap"><table><thead><tr><th>状态</th><th>数量</th></tr></thead><tbody><tr><td>授权</td><td>32425</td></tr><tr><td>公布</td><td>3949</td></tr><tr><td>实质审查的生效</td><td>12310</td></tr><tr><td>发明专利申请公布后的驳回</td><td>3798</td></tr><tr><td>专利权期限的补偿</td><td>1406</td></tr><tr><td>专利申请权、专利权的转移</td><td>1414</td></tr><tr><td>专利权的终止</td><td>250</td></tr><tr><td>专利权终止</td><td>1817</td></tr><tr><td>专利实施许可合同备案的生效、变更及注销</td><td>23</td></tr><tr><td>著录事项变更</td><td>14</td></tr><tr><td>发明专利申请公布后的视为撤回</td><td>152</td></tr><tr><td>发明专利申请公布后的撤回</td><td>43</td></tr><tr><td>专利权的视为放弃</td><td>10</td></tr><tr><td>开放许可的声明及撤回</td><td>16</td></tr><tr><td>专利权的保全及其解除</td><td>1</td></tr><tr><td>专利权人的姓名或者名称、国籍和地址的变更</td><td>8</td></tr><tr><td>专利权人的姓名或者名称、地址的变更</td><td>6</td></tr><tr><td>其他有关事项</td><td>1</td></tr><tr><td>避免重复授权放弃专利权</td><td>1</td></tr><tr><td>专利权终止-未缴年费专利权终止</td><td>1</td></tr></tbody></table></div></details></div>
+<p class="biz-section-note">按年度统计 4 类专利（发明申请/发明授权/实用新型/外观设计）申请数量</p><div class="chart-box"><h4 class="chart-title">专利申请趋势（分类型）</h4><div class="chart-frame" data-chart-state="static"><div class="chart-static"><svg width="984" height="300" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" baseProfile="full" viewBox="0 0 984 300">
+<rect width="984" height="300" x="0" y="0" fill="none"></rect>
+<path d="M48 260.5L960 260.5" fill="transparent" stroke="#E0E6F1" class="zr0-cls-0"></path>
+<path d="M48 221.5L960 221.5" fill="transparent" stroke="#E0E6F1" class="zr0-cls-0"></path>
+<path d="M48 183.5L960 183.5" fill="transparent" stroke="#E0E6F1" class="zr0-cls-0"></path>
+<path d="M48 145.5L960 145.5" fill="transparent" stroke="#E0E6F1" class="zr0-cls-0"></path>
+<path d="M48 106.5L960 106.5" fill="transparent" stroke="#E0E6F1" class="zr0-cls-0"></path>
+<path d="M48 68.5L960 68.5" fill="transparent" stroke="#E0E6F1" class="zr0-cls-0"></path>
+<path d="M48 30.5L960 30.5" fill="transparent" stroke="#E0E6F1" class="zr0-cls-0"></path>
+<path d="M48 260.5L960 260.5" fill="transparent" stroke="#6E7079" stroke-linecap="round" class="zr0-cls-0"></path>
+<path d="M48.5 260L48.5 265" fill="transparent" stroke="#6E7079" class="zr0-cls-0"></path>
+<path d="M139.5 260L139.5 265" fill="transparent" stroke="#6E7079" class="zr0-cls-0"></path>
+<path d="M230.5 260L230.5 265" fill="transparent" stroke="#6E7079" class="zr0-cls-0"></path>
+<path d="M321.5 260L321.5 265" fill="transparent" stroke="#6E7079" class="zr0-cls-0"></path>
+<path d="M413.5 260L413.5 265" fill="transparent" stroke="#6E7079" class="zr0-cls-0"></path>
+<path d="M504.5 260L504.5 265" fill="transparent" stroke="#6E7079" class="zr0-cls-0"></path>
+<path d="M595.5 260L595.5 265" fill="transparent" stroke="#6E7079" class="zr0-cls-0"></path>
+<path d="M686.5 260L686.5 265" fill="transparent" stroke="#6E7079" class="zr0-cls-0"></path>
+<path d="M777.5 260L777.5 265" fill="transparent" stroke="#6E7079" class="zr0-cls-0"></path>
+<path d="M869.5 260L869.5 265" fill="transparent" stroke="#6E7079" class="zr0-cls-0"></path>
+<path d="M960.5 260L960.5 265" fill="transparent" stroke="#6E7079" class="zr0-cls-0"></path>
+<text dominant-baseline="central" text-anchor="end" style="font-size:12px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" transform="translate(40 260)" fill="#334155">0</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:12px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" transform="translate(40 221.6667)" fill="#334155">1,000</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:12px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" transform="translate(40 183.3333)" fill="#334155">2,000</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:12px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" transform="translate(40 145)" fill="#334155">3,000</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:12px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" transform="translate(40 106.6667)" fill="#334155">4,000</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:12px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" transform="translate(40 68.3333)" fill="#334155">5,000</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:12px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" transform="translate(40 30)" fill="#334155">6,000</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" transform="matrix(0.819,-0.574,0.574,0.819,93.6,268)" fill="#334155">2017</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" transform="matrix(0.819,-0.574,0.574,0.819,184.8,268)" fill="#334155">2018</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" transform="matrix(0.819,-0.574,0.574,0.819,276,268)" fill="#334155">2019</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" transform="matrix(0.819,-0.574,0.574,0.819,367.2,268)" fill="#334155">2020</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" transform="matrix(0.819,-0.574,0.574,0.819,458.4,268)" fill="#334155">2021</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" transform="matrix(0.819,-0.574,0.574,0.819,549.6,268)" fill="#334155">2022</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" transform="matrix(0.819,-0.574,0.574,0.819,640.8,268)" fill="#334155">2023</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" transform="matrix(0.819,-0.574,0.574,0.819,732,268)" fill="#334155">2024</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" transform="matrix(0.819,-0.574,0.574,0.819,823.2,268)" fill="#334155">2025</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" transform="matrix(0.819,-0.574,0.574,0.819,914.4,268)" fill="#334155">2026</text>
+<g clip-path="url(#static-chart-0-zr0-c0)">
+<path d="M93.6 247.8C93.6 247.8 139.3 247.8 184.8 246.7C230.5 245.7 230.5 243.8 276 239.2C321.7 234.5 321.9 235.3 367.2 228.2C413.1 221 419 228.2 458.4 210.5C510.2 187.3 502.2 167.6 549.6 129.1C593.4 93.5 590.9 62.2 640.8 62.2C682.1 62.2 698.2 62.2 732 84C789.4 121 766.8 162.8 823.2 214.8C858 246.9 914.4 252.1 914.4 252.1" fill="transparent" stroke="#0b5ca8" stroke-width="2" stroke-linejoin="bevel" class="zr0-cls-2"></path>
+</g>
+<g clip-path="url(#static-chart-0-zr0-c1)">
+<path d="M93.6 183.1C93.6 183.1 148.3 183.1 184.8 171.4C239.5 153.9 221.4 89.5 276 68.1C312.6 53.7 322 53.7 367.2 53.7C413.2 53.7 418.1 54.1 458.4 75.8C509.3 103.1 502.9 115.1 549.6 151.7C594.1 186.7 590.7 198.1 640.8 219C681.9 236.1 686.7 226.3 732 236.1C777.9 246 776.9 258.5 823.2 258.5C868.1 258.5 914.4 257.7 914.4 257.7" fill="transparent" stroke="#0284c7" stroke-width="2" stroke-linejoin="bevel" class="zr0-cls-2"></path>
+</g>
+<g clip-path="url(#static-chart-0-zr0-c2)">
+<path d="M93.6 259.4C93.6 259.4 139.2 259.6 184.8 259.6C230.4 259.6 230.4 259.3 276 259C321.6 258.8 321.6 258.7 367.2 258.5C412.8 258.4 412.8 258.5 458.4 258.4C504 258.2 504 257.4 549.6 257.4C595.2 257.4 595.2 257.7 640.8 258.2C686.4 258.6 686.4 259.1 732 259.3C777.6 259.5 777.6 259.3 823.2 259.5C868.8 259.6 914.4 260 914.4 260" fill="transparent" stroke="#0b3768" stroke-width="2" stroke-linejoin="bevel" class="zr0-cls-2"></path>
+</g>
+<g clip-path="url(#static-chart-0-zr0-c3)">
+<path d="M93.6 252.3C93.6 252.3 139.7 252.3 184.8 251.7C230.9 251.1 230.1 232.6 276 232.6C321.3 232.6 321.4 240.8 367.2 245.3C412.6 249.8 412.8 250.6 458.4 250.6C504 250.6 504 250.1 549.6 249.6C595.2 249.1 595.2 248.6 640.8 248.6C686.4 248.6 686.4 248.6 732 249.9C777.6 251.2 777.6 253.4 823.2 255.9C868.8 258.4 914.4 259.9 914.4 259.9" fill="transparent" stroke="#d97706" stroke-width="2" stroke-linejoin="bevel" class="zr0-cls-2"></path>
+</g>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,93.6,247.81)" fill="#fff" stroke="#0b5ca8" ecmeta_series_index="0" ecmeta_data_index="0" ecmeta_ssr_type="chart" class="zr0-cls-3"></path>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,184.8,246.7367)" fill="#fff" stroke="#0b5ca8" ecmeta_series_index="0" ecmeta_data_index="1" ecmeta_ssr_type="chart" class="zr0-cls-3"></path>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,276,239.185)" fill="#fff" stroke="#0b5ca8" ecmeta_series_index="0" ecmeta_data_index="2" ecmeta_ssr_type="chart" class="zr0-cls-3"></path>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,367.2,228.1833)" fill="#fff" stroke="#0b5ca8" ecmeta_series_index="0" ecmeta_data_index="3" ecmeta_ssr_type="chart" class="zr0-cls-3"></path>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,458.4,210.5117)" fill="#fff" stroke="#0b5ca8" ecmeta_series_index="0" ecmeta_data_index="4" ecmeta_ssr_type="chart" class="zr0-cls-3"></path>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,549.6,129.0917)" fill="#fff" stroke="#0b5ca8" ecmeta_series_index="0" ecmeta_data_index="5" ecmeta_ssr_type="chart" class="zr0-cls-3"></path>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,640.8,62.2)" fill="#fff" stroke="#0b5ca8" ecmeta_series_index="0" ecmeta_data_index="6" ecmeta_ssr_type="chart" class="zr0-cls-3"></path>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,732,83.9733)" fill="#fff" stroke="#0b5ca8" ecmeta_series_index="0" ecmeta_data_index="7" ecmeta_ssr_type="chart" class="zr0-cls-3"></path>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,823.2,214.7667)" fill="#fff" stroke="#0b5ca8" ecmeta_series_index="0" ecmeta_data_index="8" ecmeta_ssr_type="chart" class="zr0-cls-3"></path>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,914.4,252.065)" fill="#fff" stroke="#0b5ca8" ecmeta_series_index="0" ecmeta_data_index="9" ecmeta_ssr_type="chart" class="zr0-cls-3"></path>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,93.6,183.1033)" fill="#fff" stroke="#0284c7" ecmeta_series_index="1" ecmeta_data_index="0" ecmeta_ssr_type="chart" class="zr0-cls-3"></path>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,184.8,171.4117)" fill="#fff" stroke="#0284c7" ecmeta_series_index="1" ecmeta_data_index="1" ecmeta_ssr_type="chart" class="zr0-cls-3"></path>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,276,68.065)" fill="#fff" stroke="#0284c7" ecmeta_series_index="1" ecmeta_data_index="2" ecmeta_ssr_type="chart" class="zr0-cls-3"></path>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,367.2,53.7283)" fill="#fff" stroke="#0284c7" ecmeta_series_index="1" ecmeta_data_index="3" ecmeta_ssr_type="chart" class="zr0-cls-3"></path>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,458.4,75.77)" fill="#fff" stroke="#0284c7" ecmeta_series_index="1" ecmeta_data_index="4" ecmeta_ssr_type="chart" class="zr0-cls-3"></path>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,549.6,151.7083)" fill="#fff" stroke="#0284c7" ecmeta_series_index="1" ecmeta_data_index="5" ecmeta_ssr_type="chart" class="zr0-cls-3"></path>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,640.8,218.9833)" fill="#fff" stroke="#0284c7" ecmeta_series_index="1" ecmeta_data_index="6" ecmeta_ssr_type="chart" class="zr0-cls-3"></path>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,732,236.08)" fill="#fff" stroke="#0284c7" ecmeta_series_index="1" ecmeta_data_index="7" ecmeta_ssr_type="chart" class="zr0-cls-3"></path>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,823.2,258.505)" fill="#fff" stroke="#0284c7" ecmeta_series_index="1" ecmeta_data_index="8" ecmeta_ssr_type="chart" class="zr0-cls-3"></path>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,914.4,257.7)" fill="#fff" stroke="#0284c7" ecmeta_series_index="1" ecmeta_data_index="9" ecmeta_ssr_type="chart" class="zr0-cls-3"></path>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,93.6,259.425)" fill="#fff" stroke="#0b3768" ecmeta_series_index="2" ecmeta_data_index="0" ecmeta_ssr_type="chart" class="zr0-cls-3"></path>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,184.8,259.6167)" fill="#fff" stroke="#0b3768" ecmeta_series_index="2" ecmeta_data_index="1" ecmeta_ssr_type="chart" class="zr0-cls-3"></path>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,276,259.0417)" fill="#fff" stroke="#0b3768" ecmeta_series_index="2" ecmeta_data_index="2" ecmeta_ssr_type="chart" class="zr0-cls-3"></path>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,367.2,258.505)" fill="#fff" stroke="#0b3768" ecmeta_series_index="2" ecmeta_data_index="3" ecmeta_ssr_type="chart" class="zr0-cls-3"></path>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,458.4,258.3517)" fill="#fff" stroke="#0b3768" ecmeta_series_index="2" ecmeta_data_index="4" ecmeta_ssr_type="chart" class="zr0-cls-3"></path>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,549.6,257.355)" fill="#fff" stroke="#0b3768" ecmeta_series_index="2" ecmeta_data_index="5" ecmeta_ssr_type="chart" class="zr0-cls-3"></path>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,640.8,258.16)" fill="#fff" stroke="#0b3768" ecmeta_series_index="2" ecmeta_data_index="6" ecmeta_ssr_type="chart" class="zr0-cls-3"></path>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,732,259.2717)" fill="#fff" stroke="#0b3768" ecmeta_series_index="2" ecmeta_data_index="7" ecmeta_ssr_type="chart" class="zr0-cls-3"></path>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,823.2,259.4633)" fill="#fff" stroke="#0b3768" ecmeta_series_index="2" ecmeta_data_index="8" ecmeta_ssr_type="chart" class="zr0-cls-3"></path>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,914.4,260)" fill="#fff" stroke="#0b3768" ecmeta_series_index="2" ecmeta_data_index="9" ecmeta_ssr_type="chart" class="zr0-cls-3"></path>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,93.6,252.2567)" fill="#fff" stroke="#d97706" ecmeta_series_index="3" ecmeta_data_index="0" ecmeta_ssr_type="chart" class="zr0-cls-3"></path>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,184.8,251.6817)" fill="#fff" stroke="#d97706" ecmeta_series_index="3" ecmeta_data_index="1" ecmeta_ssr_type="chart" class="zr0-cls-3"></path>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,276,232.5917)" fill="#fff" stroke="#d97706" ecmeta_series_index="3" ecmeta_data_index="2" ecmeta_ssr_type="chart" class="zr0-cls-3"></path>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,367.2,245.28)" fill="#fff" stroke="#d97706" ecmeta_series_index="3" ecmeta_data_index="3" ecmeta_ssr_type="chart" class="zr0-cls-3"></path>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,458.4,250.6083)" fill="#fff" stroke="#d97706" ecmeta_series_index="3" ecmeta_data_index="4" ecmeta_ssr_type="chart" class="zr0-cls-3"></path>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,549.6,249.5733)" fill="#fff" stroke="#d97706" ecmeta_series_index="3" ecmeta_data_index="5" ecmeta_ssr_type="chart" class="zr0-cls-3"></path>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,640.8,248.5767)" fill="#fff" stroke="#d97706" ecmeta_series_index="3" ecmeta_data_index="6" ecmeta_ssr_type="chart" class="zr0-cls-3"></path>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,732,249.88)" fill="#fff" stroke="#d97706" ecmeta_series_index="3" ecmeta_data_index="7" ecmeta_ssr_type="chart" class="zr0-cls-3"></path>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,823.2,255.9367)" fill="#fff" stroke="#d97706" ecmeta_series_index="3" ecmeta_data_index="8" ecmeta_ssr_type="chart" class="zr0-cls-3"></path>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,914.4,259.885)" fill="#fff" stroke="#d97706" ecmeta_series_index="3" ecmeta_data_index="9" ecmeta_ssr_type="chart" class="zr0-cls-3"></path>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(93.6 239.81)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">318</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(184.8 238.7367)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">346</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(276 231.185)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">543</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(367.2 220.1833)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">830</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(458.4 202.5117)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">1291</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(549.6 121.0917)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">3415</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(640.8 54.2)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">5160</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(732 75.9733)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">4592</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(823.2 206.7667)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">1180</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(914.4 244.065)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">207</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(93.6 175.1033)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">2006</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(184.8 163.4117)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">2311</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(276 60.065)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">5007</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(367.2 45.7283)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">5381</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(458.4 67.77)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">4806</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(549.6 143.7083)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">2825</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(640.8 210.9833)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">1070</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(732 228.08)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">624</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(823.2 250.505)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">39</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(914.4 249.7)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">60</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(93.6 251.425)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">15</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(184.8 251.6167)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">10</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(276 251.0417)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">25</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(367.2 250.505)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">39</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(458.4 250.3517)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">43</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(549.6 249.355)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">69</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(640.8 250.16)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">48</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(732 251.2717)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">19</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(823.2 251.4633)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">14</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(914.4 252)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">0</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(93.6 244.2567)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">202</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(184.8 243.6817)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">217</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(276 224.5917)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">715</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(367.2 237.28)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">384</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(458.4 242.6083)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">245</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(549.6 241.5733)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">272</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(640.8 240.5767)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">298</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(732 241.88)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">264</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(823.2 247.9367)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">106</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(914.4 251.885)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">3</text>
+<path d="M-5 -5l340 0l0 23.2l-340 0Z" transform="translate(327 5)" fill="rgb(0,0,0)" fill-opacity="0" stroke="#ccc" stroke-width="0" class="zr0-cls-0"></path>
+<path d="M0 7L25 7" transform="translate(328 4.6)" fill="#000" stroke="#0b5ca8" stroke-width="2" stroke-linecap="butt" stroke-miterlimit="10" class="zr0-cls-0"></path>
+<path d="M18.1 7A5.6 5.6 0 1 1 18.1 6.4A5.6 5.6 0 0 1 18.1 7" transform="translate(328 4.6)" fill="#fff" stroke="#0b5ca8" stroke-width="2" stroke-linecap="butt" stroke-miterlimit="10" class="zr0-cls-0"></path>
+<text dominant-baseline="central" text-anchor="start" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" x="30" y="7" transform="translate(328 4.6)" fill="#333">发明申请</text>
+<path d="M-1 0.4l75 0l0 13.2l-75 0Z" transform="translate(328 4.6)" fill="transparent" ecmeta_series_index="0" ecmeta_data_index="0" ecmeta_ssr_type="legend" class="zr0-cls-4"></path>
+<path d="M0 7L25 7" transform="translate(413 4.6)" fill="#000" stroke="#0284c7" stroke-width="2" stroke-linecap="butt" stroke-miterlimit="10" class="zr0-cls-0"></path>
+<path d="M18.1 7A5.6 5.6 0 1 1 18.1 6.4A5.6 5.6 0 0 1 18.1 7" transform="translate(413 4.6)" fill="#fff" stroke="#0284c7" stroke-width="2" stroke-linecap="butt" stroke-miterlimit="10" class="zr0-cls-0"></path>
+<text dominant-baseline="central" text-anchor="start" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" x="30" y="7" transform="translate(413 4.6)" fill="#333">发明授权</text>
+<path d="M-1 0.4l75 0l0 13.2l-75 0Z" transform="translate(413 4.6)" fill="transparent" ecmeta_series_index="1" ecmeta_data_index="1" ecmeta_ssr_type="legend" class="zr0-cls-4"></path>
+<path d="M0 7L25 7" transform="translate(498 4.6)" fill="#000" stroke="#0b3768" stroke-width="2" stroke-linecap="butt" stroke-miterlimit="10" class="zr0-cls-0"></path>
+<path d="M18.1 7A5.6 5.6 0 1 1 18.1 6.4A5.6 5.6 0 0 1 18.1 7" transform="translate(498 4.6)" fill="#fff" stroke="#0b3768" stroke-width="2" stroke-linecap="butt" stroke-miterlimit="10" class="zr0-cls-0"></path>
+<text dominant-baseline="central" text-anchor="start" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" x="30" y="7" transform="translate(498 4.6)" fill="#333">实用新型</text>
+<path d="M-1 0.4l75 0l0 13.2l-75 0Z" transform="translate(498 4.6)" fill="transparent" ecmeta_series_index="2" ecmeta_data_index="2" ecmeta_ssr_type="legend" class="zr0-cls-4"></path>
+<path d="M0 7L25 7" transform="translate(583 4.6)" fill="#000" stroke="#d97706" stroke-width="2" stroke-linecap="butt" stroke-miterlimit="10" class="zr0-cls-0"></path>
+<path d="M18.1 7A5.6 5.6 0 1 1 18.1 6.4A5.6 5.6 0 0 1 18.1 7" transform="translate(583 4.6)" fill="#fff" stroke="#d97706" stroke-width="2" stroke-linecap="butt" stroke-miterlimit="10" class="zr0-cls-0"></path>
+<text dominant-baseline="central" text-anchor="start" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" x="30" y="7" transform="translate(583 4.6)" fill="#333">外观设计</text>
+<path d="M-1 0.4l75 0l0 13.2l-75 0Z" transform="translate(583 4.6)" fill="transparent" ecmeta_series_index="3" ecmeta_data_index="3" ecmeta_ssr_type="legend" class="zr0-cls-4"></path>
+<defs >
+<clipPath id="static-chart-0-zr0-c0">
+<path d="M47 29l914 0l0 232l-914 0Z" fill="#000" class="zr0-cls-1"></path>
+</clipPath>
+<clipPath id="static-chart-0-zr0-c1">
+<path d="M47 29l914 0l0 232l-914 0Z" fill="#000" class="zr0-cls-1"></path>
+</clipPath>
+<clipPath id="static-chart-0-zr0-c2">
+<path d="M47 29l914 0l0 232l-914 0Z" fill="#000" class="zr0-cls-1"></path>
+</clipPath>
+<clipPath id="static-chart-0-zr0-c3">
+<path d="M47 29l914 0l0 232l-914 0Z" fill="#000" class="zr0-cls-1"></path>
+</clipPath>
+</defs>
+<style ><![CDATA[
+.zr0-cls-0:hover {
+pointer-events:none;
+}
+.zr0-cls-1:hover {
+cursor:pointer;
+fill:rgba(0,0,0,1);
+}
+.zr0-cls-2:hover {
+cursor:pointer;
+}
+.zr0-cls-3:hover {
+cursor:pointer;
+fill:rgba(255,255,255,1);
+}
+.zr0-cls-4:hover {
+cursor:pointer;
+fill:rgba(0,0,0,0);
+}
+
+]]>
+
+</style>
+</svg></div><div class="chart-canvas" data-chart="line" data-spec="{&quot;type&quot;:&quot;line&quot;,&quot;area&quot;:false,&quot;stack&quot;:false,&quot;x&quot;:[&quot;2017&quot;,&quot;2018&quot;,&quot;2019&quot;,&quot;2020&quot;,&quot;2021&quot;,&quot;2022&quot;,&quot;2023&quot;,&quot;2024&quot;,&quot;2025&quot;,&quot;2026&quot;],&quot;series&quot;:[{&quot;name&quot;:&quot;发明申请&quot;,&quot;data&quot;:[318.0,346.0,543.0,830.0,1291.0,3415.0,5160.0,4592.0,1180.0,207.0]},{&quot;name&quot;:&quot;发明授权&quot;,&quot;data&quot;:[2006.0,2311.0,5007.0,5381.0,4806.0,2825.0,1070.0,624.0,39.0,60.0]},{&quot;name&quot;:&quot;实用新型&quot;,&quot;data&quot;:[15.0,10.0,25.0,39.0,43.0,69.0,48.0,19.0,14.0,0.0]},{&quot;name&quot;:&quot;外观设计&quot;,&quot;data&quot;:[202.0,217.0,715.0,384.0,245.0,272.0,298.0,264.0,106.0,3.0]}]}"></div><p class="chart-status" aria-live="polite"></p></div><details class="chart-data"><summary>数据明细</summary><div class="table-wrap"><table><thead><tr><th>年份</th><th>发明申请</th><th>发明授权</th><th>实用新型</th><th>外观设计</th></tr></thead><tbody><tr><td>2017</td><td>318</td><td>2006</td><td>15</td><td>202</td></tr><tr><td>2018</td><td>346</td><td>2311</td><td>10</td><td>217</td></tr><tr><td>2019</td><td>543</td><td>5007</td><td>25</td><td>715</td></tr><tr><td>2020</td><td>830</td><td>5381</td><td>39</td><td>384</td></tr><tr><td>2021</td><td>1291</td><td>4806</td><td>43</td><td>245</td></tr><tr><td>2022</td><td>3415</td><td>2825</td><td>69</td><td>272</td></tr><tr><td>2023</td><td>5160</td><td>1070</td><td>48</td><td>298</td></tr><tr><td>2024</td><td>4592</td><td>624</td><td>19</td><td>264</td></tr><tr><td>2025</td><td>1180</td><td>39</td><td>14</td><td>106</td></tr><tr><td>2026</td><td>207</td><td>60</td><td>0</td><td>3</td></tr></tbody></table></div></details></div>
+<p class="biz-section-note">按年度统计 4 类专利授权数量</p><div class="chart-box"><h4 class="chart-title">专利授权趋势（分类型）</h4><div class="chart-frame" data-chart-state="static"><div class="chart-static"><svg width="984" height="300" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" baseProfile="full" viewBox="0 0 984 300">
+<rect width="984" height="300" x="0" y="0" fill="none"></rect>
+<path d="M48 260.5L960 260.5" fill="transparent" stroke="#E0E6F1" class="zr1-cls-5"></path>
+<path d="M48 214.5L960 214.5" fill="transparent" stroke="#E0E6F1" class="zr1-cls-5"></path>
+<path d="M48 168.5L960 168.5" fill="transparent" stroke="#E0E6F1" class="zr1-cls-5"></path>
+<path d="M48 122.5L960 122.5" fill="transparent" stroke="#E0E6F1" class="zr1-cls-5"></path>
+<path d="M48 76.5L960 76.5" fill="transparent" stroke="#E0E6F1" class="zr1-cls-5"></path>
+<path d="M48 30.5L960 30.5" fill="transparent" stroke="#E0E6F1" class="zr1-cls-5"></path>
+<path d="M48 260.5L960 260.5" fill="transparent" stroke="#6E7079" stroke-linecap="round" class="zr1-cls-5"></path>
+<path d="M48.5 260L48.5 265" fill="transparent" stroke="#6E7079" class="zr1-cls-5"></path>
+<path d="M139.5 260L139.5 265" fill="transparent" stroke="#6E7079" class="zr1-cls-5"></path>
+<path d="M230.5 260L230.5 265" fill="transparent" stroke="#6E7079" class="zr1-cls-5"></path>
+<path d="M321.5 260L321.5 265" fill="transparent" stroke="#6E7079" class="zr1-cls-5"></path>
+<path d="M413.5 260L413.5 265" fill="transparent" stroke="#6E7079" class="zr1-cls-5"></path>
+<path d="M504.5 260L504.5 265" fill="transparent" stroke="#6E7079" class="zr1-cls-5"></path>
+<path d="M595.5 260L595.5 265" fill="transparent" stroke="#6E7079" class="zr1-cls-5"></path>
+<path d="M686.5 260L686.5 265" fill="transparent" stroke="#6E7079" class="zr1-cls-5"></path>
+<path d="M777.5 260L777.5 265" fill="transparent" stroke="#6E7079" class="zr1-cls-5"></path>
+<path d="M869.5 260L869.5 265" fill="transparent" stroke="#6E7079" class="zr1-cls-5"></path>
+<path d="M960.5 260L960.5 265" fill="transparent" stroke="#6E7079" class="zr1-cls-5"></path>
+<text dominant-baseline="central" text-anchor="end" style="font-size:12px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" transform="translate(40 260)" fill="#334155">0</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:12px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" transform="translate(40 214)" fill="#334155">1,000</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:12px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" transform="translate(40 168)" fill="#334155">2,000</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:12px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" transform="translate(40 122)" fill="#334155">3,000</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:12px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" transform="translate(40 76)" fill="#334155">4,000</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:12px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" transform="translate(40 30)" fill="#334155">5,000</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" transform="matrix(0.819,-0.574,0.574,0.819,93.6,268)" fill="#334155">2017</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" transform="matrix(0.819,-0.574,0.574,0.819,184.8,268)" fill="#334155">2018</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" transform="matrix(0.819,-0.574,0.574,0.819,276,268)" fill="#334155">2019</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" transform="matrix(0.819,-0.574,0.574,0.819,367.2,268)" fill="#334155">2020</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" transform="matrix(0.819,-0.574,0.574,0.819,458.4,268)" fill="#334155">2021</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" transform="matrix(0.819,-0.574,0.574,0.819,549.6,268)" fill="#334155">2022</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" transform="matrix(0.819,-0.574,0.574,0.819,640.8,268)" fill="#334155">2023</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" transform="matrix(0.819,-0.574,0.574,0.819,732,268)" fill="#334155">2024</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" transform="matrix(0.819,-0.574,0.574,0.819,823.2,268)" fill="#334155">2025</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" transform="matrix(0.819,-0.574,0.574,0.819,914.4,268)" fill="#334155">2026</text>
+<g clip-path="url(#static-chart-1-zr1-c0)">
+<path d="M93.6 243.1C93.6 243.1 139.3 243.1 184.8 242.9C230.5 242.8 230.3 238.5 276 235.9C321.5 233.4 321.6 232.6 367.2 232.6C412.8 232.6 413 234.4 458.4 234.4C504.2 234.4 518.7 234.4 549.6 223.6C609.9 202.4 580.9 69.5 640.8 69.5C672.1 69.5 687.1 91 732 91C778.3 91 781.5 58.9 823.2 58.9C872.7 58.9 914.4 128.6 914.4 128.6" fill="transparent" stroke="#0b5ca8" stroke-width="2" stroke-linejoin="bevel" class="zr1-cls-7"></path>
+</g>
+<g clip-path="url(#static-chart-1-zr1-c1)">
+<path d="M93.6 225.5C93.6 225.5 137.8 201.2 184.8 185.1C229 169.8 230.7 174.9 276 162.7C321.9 150.4 327.2 159.5 367.2 136C418.4 105.8 406.6 55.2 458.4 55.2C497.8 55.2 504.1 72.6 549.6 72.6C595.3 72.6 594.8 52.5 640.8 52.5C686 52.5 687.5 53.3 732 63.7C778.7 74.7 779.5 75.4 823.2 95.4C870.7 117 914.4 147 914.4 147" fill="transparent" stroke="#0284c7" stroke-width="2" stroke-linejoin="bevel" class="zr1-cls-7"></path>
+</g>
+<g clip-path="url(#static-chart-1-zr1-c2)">
+<path d="M93.6 259.7C93.6 259.7 139.2 259.3 184.8 259.3C230.4 259.3 230.4 259.4 276 259.4C321.6 259.4 321.6 259.2 367.2 258.7C412.8 258.2 412.8 257.3 458.4 257.3C504 257.3 504 257.3 549.6 257.4C595.2 257.5 595.2 257.4 640.8 257.7C686.4 258 686.4 258.1 732 258.5C777.6 259 777.6 259.4 823.2 259.4C868.8 259.4 914.4 259.4 914.4 259.4" fill="transparent" stroke="#0b3768" stroke-width="2" stroke-linejoin="bevel" class="zr1-cls-7"></path>
+</g>
+<g clip-path="url(#static-chart-1-zr1-c3)">
+<path d="M93.6 252.9C93.6 252.9 139.2 252.2 184.8 250.9C230.4 249.5 231.2 250.9 276 247.5C322.4 244 321.6 222.5 367.2 222.5C412.8 222.5 412.1 238.6 458.4 246.8C503.3 254.9 503.9 255 549.6 255C595.1 255 595.6 255 640.8 253.9C686.8 252.8 686.3 235.9 732 235.9C777.5 235.9 777.3 249.6 823.2 251.8C868.5 254 914.4 254 914.4 254" fill="transparent" stroke="#d97706" stroke-width="2" stroke-linejoin="bevel" class="zr1-cls-7"></path>
+</g>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,93.6,243.072)" fill="#fff" stroke="#0b5ca8" ecmeta_series_index="0" ecmeta_data_index="0" ecmeta_ssr_type="chart" class="zr1-cls-8"></path>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,184.8,242.934)" fill="#fff" stroke="#0b5ca8" ecmeta_series_index="0" ecmeta_data_index="1" ecmeta_ssr_type="chart" class="zr1-cls-8"></path>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,276,235.942)" fill="#fff" stroke="#0b5ca8" ecmeta_series_index="0" ecmeta_data_index="2" ecmeta_ssr_type="chart" class="zr1-cls-8"></path>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,367.2,232.63)" fill="#fff" stroke="#0b5ca8" ecmeta_series_index="0" ecmeta_data_index="3" ecmeta_ssr_type="chart" class="zr1-cls-8"></path>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,458.4,234.424)" fill="#fff" stroke="#0b5ca8" ecmeta_series_index="0" ecmeta_data_index="4" ecmeta_ssr_type="chart" class="zr1-cls-8"></path>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,549.6,223.568)" fill="#fff" stroke="#0b5ca8" ecmeta_series_index="0" ecmeta_data_index="5" ecmeta_ssr_type="chart" class="zr1-cls-8"></path>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,640.8,69.468)" fill="#fff" stroke="#0b5ca8" ecmeta_series_index="0" ecmeta_data_index="6" ecmeta_ssr_type="chart" class="zr1-cls-8"></path>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,732,91.042)" fill="#fff" stroke="#0b5ca8" ecmeta_series_index="0" ecmeta_data_index="7" ecmeta_ssr_type="chart" class="zr1-cls-8"></path>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,823.2,58.934)" fill="#fff" stroke="#0b5ca8" ecmeta_series_index="0" ecmeta_data_index="8" ecmeta_ssr_type="chart" class="zr1-cls-8"></path>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,914.4,128.624)" fill="#fff" stroke="#0b5ca8" ecmeta_series_index="0" ecmeta_data_index="9" ecmeta_ssr_type="chart" class="zr1-cls-8"></path>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,93.6,225.5)" fill="#fff" stroke="#0284c7" ecmeta_series_index="1" ecmeta_data_index="0" ecmeta_ssr_type="chart" class="zr1-cls-8"></path>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,184.8,185.066)" fill="#fff" stroke="#0284c7" ecmeta_series_index="1" ecmeta_data_index="1" ecmeta_ssr_type="chart" class="zr1-cls-8"></path>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,276,162.71)" fill="#fff" stroke="#0284c7" ecmeta_series_index="1" ecmeta_data_index="2" ecmeta_ssr_type="chart" class="zr1-cls-8"></path>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,367.2,135.984)" fill="#fff" stroke="#0284c7" ecmeta_series_index="1" ecmeta_data_index="3" ecmeta_ssr_type="chart" class="zr1-cls-8"></path>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,458.4,55.208)" fill="#fff" stroke="#0284c7" ecmeta_series_index="1" ecmeta_data_index="4" ecmeta_ssr_type="chart" class="zr1-cls-8"></path>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,549.6,72.55)" fill="#fff" stroke="#0284c7" ecmeta_series_index="1" ecmeta_data_index="5" ecmeta_ssr_type="chart" class="zr1-cls-8"></path>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,640.8,52.494)" fill="#fff" stroke="#0284c7" ecmeta_series_index="1" ecmeta_data_index="6" ecmeta_ssr_type="chart" class="zr1-cls-8"></path>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,732,63.718)" fill="#fff" stroke="#0284c7" ecmeta_series_index="1" ecmeta_data_index="7" ecmeta_ssr_type="chart" class="zr1-cls-8"></path>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,823.2,95.366)" fill="#fff" stroke="#0284c7" ecmeta_series_index="1" ecmeta_data_index="8" ecmeta_ssr_type="chart" class="zr1-cls-8"></path>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,914.4,146.978)" fill="#fff" stroke="#0284c7" ecmeta_series_index="1" ecmeta_data_index="9" ecmeta_ssr_type="chart" class="zr1-cls-8"></path>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,93.6,259.678)" fill="#fff" stroke="#0b3768" ecmeta_series_index="2" ecmeta_data_index="0" ecmeta_ssr_type="chart" class="zr1-cls-8"></path>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,184.8,259.31)" fill="#fff" stroke="#0b3768" ecmeta_series_index="2" ecmeta_data_index="1" ecmeta_ssr_type="chart" class="zr1-cls-8"></path>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,276,259.402)" fill="#fff" stroke="#0b3768" ecmeta_series_index="2" ecmeta_data_index="2" ecmeta_ssr_type="chart" class="zr1-cls-8"></path>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,367.2,258.712)" fill="#fff" stroke="#0b3768" ecmeta_series_index="2" ecmeta_data_index="3" ecmeta_ssr_type="chart" class="zr1-cls-8"></path>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,458.4,257.286)" fill="#fff" stroke="#0b3768" ecmeta_series_index="2" ecmeta_data_index="4" ecmeta_ssr_type="chart" class="zr1-cls-8"></path>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,549.6,257.378)" fill="#fff" stroke="#0b3768" ecmeta_series_index="2" ecmeta_data_index="5" ecmeta_ssr_type="chart" class="zr1-cls-8"></path>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,640.8,257.7)" fill="#fff" stroke="#0b3768" ecmeta_series_index="2" ecmeta_data_index="6" ecmeta_ssr_type="chart" class="zr1-cls-8"></path>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,732,258.528)" fill="#fff" stroke="#0b3768" ecmeta_series_index="2" ecmeta_data_index="7" ecmeta_ssr_type="chart" class="zr1-cls-8"></path>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,823.2,259.448)" fill="#fff" stroke="#0b3768" ecmeta_series_index="2" ecmeta_data_index="8" ecmeta_ssr_type="chart" class="zr1-cls-8"></path>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,914.4,259.356)" fill="#fff" stroke="#0b3768" ecmeta_series_index="2" ecmeta_data_index="9" ecmeta_ssr_type="chart" class="zr1-cls-8"></path>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,93.6,252.916)" fill="#fff" stroke="#d97706" ecmeta_series_index="3" ecmeta_data_index="0" ecmeta_ssr_type="chart" class="zr1-cls-8"></path>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,184.8,250.892)" fill="#fff" stroke="#d97706" ecmeta_series_index="3" ecmeta_data_index="1" ecmeta_ssr_type="chart" class="zr1-cls-8"></path>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,276,247.488)" fill="#fff" stroke="#d97706" ecmeta_series_index="3" ecmeta_data_index="2" ecmeta_ssr_type="chart" class="zr1-cls-8"></path>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,367.2,222.464)" fill="#fff" stroke="#d97706" ecmeta_series_index="3" ecmeta_data_index="3" ecmeta_ssr_type="chart" class="zr1-cls-8"></path>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,458.4,246.844)" fill="#fff" stroke="#d97706" ecmeta_series_index="3" ecmeta_data_index="4" ecmeta_ssr_type="chart" class="zr1-cls-8"></path>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,549.6,254.986)" fill="#fff" stroke="#d97706" ecmeta_series_index="3" ecmeta_data_index="5" ecmeta_ssr_type="chart" class="zr1-cls-8"></path>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,640.8,253.882)" fill="#fff" stroke="#d97706" ecmeta_series_index="3" ecmeta_data_index="6" ecmeta_ssr_type="chart" class="zr1-cls-8"></path>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,732,235.942)" fill="#fff" stroke="#d97706" ecmeta_series_index="3" ecmeta_data_index="7" ecmeta_ssr_type="chart" class="zr1-cls-8"></path>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,823.2,251.812)" fill="#fff" stroke="#d97706" ecmeta_series_index="3" ecmeta_data_index="8" ecmeta_ssr_type="chart" class="zr1-cls-8"></path>
+<path d="M1 0A1 1 0 1 1 1 -0.1A1 1 0 0 1 1 0" transform="matrix(2,0,0,2,914.4,254.02)" fill="#fff" stroke="#d97706" ecmeta_series_index="3" ecmeta_data_index="9" ecmeta_ssr_type="chart" class="zr1-cls-8"></path>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(93.6 235.072)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">368</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(184.8 234.934)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">371</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(276 227.942)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">523</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(367.2 224.63)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">595</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(458.4 226.424)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">556</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(549.6 215.568)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">792</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(640.8 61.468)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">4142</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(732 83.042)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">3673</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(823.2 50.934)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">4371</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(914.4 120.624)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">2856</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(93.6 217.5)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">750</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(184.8 177.066)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">1629</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(276 154.71)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">2115</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(367.2 127.984)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">2696</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(458.4 47.208)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">4452</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(549.6 64.55)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">4075</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(640.8 44.494)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">4511</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(732 55.718)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">4267</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(823.2 87.366)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">3579</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(914.4 138.978)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">2457</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(93.6 251.678)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">7</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(184.8 251.31)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">15</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(276 251.402)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">13</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(367.2 250.712)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">28</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(458.4 249.286)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">59</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(549.6 249.378)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">57</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(640.8 249.7)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">50</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(732 250.528)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">32</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(823.2 251.448)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">12</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(914.4 251.356)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">14</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(93.6 244.916)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">154</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(184.8 242.892)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">198</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(276 239.488)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">272</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(367.2 214.464)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">816</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(458.4 238.844)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">286</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(549.6 246.986)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">109</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(640.8 245.882)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">133</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(732 227.942)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">523</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(823.2 243.812)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">178</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(914.4 246.02)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">130</text>
+<path d="M-5 -5l340 0l0 23.2l-340 0Z" transform="translate(327 5)" fill="rgb(0,0,0)" fill-opacity="0" stroke="#ccc" stroke-width="0" class="zr1-cls-5"></path>
+<path d="M0 7L25 7" transform="translate(328 4.6)" fill="#000" stroke="#0b5ca8" stroke-width="2" stroke-linecap="butt" stroke-miterlimit="10" class="zr1-cls-5"></path>
+<path d="M18.1 7A5.6 5.6 0 1 1 18.1 6.4A5.6 5.6 0 0 1 18.1 7" transform="translate(328 4.6)" fill="#fff" stroke="#0b5ca8" stroke-width="2" stroke-linecap="butt" stroke-miterlimit="10" class="zr1-cls-5"></path>
+<text dominant-baseline="central" text-anchor="start" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" x="30" y="7" transform="translate(328 4.6)" fill="#333">发明申请</text>
+<path d="M-1 0.4l75 0l0 13.2l-75 0Z" transform="translate(328 4.6)" fill="transparent" ecmeta_series_index="0" ecmeta_data_index="0" ecmeta_ssr_type="legend" class="zr1-cls-9"></path>
+<path d="M0 7L25 7" transform="translate(413 4.6)" fill="#000" stroke="#0284c7" stroke-width="2" stroke-linecap="butt" stroke-miterlimit="10" class="zr1-cls-5"></path>
+<path d="M18.1 7A5.6 5.6 0 1 1 18.1 6.4A5.6 5.6 0 0 1 18.1 7" transform="translate(413 4.6)" fill="#fff" stroke="#0284c7" stroke-width="2" stroke-linecap="butt" stroke-miterlimit="10" class="zr1-cls-5"></path>
+<text dominant-baseline="central" text-anchor="start" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" x="30" y="7" transform="translate(413 4.6)" fill="#333">发明授权</text>
+<path d="M-1 0.4l75 0l0 13.2l-75 0Z" transform="translate(413 4.6)" fill="transparent" ecmeta_series_index="1" ecmeta_data_index="1" ecmeta_ssr_type="legend" class="zr1-cls-9"></path>
+<path d="M0 7L25 7" transform="translate(498 4.6)" fill="#000" stroke="#0b3768" stroke-width="2" stroke-linecap="butt" stroke-miterlimit="10" class="zr1-cls-5"></path>
+<path d="M18.1 7A5.6 5.6 0 1 1 18.1 6.4A5.6 5.6 0 0 1 18.1 7" transform="translate(498 4.6)" fill="#fff" stroke="#0b3768" stroke-width="2" stroke-linecap="butt" stroke-miterlimit="10" class="zr1-cls-5"></path>
+<text dominant-baseline="central" text-anchor="start" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" x="30" y="7" transform="translate(498 4.6)" fill="#333">实用新型</text>
+<path d="M-1 0.4l75 0l0 13.2l-75 0Z" transform="translate(498 4.6)" fill="transparent" ecmeta_series_index="2" ecmeta_data_index="2" ecmeta_ssr_type="legend" class="zr1-cls-9"></path>
+<path d="M0 7L25 7" transform="translate(583 4.6)" fill="#000" stroke="#d97706" stroke-width="2" stroke-linecap="butt" stroke-miterlimit="10" class="zr1-cls-5"></path>
+<path d="M18.1 7A5.6 5.6 0 1 1 18.1 6.4A5.6 5.6 0 0 1 18.1 7" transform="translate(583 4.6)" fill="#fff" stroke="#d97706" stroke-width="2" stroke-linecap="butt" stroke-miterlimit="10" class="zr1-cls-5"></path>
+<text dominant-baseline="central" text-anchor="start" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" x="30" y="7" transform="translate(583 4.6)" fill="#333">外观设计</text>
+<path d="M-1 0.4l75 0l0 13.2l-75 0Z" transform="translate(583 4.6)" fill="transparent" ecmeta_series_index="3" ecmeta_data_index="3" ecmeta_ssr_type="legend" class="zr1-cls-9"></path>
+<defs >
+<clipPath id="static-chart-1-zr1-c0">
+<path d="M47 29l914 0l0 232l-914 0Z" fill="#000" class="zr1-cls-6"></path>
+</clipPath>
+<clipPath id="static-chart-1-zr1-c1">
+<path d="M47 29l914 0l0 232l-914 0Z" fill="#000" class="zr1-cls-6"></path>
+</clipPath>
+<clipPath id="static-chart-1-zr1-c2">
+<path d="M47 29l914 0l0 232l-914 0Z" fill="#000" class="zr1-cls-6"></path>
+</clipPath>
+<clipPath id="static-chart-1-zr1-c3">
+<path d="M47 29l914 0l0 232l-914 0Z" fill="#000" class="zr1-cls-6"></path>
+</clipPath>
+</defs>
+<style ><![CDATA[
+.zr1-cls-5:hover {
+pointer-events:none;
+}
+.zr1-cls-6:hover {
+cursor:pointer;
+fill:rgba(0,0,0,1);
+}
+.zr1-cls-7:hover {
+cursor:pointer;
+}
+.zr1-cls-8:hover {
+cursor:pointer;
+fill:rgba(255,255,255,1);
+}
+.zr1-cls-9:hover {
+cursor:pointer;
+fill:rgba(0,0,0,0);
+}
+
+]]>
+
+</style>
+</svg></div><div class="chart-canvas" data-chart="line" data-spec="{&quot;type&quot;:&quot;line&quot;,&quot;area&quot;:false,&quot;stack&quot;:false,&quot;x&quot;:[&quot;2017&quot;,&quot;2018&quot;,&quot;2019&quot;,&quot;2020&quot;,&quot;2021&quot;,&quot;2022&quot;,&quot;2023&quot;,&quot;2024&quot;,&quot;2025&quot;,&quot;2026&quot;],&quot;series&quot;:[{&quot;name&quot;:&quot;发明申请&quot;,&quot;data&quot;:[368.0,371.0,523.0,595.0,556.0,792.0,4142.0,3673.0,4371.0,2856.0]},{&quot;name&quot;:&quot;发明授权&quot;,&quot;data&quot;:[750.0,1629.0,2115.0,2696.0,4452.0,4075.0,4511.0,4267.0,3579.0,2457.0]},{&quot;name&quot;:&quot;实用新型&quot;,&quot;data&quot;:[7.0,15.0,13.0,28.0,59.0,57.0,50.0,32.0,12.0,14.0]},{&quot;name&quot;:&quot;外观设计&quot;,&quot;data&quot;:[154.0,198.0,272.0,816.0,286.0,109.0,133.0,523.0,178.0,130.0]}]}"></div><p class="chart-status" aria-live="polite"></p></div><details class="chart-data"><summary>数据明细</summary><div class="table-wrap"><table><thead><tr><th>年份</th><th>发明申请</th><th>发明授权</th><th>实用新型</th><th>外观设计</th></tr></thead><tbody><tr><td>2017</td><td>368</td><td>750</td><td>7</td><td>154</td></tr><tr><td>2018</td><td>371</td><td>1629</td><td>15</td><td>198</td></tr><tr><td>2019</td><td>523</td><td>2115</td><td>13</td><td>272</td></tr><tr><td>2020</td><td>595</td><td>2696</td><td>28</td><td>816</td></tr><tr><td>2021</td><td>556</td><td>4452</td><td>59</td><td>286</td></tr><tr><td>2022</td><td>792</td><td>4075</td><td>57</td><td>109</td></tr><tr><td>2023</td><td>4142</td><td>4511</td><td>50</td><td>133</td></tr><tr><td>2024</td><td>3673</td><td>4267</td><td>32</td><td>523</td></tr><tr><td>2025</td><td>4371</td><td>3579</td><td>12</td><td>178</td></tr><tr><td>2026</td><td>2856</td><td>2457</td><td>14</td><td>130</td></tr></tbody></table></div></details></div>
+<p class="biz-section-note">将法律状态归并为 有效/失效/审查中/失败</p><div class="chart-box"><h4 class="chart-title">专利有效性结构</h4><div class="chart-frame" data-chart-state="static"><div class="chart-static"><svg width="984" height="300" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" baseProfile="full" viewBox="0 0 984 300">
+<rect width="984" height="300" x="0" y="0" fill="none"></rect>
+<polyline points="592 184.9 606.8 187.8 621.8 187.8" fill="transparent" stroke="#0b5ca8" class="zr2-cls-10"></polyline>
+<polyline points="442.6 254.2 435.3 267.3 420.3 267.3" fill="transparent" stroke="#0284c7" class="zr2-cls-10"></polyline>
+<polyline points="390.2 171.7 375.3 172.6 360.3 172.6" fill="transparent" stroke="#0b3768" class="zr2-cls-10"></polyline>
+<polyline points="440.3 77.1 432.7 64.1 417.7 64.1" fill="transparent" stroke="#d97706" class="zr2-cls-10"></polyline>
+<polyline points="476.1 64.2 473.8 49.4 458.8 49.4" fill="transparent" stroke="#059669" class="zr2-cls-10"></polyline>
+<path d="M492 63A102 102 0 1 1 453 259.2L467.9 223.2A63 63 0 1 0 492 102Z" fill="#0b5ca8" stroke="#fff" stroke-width="2" stroke-linejoin="round" ecmeta_series_index="0" ecmeta_data_index="0" ecmeta_ssr_type="chart" class="zr2-cls-11"></path>
+<path d="M453 259.2A102 102 0 0 1 432.8 248.1L455.4 216.3A63 63 0 0 0 467.9 223.2Z" fill="#0284c7" stroke="#fff" stroke-width="2" stroke-linejoin="round" ecmeta_series_index="0" ecmeta_data_index="1" ecmeta_ssr_type="chart" class="zr2-cls-12"></path>
+<path d="M432.8 248.1A102 102 0 0 1 422.5 90.4L449.1 118.9A63 63 0 0 0 455.4 216.3Z" fill="#0b3768" stroke="#fff" stroke-width="2" stroke-linejoin="round" ecmeta_series_index="0" ecmeta_data_index="2" ecmeta_ssr_type="chart" class="zr2-cls-13"></path>
+<path d="M422.5 90.4A102 102 0 0 1 460.6 68L472.6 105.1A63 63 0 0 0 449.1 118.9Z" fill="#d97706" stroke="#fff" stroke-width="2" stroke-linejoin="round" ecmeta_series_index="0" ecmeta_data_index="3" ecmeta_ssr_type="chart" class="zr2-cls-14"></path>
+<path d="M460.6 68A102 102 0 0 1 492 63L492 102A63 63 0 0 0 472.6 105.1Z" fill="#059669" stroke="#fff" stroke-width="2" stroke-linejoin="round" ecmeta_series_index="0" ecmeta_data_index="4" ecmeta_ssr_type="chart" class="zr2-cls-15"></path>
+<text dominant-baseline="central" text-anchor="start" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" xml:space="preserve" transform="translate(626.7523 187.8236)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">有效: 32425 (56.25%)</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" xml:space="preserve" transform="translate(415.2954 267.3406)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">失效: 2079 (3.61%)</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" xml:space="preserve" transform="translate(355.2503 172.6494)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">审查中: 16259 (28.21%)</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" xml:space="preserve" transform="translate(412.6874 64.1486)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">失败: 4009 (6.95%)</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" xml:space="preserve" transform="translate(453.7554 49.4313)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">其他: 2873 (4.98%)</text>
+<path d="M-5 -5l326 0l0 26l-326 0Z" transform="translate(334 279)" fill="rgb(0,0,0)" fill-opacity="0" stroke="#ccc" stroke-width="0" class="zr2-cls-16"></path>
+<path d="M3.5 0L21.5 0A3.5 3.5 0 0 1 25 3.5L25 10.5A3.5 3.5 0 0 1 21.5 14L3.5 14A3.5 3.5 0 0 1 0 10.5L0 3.5A3.5 3.5 0 0 1 3.5 0" transform="translate(335 280)" fill="#0b5ca8" stroke="#fff" stroke-width="2" stroke-linecap="butt" stroke-miterlimit="10" stroke-linejoin="round" ecmeta_series_index="0" ecmeta_data_index="0" ecmeta_ssr_type="legend" ecmeta_silent="true" class="zr2-cls-16"></path>
+<text dominant-baseline="central" text-anchor="start" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" x="30" y="7" transform="translate(335 280)" fill="#333">有效</text>
+<path d="M-1 -1l53 0l0 16l-53 0Z" transform="translate(335 280)" fill="transparent" ecmeta_series_index="0" ecmeta_data_index="0" ecmeta_ssr_type="legend" class="zr2-cls-17"></path>
+<path d="M3.5 0L21.5 0A3.5 3.5 0 0 1 25 3.5L25 10.5A3.5 3.5 0 0 1 21.5 14L3.5 14A3.5 3.5 0 0 1 0 10.5L0 3.5A3.5 3.5 0 0 1 3.5 0" transform="translate(398 280)" fill="#0284c7" stroke="#fff" stroke-width="2" stroke-linecap="butt" stroke-miterlimit="10" stroke-linejoin="round" ecmeta_series_index="0" ecmeta_data_index="1" ecmeta_ssr_type="legend" ecmeta_silent="true" class="zr2-cls-16"></path>
+<text dominant-baseline="central" text-anchor="start" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" x="30" y="7" transform="translate(398 280)" fill="#333">失效</text>
+<path d="M-1 -1l53 0l0 16l-53 0Z" transform="translate(398 280)" fill="transparent" ecmeta_series_index="0" ecmeta_data_index="1" ecmeta_ssr_type="legend" class="zr2-cls-17"></path>
+<path d="M3.5 0L21.5 0A3.5 3.5 0 0 1 25 3.5L25 10.5A3.5 3.5 0 0 1 21.5 14L3.5 14A3.5 3.5 0 0 1 0 10.5L0 3.5A3.5 3.5 0 0 1 3.5 0" transform="translate(461 280)" fill="#0b3768" stroke="#fff" stroke-width="2" stroke-linecap="butt" stroke-miterlimit="10" stroke-linejoin="round" ecmeta_series_index="0" ecmeta_data_index="2" ecmeta_ssr_type="legend" ecmeta_silent="true" class="zr2-cls-16"></path>
+<text dominant-baseline="central" text-anchor="start" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" x="30" y="7" transform="translate(461 280)" fill="#333">审查中</text>
+<path d="M-1 -1l64 0l0 16l-64 0Z" transform="translate(461 280)" fill="transparent" ecmeta_series_index="0" ecmeta_data_index="2" ecmeta_ssr_type="legend" class="zr2-cls-17"></path>
+<path d="M3.5 0L21.5 0A3.5 3.5 0 0 1 25 3.5L25 10.5A3.5 3.5 0 0 1 21.5 14L3.5 14A3.5 3.5 0 0 1 0 10.5L0 3.5A3.5 3.5 0 0 1 3.5 0" transform="translate(535 280)" fill="#d97706" stroke="#fff" stroke-width="2" stroke-linecap="butt" stroke-miterlimit="10" stroke-linejoin="round" ecmeta_series_index="0" ecmeta_data_index="3" ecmeta_ssr_type="legend" ecmeta_silent="true" class="zr2-cls-16"></path>
+<text dominant-baseline="central" text-anchor="start" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" x="30" y="7" transform="translate(535 280)" fill="#333">失败</text>
+<path d="M-1 -1l53 0l0 16l-53 0Z" transform="translate(535 280)" fill="transparent" ecmeta_series_index="0" ecmeta_data_index="3" ecmeta_ssr_type="legend" class="zr2-cls-17"></path>
+<path d="M3.5 0L21.5 0A3.5 3.5 0 0 1 25 3.5L25 10.5A3.5 3.5 0 0 1 21.5 14L3.5 14A3.5 3.5 0 0 1 0 10.5L0 3.5A3.5 3.5 0 0 1 3.5 0" transform="translate(598 280)" fill="#059669" stroke="#fff" stroke-width="2" stroke-linecap="butt" stroke-miterlimit="10" stroke-linejoin="round" ecmeta_series_index="0" ecmeta_data_index="4" ecmeta_ssr_type="legend" ecmeta_silent="true" class="zr2-cls-16"></path>
+<text dominant-baseline="central" text-anchor="start" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" x="30" y="7" transform="translate(598 280)" fill="#333">其他</text>
+<path d="M-1 -1l53 0l0 16l-53 0Z" transform="translate(598 280)" fill="transparent" ecmeta_series_index="0" ecmeta_data_index="4" ecmeta_ssr_type="legend" class="zr2-cls-17"></path>
+<style ><![CDATA[
+.zr2-cls-10:hover {
+cursor:pointer;
+}
+.zr2-cls-11:hover {
+cursor:pointer;
+fill:rgba(12,101,184,1);
+}
+.zr2-cls-12:hover {
+cursor:pointer;
+fill:rgba(2,145,218,1);
+}
+.zr2-cls-13:hover {
+cursor:pointer;
+fill:rgba(12,60,114,1);
+}
+.zr2-cls-14:hover {
+cursor:pointer;
+fill:rgba(238,130,6,1);
+}
+.zr2-cls-15:hover {
+cursor:pointer;
+fill:rgba(5,165,115,1);
+}
+.zr2-cls-16:hover {
+pointer-events:none;
+}
+.zr2-cls-17:hover {
+cursor:pointer;
+fill:rgba(0,0,0,0);
+}
+
+]]>
+
+</style>
+</svg></div><div class="chart-canvas" data-chart="pie" data-spec="{&quot;type&quot;:&quot;pie&quot;,&quot;donut&quot;:true,&quot;data&quot;:[{&quot;name&quot;:&quot;有效&quot;,&quot;value&quot;:32425.0},{&quot;name&quot;:&quot;失效&quot;,&quot;value&quot;:2079.0},{&quot;name&quot;:&quot;审查中&quot;,&quot;value&quot;:16259.0},{&quot;name&quot;:&quot;失败&quot;,&quot;value&quot;:4009.0},{&quot;name&quot;:&quot;其他&quot;,&quot;value&quot;:2873.0}]}"></div><p class="chart-status" aria-live="polite"></p></div><details class="chart-data"><summary>数据明细</summary><div class="table-wrap"><table><thead><tr><th>有效性</th><th>数量</th></tr></thead><tbody><tr><td>有效</td><td>32425</td></tr><tr><td>失效</td><td>2079</td></tr><tr><td>审查中</td><td>16259</td></tr><tr><td>失败</td><td>4009</td></tr><tr><td>其他</td><td>2873</td></tr></tbody></table></div></details></div>
+<p class="biz-section-note">按专利类型统计数量</p><div class="chart-box"><h4 class="chart-title">专利类型分布</h4><div class="chart-frame" data-chart-state="static"><div class="chart-static"><svg width="984" height="300" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" baseProfile="full" viewBox="0 0 984 300">
+<rect width="984" height="300" x="0" y="0" fill="none"></rect>
+<polyline points="584 121.1 597.6 114.6 612.6 114.6" fill="transparent" stroke="#0b5ca8" class="zr3-cls-18"></polyline>
+<polyline points="411 227.1 399.1 236.2 384.1 236.2" fill="transparent" stroke="#0284c7" class="zr3-cls-18"></polyline>
+<polyline points="452.2 71.1 437.6 63.3 422.6 63.3" fill="transparent" stroke="#0b3768" class="zr3-cls-18"></polyline>
+<polyline points="472.5 64.9 469.7 50.2 454.7 50.2" fill="transparent" stroke="#d97706" class="zr3-cls-18"></polyline>
+<path d="M492 63A102 102 0 0 1 571.3 229.1L541 204.6A63 63 0 0 0 492 102Z" fill="#0b5ca8" stroke="#fff" stroke-width="2" stroke-linejoin="round" ecmeta_series_index="0" ecmeta_data_index="0" ecmeta_ssr_type="chart" class="zr3-cls-19"></path>
+<path d="M571.3 229.1A102 102 0 1 1 450.7 71.8L466.5 107.4A63 63 0 1 0 541 204.6Z" fill="#0284c7" stroke="#fff" stroke-width="2" stroke-linejoin="round" ecmeta_series_index="0" ecmeta_data_index="1" ecmeta_ssr_type="chart" class="zr3-cls-20"></path>
+<path d="M450.7 71.8A102 102 0 0 1 453.8 70.4L468.4 106.6A63 63 0 0 0 466.5 107.4Z" fill="#0b3768" stroke="#fff" stroke-width="2" stroke-linejoin="round" ecmeta_series_index="0" ecmeta_data_index="2" ecmeta_ssr_type="chart" class="zr3-cls-21"></path>
+<path d="M453.8 70.4A102 102 0 0 1 492 63L492 102A63 63 0 0 0 468.4 106.6Z" fill="#d97706" stroke="#fff" stroke-width="2" stroke-linejoin="round" ecmeta_series_index="0" ecmeta_data_index="3" ecmeta_ssr_type="chart" class="zr3-cls-22"></path>
+<text dominant-baseline="central" text-anchor="start" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" xml:space="preserve" transform="translate(617.5861 114.596)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">发明申请: 20734 (35.82%)</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" xml:space="preserve" transform="translate(379.1443 236.1816)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">发明授权: 33301 (57.54%)</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" xml:space="preserve" transform="translate(417.5754 63.252)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">实用新型: 305 (0.53%)</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" xml:space="preserve" transform="translate(449.6632 50.152)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">外观设计: 3539 (6.11%)</text>
+<path d="M-5 -5l340 0l0 26l-340 0Z" transform="translate(327 279)" fill="rgb(0,0,0)" fill-opacity="0" stroke="#ccc" stroke-width="0" class="zr3-cls-23"></path>
+<path d="M3.5 0L21.5 0A3.5 3.5 0 0 1 25 3.5L25 10.5A3.5 3.5 0 0 1 21.5 14L3.5 14A3.5 3.5 0 0 1 0 10.5L0 3.5A3.5 3.5 0 0 1 3.5 0" transform="translate(328 280)" fill="#0b5ca8" stroke="#fff" stroke-width="2" stroke-linecap="butt" stroke-miterlimit="10" stroke-linejoin="round" ecmeta_series_index="0" ecmeta_data_index="0" ecmeta_ssr_type="legend" ecmeta_silent="true" class="zr3-cls-23"></path>
+<text dominant-baseline="central" text-anchor="start" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" x="30" y="7" transform="translate(328 280)" fill="#333">发明申请</text>
+<path d="M-1 -1l75 0l0 16l-75 0Z" transform="translate(328 280)" fill="transparent" ecmeta_series_index="0" ecmeta_data_index="0" ecmeta_ssr_type="legend" class="zr3-cls-24"></path>
+<path d="M3.5 0L21.5 0A3.5 3.5 0 0 1 25 3.5L25 10.5A3.5 3.5 0 0 1 21.5 14L3.5 14A3.5 3.5 0 0 1 0 10.5L0 3.5A3.5 3.5 0 0 1 3.5 0" transform="translate(413 280)" fill="#0284c7" stroke="#fff" stroke-width="2" stroke-linecap="butt" stroke-miterlimit="10" stroke-linejoin="round" ecmeta_series_index="0" ecmeta_data_index="1" ecmeta_ssr_type="legend" ecmeta_silent="true" class="zr3-cls-23"></path>
+<text dominant-baseline="central" text-anchor="start" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" x="30" y="7" transform="translate(413 280)" fill="#333">发明授权</text>
+<path d="M-1 -1l75 0l0 16l-75 0Z" transform="translate(413 280)" fill="transparent" ecmeta_series_index="0" ecmeta_data_index="1" ecmeta_ssr_type="legend" class="zr3-cls-24"></path>
+<path d="M3.5 0L21.5 0A3.5 3.5 0 0 1 25 3.5L25 10.5A3.5 3.5 0 0 1 21.5 14L3.5 14A3.5 3.5 0 0 1 0 10.5L0 3.5A3.5 3.5 0 0 1 3.5 0" transform="translate(498 280)" fill="#0b3768" stroke="#fff" stroke-width="2" stroke-linecap="butt" stroke-miterlimit="10" stroke-linejoin="round" ecmeta_series_index="0" ecmeta_data_index="2" ecmeta_ssr_type="legend" ecmeta_silent="true" class="zr3-cls-23"></path>
+<text dominant-baseline="central" text-anchor="start" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" x="30" y="7" transform="translate(498 280)" fill="#333">实用新型</text>
+<path d="M-1 -1l75 0l0 16l-75 0Z" transform="translate(498 280)" fill="transparent" ecmeta_series_index="0" ecmeta_data_index="2" ecmeta_ssr_type="legend" class="zr3-cls-24"></path>
+<path d="M3.5 0L21.5 0A3.5 3.5 0 0 1 25 3.5L25 10.5A3.5 3.5 0 0 1 21.5 14L3.5 14A3.5 3.5 0 0 1 0 10.5L0 3.5A3.5 3.5 0 0 1 3.5 0" transform="translate(583 280)" fill="#d97706" stroke="#fff" stroke-width="2" stroke-linecap="butt" stroke-miterlimit="10" stroke-linejoin="round" ecmeta_series_index="0" ecmeta_data_index="3" ecmeta_ssr_type="legend" ecmeta_silent="true" class="zr3-cls-23"></path>
+<text dominant-baseline="central" text-anchor="start" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" x="30" y="7" transform="translate(583 280)" fill="#333">外观设计</text>
+<path d="M-1 -1l75 0l0 16l-75 0Z" transform="translate(583 280)" fill="transparent" ecmeta_series_index="0" ecmeta_data_index="3" ecmeta_ssr_type="legend" class="zr3-cls-24"></path>
+<style ><![CDATA[
+.zr3-cls-18:hover {
+cursor:pointer;
+}
+.zr3-cls-19:hover {
+cursor:pointer;
+fill:rgba(12,101,184,1);
+}
+.zr3-cls-20:hover {
+cursor:pointer;
+fill:rgba(2,145,218,1);
+}
+.zr3-cls-21:hover {
+cursor:pointer;
+fill:rgba(12,60,114,1);
+}
+.zr3-cls-22:hover {
+cursor:pointer;
+fill:rgba(238,130,6,1);
+}
+.zr3-cls-23:hover {
+pointer-events:none;
+}
+.zr3-cls-24:hover {
+cursor:pointer;
+fill:rgba(0,0,0,0);
+}
+
+]]>
+
+</style>
+</svg></div><div class="chart-canvas" data-chart="pie" data-spec="{&quot;type&quot;:&quot;pie&quot;,&quot;donut&quot;:true,&quot;data&quot;:[{&quot;name&quot;:&quot;发明申请&quot;,&quot;value&quot;:20734.0},{&quot;name&quot;:&quot;发明授权&quot;,&quot;value&quot;:33301.0},{&quot;name&quot;:&quot;实用新型&quot;,&quot;value&quot;:305.0},{&quot;name&quot;:&quot;外观设计&quot;,&quot;value&quot;:3539.0}]}"></div><p class="chart-status" aria-live="polite"></p></div><details class="chart-data"><summary>数据明细</summary><div class="table-wrap"><table><thead><tr><th>类型</th><th>数量</th></tr></thead><tbody><tr><td>发明申请</td><td>20734</td></tr><tr><td>发明授权</td><td>33301</td></tr><tr><td>实用新型</td><td>305</td></tr><tr><td>外观设计</td><td>3539</td></tr></tbody></table></div></details></div>
+<p class="biz-section-note">按专利法律状态统计数量</p><div class="chart-box"><h4 class="chart-title">专利法律状态分布</h4><div class="chart-frame" data-chart-state="static"><div class="chart-static"><svg width="984" height="300" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" baseProfile="full" viewBox="0 0 984 300">
+<rect width="984" height="300" x="0" y="0" fill="none"></rect>
+<path d="M48 260.5L960 260.5" fill="transparent" stroke="#E0E6F1" class="zr4-cls-25"></path>
+<path d="M48 227.5L960 227.5" fill="transparent" stroke="#E0E6F1" class="zr4-cls-25"></path>
+<path d="M48 194.5L960 194.5" fill="transparent" stroke="#E0E6F1" class="zr4-cls-25"></path>
+<path d="M48 161.5L960 161.5" fill="transparent" stroke="#E0E6F1" class="zr4-cls-25"></path>
+<path d="M48 128.5L960 128.5" fill="transparent" stroke="#E0E6F1" class="zr4-cls-25"></path>
+<path d="M48 95.5L960 95.5" fill="transparent" stroke="#E0E6F1" class="zr4-cls-25"></path>
+<path d="M48 63.5L960 63.5" fill="transparent" stroke="#E0E6F1" class="zr4-cls-25"></path>
+<path d="M48 30.5L960 30.5" fill="transparent" stroke="#E0E6F1" class="zr4-cls-25"></path>
+<path d="M48 260.5L960 260.5" fill="transparent" stroke="#6E7079" stroke-linecap="round" class="zr4-cls-25"></path>
+<path d="M48.5 260L48.5 265" fill="transparent" stroke="#6E7079" class="zr4-cls-25"></path>
+<path d="M93.5 260L93.5 265" fill="transparent" stroke="#6E7079" class="zr4-cls-25"></path>
+<path d="M139.5 260L139.5 265" fill="transparent" stroke="#6E7079" class="zr4-cls-25"></path>
+<path d="M185.5 260L185.5 265" fill="transparent" stroke="#6E7079" class="zr4-cls-25"></path>
+<path d="M230.5 260L230.5 265" fill="transparent" stroke="#6E7079" class="zr4-cls-25"></path>
+<path d="M276.5 260L276.5 265" fill="transparent" stroke="#6E7079" class="zr4-cls-25"></path>
+<path d="M321.5 260L321.5 265" fill="transparent" stroke="#6E7079" class="zr4-cls-25"></path>
+<path d="M367.5 260L367.5 265" fill="transparent" stroke="#6E7079" class="zr4-cls-25"></path>
+<path d="M413.5 260L413.5 265" fill="transparent" stroke="#6E7079" class="zr4-cls-25"></path>
+<path d="M458.5 260L458.5 265" fill="transparent" stroke="#6E7079" class="zr4-cls-25"></path>
+<path d="M504.5 260L504.5 265" fill="transparent" stroke="#6E7079" class="zr4-cls-25"></path>
+<path d="M549.5 260L549.5 265" fill="transparent" stroke="#6E7079" class="zr4-cls-25"></path>
+<path d="M595.5 260L595.5 265" fill="transparent" stroke="#6E7079" class="zr4-cls-25"></path>
+<path d="M641.5 260L641.5 265" fill="transparent" stroke="#6E7079" class="zr4-cls-25"></path>
+<path d="M686.5 260L686.5 265" fill="transparent" stroke="#6E7079" class="zr4-cls-25"></path>
+<path d="M732.5 260L732.5 265" fill="transparent" stroke="#6E7079" class="zr4-cls-25"></path>
+<path d="M777.5 260L777.5 265" fill="transparent" stroke="#6E7079" class="zr4-cls-25"></path>
+<path d="M823.5 260L823.5 265" fill="transparent" stroke="#6E7079" class="zr4-cls-25"></path>
+<path d="M869.5 260L869.5 265" fill="transparent" stroke="#6E7079" class="zr4-cls-25"></path>
+<path d="M914.5 260L914.5 265" fill="transparent" stroke="#6E7079" class="zr4-cls-25"></path>
+<path d="M960.5 260L960.5 265" fill="transparent" stroke="#6E7079" class="zr4-cls-25"></path>
+<text dominant-baseline="central" text-anchor="end" style="font-size:12px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" transform="translate(40 260)" fill="#334155">0</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:12px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" transform="translate(40 227.1429)" fill="#334155">5,000</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:12px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" transform="translate(40 194.2857)" fill="#334155">10,000</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:12px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" transform="translate(40 161.4286)" fill="#334155">15,000</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:12px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" transform="translate(40 128.5714)" fill="#334155">20,000</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:12px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" transform="translate(40 95.7143)" fill="#334155">25,000</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:12px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" transform="translate(40 62.8571)" fill="#334155">30,000</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:12px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" transform="translate(40 30)" fill="#334155">35,000</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" transform="matrix(0.819,-0.574,0.574,0.819,70.8,268)" fill="#334155">授权</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" transform="matrix(0.819,-0.574,0.574,0.819,116.4,268)" fill="#334155">公布</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" transform="matrix(0.819,-0.574,0.574,0.819,162,268)" fill="#334155">实质审查的生效</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" transform="matrix(0.819,-0.574,0.574,0.819,207.6,268)" fill="#334155">发明专利申请公布后的驳回</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" transform="matrix(0.819,-0.574,0.574,0.819,253.2,268)" fill="#334155">专利权期限的补偿</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" transform="matrix(0.819,-0.574,0.574,0.819,298.8,268)" fill="#334155">专利申请权、专利权的转移</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" transform="matrix(0.819,-0.574,0.574,0.819,344.4,268)" fill="#334155">专利权的终止</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" transform="matrix(0.819,-0.574,0.574,0.819,390,268)" fill="#334155">专利权终止</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" transform="matrix(0.819,-0.574,0.574,0.819,435.6,268)" fill="#334155">专利实施许可合同备案的生效、变更及注销</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" transform="matrix(0.819,-0.574,0.574,0.819,481.2,268)" fill="#334155">著录事项变更</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" transform="matrix(0.819,-0.574,0.574,0.819,526.8,268)" fill="#334155">发明专利申请公布后的视为撤回</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" transform="matrix(0.819,-0.574,0.574,0.819,572.4,268)" fill="#334155">发明专利申请公布后的撤回</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" transform="matrix(0.819,-0.574,0.574,0.819,618,268)" fill="#334155">专利权的视为放弃</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" transform="matrix(0.819,-0.574,0.574,0.819,663.6,268)" fill="#334155">开放许可的声明及撤回</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" transform="matrix(0.819,-0.574,0.574,0.819,709.2,268)" fill="#334155">专利权的保全及其解除</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" transform="matrix(0.819,-0.574,0.574,0.819,754.8,268)" fill="#334155">专利权人的姓名或者名称、国籍和地址的变更</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" transform="matrix(0.819,-0.574,0.574,0.819,800.4,268)" fill="#334155">专利权人的姓名或者名称、地址的变更</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" transform="matrix(0.819,-0.574,0.574,0.819,846,268)" fill="#334155">其他有关事项</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" transform="matrix(0.819,-0.574,0.574,0.819,891.6,268)" fill="#334155">避免重复授权放弃专利权</text>
+<text dominant-baseline="central" text-anchor="end" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" transform="matrix(0.819,-0.574,0.574,0.819,937.2,268)" fill="#334155">专利权终止-未缴年费专利权终止</text>
+<path d="M55.1 260l31.5 0l0 -213.1l-31.5 0Z" fill="#0b5ca8" ecmeta_series_index="0" ecmeta_data_index="0" ecmeta_ssr_type="chart" class="zr4-cls-26"></path>
+<path d="M100.7 260l31.5 0l0 -26l-31.5 0Z" fill="#0b5ca8" ecmeta_series_index="0" ecmeta_data_index="1" ecmeta_ssr_type="chart" class="zr4-cls-26"></path>
+<path d="M146.3 260l31.5 0l0 -80.9l-31.5 0Z" fill="#0b5ca8" ecmeta_series_index="0" ecmeta_data_index="2" ecmeta_ssr_type="chart" class="zr4-cls-26"></path>
+<path d="M191.9 260l31.5 0l0 -25l-31.5 0Z" fill="#0b5ca8" ecmeta_series_index="0" ecmeta_data_index="3" ecmeta_ssr_type="chart" class="zr4-cls-26"></path>
+<path d="M237.5 260l31.5 0l0 -9.2l-31.5 0Z" fill="#0b5ca8" ecmeta_series_index="0" ecmeta_data_index="4" ecmeta_ssr_type="chart" class="zr4-cls-26"></path>
+<path d="M283.1 260l31.5 0l0 -9.3l-31.5 0Z" fill="#0b5ca8" ecmeta_series_index="0" ecmeta_data_index="5" ecmeta_ssr_type="chart" class="zr4-cls-26"></path>
+<path d="M328.7 260l31.5 0l0 -1.6l-31.5 0Z" fill="#0b5ca8" ecmeta_series_index="0" ecmeta_data_index="6" ecmeta_ssr_type="chart" class="zr4-cls-26"></path>
+<path d="M374.3 260l31.5 0l0 -11.9l-31.5 0Z" fill="#0b5ca8" ecmeta_series_index="0" ecmeta_data_index="7" ecmeta_ssr_type="chart" class="zr4-cls-26"></path>
+<path d="M419.9 260l31.5 0l0 -0.2l-31.5 0Z" fill="#0b5ca8" ecmeta_series_index="0" ecmeta_data_index="8" ecmeta_ssr_type="chart" class="zr4-cls-26"></path>
+<path d="M465.5 260l31.5 0l0 -0.1l-31.5 0Z" fill="#0b5ca8" ecmeta_series_index="0" ecmeta_data_index="9" ecmeta_ssr_type="chart" class="zr4-cls-26"></path>
+<path d="M511.1 260l31.5 0l0 -1l-31.5 0Z" fill="#0b5ca8" ecmeta_series_index="0" ecmeta_data_index="10" ecmeta_ssr_type="chart" class="zr4-cls-26"></path>
+<path d="M556.7 260l31.5 0l0 -0.3l-31.5 0Z" fill="#0b5ca8" ecmeta_series_index="0" ecmeta_data_index="11" ecmeta_ssr_type="chart" class="zr4-cls-26"></path>
+<path d="M602.3 260l31.5 0l0 -0.1l-31.5 0Z" fill="#0b5ca8" ecmeta_series_index="0" ecmeta_data_index="12" ecmeta_ssr_type="chart" class="zr4-cls-26"></path>
+<path d="M647.9 260l31.5 0l0 -0.1l-31.5 0Z" fill="#0b5ca8" ecmeta_series_index="0" ecmeta_data_index="13" ecmeta_ssr_type="chart" class="zr4-cls-26"></path>
+<path d="M693.5 260l31.5 0l0 0l-31.5 0Z" fill="#0b5ca8" ecmeta_series_index="0" ecmeta_data_index="14" ecmeta_ssr_type="chart" class="zr4-cls-26"></path>
+<path d="M739.1 260l31.5 0l0 -0.1l-31.5 0Z" fill="#0b5ca8" ecmeta_series_index="0" ecmeta_data_index="15" ecmeta_ssr_type="chart" class="zr4-cls-26"></path>
+<path d="M784.7 260l31.5 0l0 0l-31.5 0Z" fill="#0b5ca8" ecmeta_series_index="0" ecmeta_data_index="16" ecmeta_ssr_type="chart" class="zr4-cls-26"></path>
+<path d="M830.3 260l31.5 0l0 0l-31.5 0Z" fill="#0b5ca8" ecmeta_series_index="0" ecmeta_data_index="17" ecmeta_ssr_type="chart" class="zr4-cls-26"></path>
+<path d="M875.9 260l31.5 0l0 0l-31.5 0Z" fill="#0b5ca8" ecmeta_series_index="0" ecmeta_data_index="18" ecmeta_ssr_type="chart" class="zr4-cls-26"></path>
+<path d="M921.5 260l31.5 0l0 0l-31.5 0Z" fill="#0b5ca8" ecmeta_series_index="0" ecmeta_data_index="19" ecmeta_ssr_type="chart" class="zr4-cls-26"></path>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(70.8 41.9214)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">32425</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(116.4 229.0494)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">3949</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(162 174.1057)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">12310</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(207.6 230.0417)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">3798</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(253.2 245.7606)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">1406</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(298.8 245.708)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">1414</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(344.4 253.3571)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">250</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(390 243.0597)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">1817</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(435.6 254.8489)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">23</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(481.2 254.908)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">14</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(526.8 254.0011)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">152</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(572.4 254.7174)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">43</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(618 254.9343)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">10</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(663.6 254.8949)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">16</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(709.2 254.9934)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">1</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(754.8 254.9474)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">8</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(800.4 254.9606)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">6</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(846 254.9934)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">1</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(891.6 254.9934)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">1</text>
+<text dominant-baseline="central" text-anchor="middle" style="font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;" y="-5.5" transform="translate(937.2 254.9934)" fill="#333" stroke="rgb(255,255,255)" stroke-width="2" paint-order="stroke" stroke-miterlimit="2">1</text>
+<path d="M-5 -5l10 0l0 10l-10 0Z" transform="translate(492 5)" fill="rgb(0,0,0)" fill-opacity="0" stroke="#ccc" stroke-width="0" class="zr4-cls-25"></path>
+<style ><![CDATA[
+.zr4-cls-25:hover {
+pointer-events:none;
+}
+.zr4-cls-26:hover {
+cursor:pointer;
+fill:rgba(12,101,184,1);
+}
+
+]]>
+
+</style>
+</svg></div><div class="chart-canvas" data-chart="bar" data-spec="{&quot;type&quot;:&quot;bar&quot;,&quot;orient&quot;:&quot;v&quot;,&quot;names&quot;:[&quot;授权&quot;,&quot;公布&quot;,&quot;实质审查的生效&quot;,&quot;发明专利申请公布后的驳回&quot;,&quot;专利权期限的补偿&quot;,&quot;专利申请权、专利权的转移&quot;,&quot;专利权的终止&quot;,&quot;专利权终止&quot;,&quot;专利实施许可合同备案的生效、变更及注销&quot;,&quot;著录事项变更&quot;,&quot;发明专利申请公布后的视为撤回&quot;,&quot;发明专利申请公布后的撤回&quot;,&quot;专利权的视为放弃&quot;,&quot;开放许可的声明及撤回&quot;,&quot;专利权的保全及其解除&quot;,&quot;专利权人的姓名或者名称、国籍和地址的变更&quot;,&quot;专利权人的姓名或者名称、地址的变更&quot;,&quot;其他有关事项&quot;,&quot;避免重复授权放弃专利权&quot;,&quot;专利权终止-未缴年费专利权终止&quot;],&quot;values&quot;:[32425.0,3949.0,12310.0,3798.0,1406.0,1414.0,250.0,1817.0,23.0,14.0,152.0,43.0,10.0,16.0,1.0,8.0,6.0,1.0,1.0,1.0]}"></div><p class="chart-status" aria-live="polite"></p></div><details class="chart-data"><summary>数据明细</summary><div class="table-wrap"><table><thead><tr><th>状态</th><th>数量</th></tr></thead><tbody><tr><td>授权</td><td>32425</td></tr><tr><td>公布</td><td>3949</td></tr><tr><td>实质审查的生效</td><td>12310</td></tr><tr><td>发明专利申请公布后的驳回</td><td>3798</td></tr><tr><td>专利权期限的补偿</td><td>1406</td></tr><tr><td>专利申请权、专利权的转移</td><td>1414</td></tr><tr><td>专利权的终止</td><td>250</td></tr><tr><td>专利权终止</td><td>1817</td></tr><tr><td>专利实施许可合同备案的生效、变更及注销</td><td>23</td></tr><tr><td>著录事项变更</td><td>14</td></tr><tr><td>发明专利申请公布后的视为撤回</td><td>152</td></tr><tr><td>发明专利申请公布后的撤回</td><td>43</td></tr><tr><td>专利权的视为放弃</td><td>10</td></tr><tr><td>开放许可的声明及撤回</td><td>16</td></tr><tr><td>专利权的保全及其解除</td><td>1</td></tr><tr><td>专利权人的姓名或者名称、国籍和地址的变更</td><td>8</td></tr><tr><td>专利权人的姓名或者名称、地址的变更</td><td>6</td></tr><tr><td>其他有关事项</td><td>1</td></tr><tr><td>避免重复授权放弃专利权</td><td>1</td></tr><tr><td>专利权终止-未缴年费专利权终止</td><td>1</td></tr></tbody></table></div></details></div>
 <h3 class="biz-subsection-title">专利检索明细</h3><p class="biz-section-note">明细筛选：申请人=腾讯科技（深圳）有限公司、专利类型=发明授权；命中 34167 条，展示前 6 条</p><div class="table-wrap"><table><thead><tr><th>专利名称</th><th>申请号</th><th>申请人</th><th>专利类型</th><th>申请日期</th><th>法律状态</th><th>代理机构</th></tr></thead><tbody><tr><td>关键词的检测方法以及相关装置</td><td>TW109100644</td><td>大陆商腾讯科技(深圳)有限公司()</td><td>发明授权</td><td>2020-01-08</td><td>-</td><td>-</td></tr><tr><td>人机对话方法、装置、电子设备及电脑可读媒体</td><td>TW108129270</td><td>大陆商腾讯科技(深圳)有限公司()</td><td>发明授权</td><td>2019-08-16</td><td>-</td><td>-</td></tr><tr><td>视频档案的生成方法、装置及储存媒体</td><td>TW108123648</td><td>大陆商腾讯科技(深圳)有限公司()</td><td>发明授权</td><td>2019-07-04</td><td>-</td><td>-</td></tr><tr><td>语音合成方法、模型训练方法、装置和电脑设备</td><td>TW108119775</td><td>大陆商腾讯科技(深圳)有限公司()</td><td>发明授权</td><td>2019-06-06</td><td>-</td><td>-</td></tr><tr><td>推荐内容显示方法、装置、终端及储存媒体</td><td>TW108118101</td><td>大陆商腾讯科技(深圳)有限公司</td><td>发明授权</td><td>2019-05-24</td><td>-</td><td>康清敬</td></tr><tr><td>二维条码、印刷刊物、生成设备及讯息处理方法</td><td>TW107128869</td><td>大陆商腾讯科技(深圳)有限公司()</td><td>发明授权</td><td>2018-03-20</td><td>-</td><td>刘哲郎</td></tr></tbody></table></div></section>
     <section class="report-page biz-section"><div class="report-topbar"><div class="report-stripe"></div><div class="report-banner">专利大数据报告</div></div><div class="biz-section-head"><div><h2>代表性记录</h2><p class="biz-section-note">关键明细记录 Top N。</p></div><span class="biz-tag">Records</span></div><div class="table-wrap"><table><thead><tr><th>专利名称</th><th>专利类型</th><th>申请日期</th><th>法律状态</th></tr></thead><tbody><tr><td>关键词的检测方法以及相关装置</td><td>发明授权</td><td>2020-01-08</td><td>-</td></tr><tr><td>人机对话方法、装置、电子设备及电脑可读媒体</td><td>发明授权</td><td>2019-08-16</td><td>-</td></tr><tr><td>视频档案的生成方法、装置及储存媒体</td><td>发明授权</td><td>2019-07-04</td><td>-</td></tr><tr><td>语音合成方法、模型训练方法、装置和电脑设备</td><td>发明授权</td><td>2019-06-06</td><td>-</td></tr><tr><td>推荐内容显示方法、装置、终端及储存媒体</td><td>发明授权</td><td>2019-05-24</td><td>-</td></tr><tr><td>二维条码、印刷刊物、生成设备及讯息处理方法</td><td>发明授权</td><td>2018-03-20</td><td>-</td></tr></tbody></table></div></section>
     <section class="report-page biz-section"><div class="report-topbar"><div class="report-stripe"></div><div class="report-banner">专利大数据报告</div></div><div class="biz-section-head"><div><h2>特征与洞察</h2><p class="biz-section-note">基于数据的结构化解读。</p></div><span class="biz-tag">Insights</span></div><div class="structural-feature-grid"><article class="structural-feature-card">
