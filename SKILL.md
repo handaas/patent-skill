@@ -26,6 +26,17 @@ description: Use for generating a professional patent big-data report (专利大
 - 报告所有章节标题、指标卡标签必须用中文；`core_analysis.sections` 的 `title` 字段必须中文，不可显示英文 key（如 `holders`、`investments`）。
 - 指标值必须可读化：金额格式为"X 亿/万 + 币种"，地址拼接省市区，比率显示百分号。详见 `references/report-output.md` 的「数据格式约束」。
 
+## 内容整理与交付审校（强制）
+
+在写摘要、洞察或修改正文前，按以下顺序整理；不得为凑结构补造事实：
+
+1. **先定口径**：区分「申请 / 授权 / 有效 / 失效 / 驳回撤回」。“发明申请”是申请记录，“发明授权”是授权记录，当前是否有效看法律状态；申请数不得当作授权数，授权数不得当作有效专利数。
+2. **状态归一**：把上游细状态映射到 有效 / 失效 / 审查中 / 失败 / 其他，保留原始状态文本供核对。转移、变更、著录等程序性状态不能计入“有效率”分母；驳回、撤回归“失败”，不要与“失效”混写。
+3. **趋势只比完整年度**：当前自然年是不完整年度，不参与峰值、同比或“近两年下降”结论；近两年任一不足 10 件时只披露计数，不作方向判断。申请趋势还须提示公开滞后，不能把近年的低值解释为研发收缩。
+4. **样本不当全量**：检索明细只代表当前页。不得从明细样本抽取“专利类型数 / 申请人数”冒充企业全量；类型分布用统计口径。
+5. **证据与推断分开**：每条洞察先写可核对的数量、年份、分母，再写限制；不得由专利数量推断技术实力、研发投入、商业价值或政府认可。
+6. 原值保留在 `core_analysis` / `metrics` 中供核对；修订正文不回写 `examples/` 或 `test-records/`。正常生成与离线修订均调用 `apply_content_review(report)`（仅使用报告既有字段）。
+
 ## 付费调用与分页预算（强制）
 
 每次 MCP 业务调用和每一页明细请求都可能计费；希望得到 total / 页数计算**不是**全量拉取的授权。
@@ -72,6 +83,8 @@ description: Use for generating a professional patent big-data report (专利大
 3. **组装统一报告**：核心分析含专利统计（KV）、申请/授权趋势、类型分布、状态分布、专利检索明细（表）。
 4. **渲染三件套**：`compose_report.py --enterprise ... --output ... --report-output ...` 直接产出 JSON + HTML + Markdown；或 `render_report.py --input ... --output ...` 重渲染。
 5. **返回路径**：返回 JSON、HTML、Markdown 文件路径，以及企业全称映射与数据口径。
+
+- **渲染前置检查**：执行会产出含图表 HTML / PDF 的报告命令前，先验证 `node --version` 与本 skill 自带 `assets/vendor/echarts.min.js` 存在；内嵌静态 SVG 的生成需要 Node.js（推荐当前 LTS，无需 npm 包），缺失时报告生成明确报错。查看已生成的 HTML 与 Markdown 输出不需要 Node。
 
 ## 脚本速查
 
